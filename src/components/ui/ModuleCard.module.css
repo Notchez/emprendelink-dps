@@ -1,0 +1,18 @@
+.card {
+  border: 1px solid #d9e0e8;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.card h2 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.owner {
+  margin: 0;
+  color: #46627f;
+  font-size: 0.85rem;
+  font-weight: 700;
+}

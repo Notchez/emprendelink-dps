@@ -1,0 +1,87 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f8fb;
+  color: #1e2936;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4rem 0;
+}
+
+.hero {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin: 0.2rem 0 0.75rem;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+}
+
+.hero p {
+  line-height: 1.65;
+}
+
+.eyebrow {
+  color: #46627f;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.status {
+  margin-top: 2rem;
+  border-top: 1px solid #d9e0e8;
+  padding-top: 1.5rem;
+}
+
+code {
+  background: #eaf0f6;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 2rem 0;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
