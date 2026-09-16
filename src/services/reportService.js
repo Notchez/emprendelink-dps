@@ -1,6 +1,7 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { reportsMock } from "@/data/mock/reportsMock";
 
 export const reportService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async getOrdersReport() {
+    return reportsMock;
+  },
 };
