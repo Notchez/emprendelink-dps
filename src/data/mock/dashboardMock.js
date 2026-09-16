@@ -8,7 +8,7 @@ export const entrepreneurDashboardMock = {
         deliveredOrders: 16,
         totalCommissions: 125,
     },
-    salesByPEriod: [
+    salesByPeriod:[
         { label: "Lun", sales: 120 },
         { label: "Mar", sales: 180 },
         { label: "Mie", sales: 150 },
