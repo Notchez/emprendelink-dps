@@ -1,3 +1,4 @@
+import ReportFilters from "@/components/dashboard/ReportFilters";
 import { reportService } from "@/services/reportService";
 
 export default async function Page() {
@@ -9,7 +10,7 @@ export default async function Page() {
       <h1>Reportes</h1>
       <p>Consulta los pedidos y las ventas de tu emprendimiento.</p>
 
-      <p>Pedidos encontrados: {orders.length}</p>
+      <ReportFilters orders={orders} />
     </main>
   );
 }
