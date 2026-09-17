@@ -1,14 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./BusinessSettings.module.css";
 import { useBusinessForm } from "@/hooks/useBusinessForm";
 
 export default function BusinessSettingsPage() {
   const { values, errors, updateField, formatSlug, validateForm } = useBusinessForm();
 
+  const [feedback, setFeedback] = useState("");
+
   function handleSubmit(event) {
     event.preventDefault();
-    validateForm();
+
+    const isValid = validateForm();
+
+    setFeedback(isValid ? "Los datos son válidos. Ya puedes guardarlos." : "");
   }
 
   return (
@@ -90,6 +96,12 @@ export default function BusinessSettingsPage() {
               </button>
             </div>
           </form>
+
+          {feedback && (
+            <p className={styles.success} role="status">
+              {feedback}
+            </p>
+          )}
         </section>
       </div>
     </main>

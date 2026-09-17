@@ -46,20 +46,6 @@
     line-height: 1.6;
 }
 
-@media (max-width: 600px) {
-    .page {
-        padding: 24px 16px;
-    }
-
-    .title {
-        font-size: 24px;
-    }
-
-    .card {
-        padding: 24px 16px;
-    }
-}
-
 .fields {
     display: grid;
     gap: 24px;
@@ -97,6 +83,10 @@
     outline-offset: 2px;
 }
 
+.input[aria-invalid="true"] {
+    border-color: #b91c1c;
+}
+
 .help {
     margin: 0;
     color: #64748b;
@@ -109,10 +99,6 @@
     color: #b91c1c;
     font-size: 14px;
     line-height: 1.5;
-}
-
-.input[aria-invalid="true"] {
-    border-color: #b91c1c;
 }
 
 .actions {
@@ -138,4 +124,25 @@
 .primaryButton:focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 3px;
+}
+
+.success {
+    margin: 20px 0 0;
+    color: #166534;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 24px 16px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .card {
+        padding: 24px 16px;
+    }
 }
