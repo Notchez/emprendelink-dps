@@ -1,6 +1,7 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { plansMock } from "@/data/mock/plansMock";
 
 export const planService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async getPlans() {
+    return plansMock;
+  },
 };
