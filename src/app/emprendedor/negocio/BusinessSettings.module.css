@@ -103,3 +103,39 @@
     font-size: 13px;
     line-height: 1.5;
 }
+
+.error {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.input[aria-invalid="true"] {
+    border-color: #b91c1c;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.primaryButton {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primaryButton:hover {
+    background-color: #1d4ed8;
+}
+
+.primaryButton:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+}
