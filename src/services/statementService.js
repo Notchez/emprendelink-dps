@@ -1,6 +1,9 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { commissionsMock } from "@/data/mock/commissionsMock";
 
 export const statementService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async getCommissions(businessId) {
+    return commissionsMock.filter(
+      (commission) => commission.businessId === businessId
+    );
+  },
 };
