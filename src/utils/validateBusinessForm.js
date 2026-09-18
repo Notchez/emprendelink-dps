@@ -11,5 +11,9 @@ export function validateBusinessForm(values) {
     errors.slug = "La dirección debe contener letras sin tildes, números o guiones.";
   }
 
+  if (!values.planId) {
+    errors.planId = "Selecciona un plan para tu emprendimiento.";
+  }
+
   return errors;
 }

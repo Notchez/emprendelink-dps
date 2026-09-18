@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 
 import { getFirebaseDb } from "@/lib/firebase/client";
 
@@ -27,6 +27,33 @@ async function getById(planId) {
   };
 }
 
+async function getActive() {
+  const activePlansQuery = query(
+    collection(getFirebaseDb(), PLANS_COLLECTION),
+    where("active", "==", true)
+  );
+
+  const plansSnapshot = await getDocs(activePlansQuery);
+
+  return plansSnapshot.docs
+    .map((planSnapshot) => ({
+      id: planSnapshot.id,
+      ...planSnapshot.data(),
+    }))
+    .sort((firstPlan, secondPlan) => {
+      const limitDifference = firstPlan.maxActiveProducts - secondPlan.maxActiveProducts;
+
+      if (limitDifference !== 0) {
+        return limitDifference;
+      }
+
+      return firstPlan.name.localeCompare(secondPlan.name, "es", {
+        sensitivity: "base",
+      });
+    });
+}
+
 export const planService = {
   getById,
+  getActive,
 };
