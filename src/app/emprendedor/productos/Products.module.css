@@ -1,0 +1,276 @@
+.page {
+    min-height: 100vh;
+    padding: 48px 24px;
+    background: #f6f7f9;
+    color: #172033;
+}
+
+.container {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.title {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.1;
+}
+
+.description {
+    margin: 12px 0 0;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.card {
+    padding: 28px;
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid #e4e7ec;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgb(16 24 40 / 6%);
+}
+
+.sectionTitle {
+    margin: 0 0 22px;
+    font-size: 1.35rem;
+}
+
+.form {
+    display: grid;
+    gap: 22px;
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.label {
+    font-weight: 700;
+}
+
+.input,
+.textarea {
+    width: 100%;
+    padding: 12px 14px;
+    color: #172033;
+    font: inherit;
+    background: #ffffff;
+    border: 1px solid #cfd4dc;
+    border-radius: 10px;
+    outline: none;
+}
+
+.input:focus,
+.textarea:focus {
+    border-color: #5b5bd6;
+    box-shadow: 0 0 0 3px rgb(91 91 214 / 15%);
+}
+
+.input:disabled,
+.textarea:disabled {
+    cursor: not-allowed;
+    background: #f2f4f7;
+}
+
+.textarea {
+    resize: vertical;
+}
+
+.helper,
+.fieldError,
+.feedback,
+.notice,
+.empty,
+.status,
+.errorBanner {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.helper,
+.empty,
+.status {
+    color: #667085;
+}
+
+.fieldError,
+.errorBanner {
+    color: #b42318;
+}
+
+.errorBanner {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    border-radius: 10px;
+}
+
+.notice {
+    color: #854a0e;
+}
+
+.feedback {
+    color: #067647;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.primaryButton,
+.secondaryButton,
+.editButton {
+    padding: 11px 18px;
+    font: inherit;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.primaryButton {
+    color: #ffffff;
+    background: #5b5bd6;
+    border: 1px solid #5b5bd6;
+}
+
+.primaryButton:hover:not(:disabled) {
+    background: #4747bd;
+}
+
+.primaryButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.secondaryButton,
+.editButton {
+    color: #344054;
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+}
+
+.secondaryButton:hover,
+.editButton:hover {
+    background: #f2f4f7;
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.product {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+}
+
+.productImage,
+.imagePlaceholder {
+    width: 100%;
+    height: 190px;
+}
+
+.productImage {
+    display: block;
+    object-fit: cover;
+}
+
+.imagePlaceholder {
+    display: grid;
+    place-items: center;
+    color: #667085;
+    background: #eef0f4;
+}
+
+.productContent {
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+}
+
+.productHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.productName,
+.productDescription {
+    margin: 0;
+}
+
+.productDescription {
+    color: #667085;
+    line-height: 1.5;
+}
+
+.price {
+    font-size: 1.2rem;
+}
+
+.activeBadge,
+.inactiveBadge {
+    padding: 5px 9px;
+    font-size: 0.75rem;
+    border-radius: 999px;
+}
+
+.activeBadge {
+    color: #067647;
+    background: #ecfdf3;
+}
+
+.inactiveBadge {
+    color: #475467;
+    background: #f2f4f7;
+}
+
+.editButton {
+    justify-self: start;
+}
+
+@media (max-width: 720px) {
+    .page {
+        padding: 32px 16px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .fields,
+    .productGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .fullWidth {
+        grid-column: auto;
+    }
+}
