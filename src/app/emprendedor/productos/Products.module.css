@@ -130,6 +130,12 @@
     color: #854a0e;
 }
 
+.planSummary {
+    margin: 0 0 20px;
+    color: #344054;
+    line-height: 1.5;
+}
+
 .feedback {
     color: #067647;
 }
@@ -142,7 +148,9 @@
 
 .primaryButton,
 .secondaryButton,
-.editButton {
+.editButton,
+.toggleButton,
+.dangerButton {
     padding: 11px 18px;
     font: inherit;
     font-weight: 700;
@@ -175,6 +183,33 @@
 .secondaryButton:hover,
 .editButton:hover {
     background: #f2f4f7;
+}
+
+.toggleButton {
+    color: #ffffff;
+    background: #067647;
+    border: 1px solid #067647;
+}
+
+.toggleButton:hover:not(:disabled) {
+    background: #05603a;
+}
+
+.dangerButton {
+    color: #b42318;
+    background: #ffffff;
+    border: 1px solid #fda29b;
+}
+
+.dangerButton:hover:not(:disabled) {
+    background: #fef3f2;
+}
+
+.editButton:disabled,
+.toggleButton:disabled,
+.dangerButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
 }
 
 .productGrid {
@@ -252,8 +287,10 @@
     background: #f2f4f7;
 }
 
-.editButton {
-    justify-self: start;
+.productActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 @media (max-width: 720px) {

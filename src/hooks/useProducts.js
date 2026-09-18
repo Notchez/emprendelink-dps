@@ -4,11 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import { businessService } from "@/services/businessService";
 import { categoryService } from "@/services/categoryService";
+import { planService } from "@/services/planService";
 import { productService } from "@/services/productService";
 
 const initialState = {
   ownerId: null,
   business: null,
+  plan: null,
   categories: [],
   products: [],
   error: "",
@@ -28,18 +30,21 @@ async function fetchProductData(ownerId) {
   if (!business) {
     return {
       business: null,
+      plan: null,
       categories: [],
       products: [],
     };
   }
 
-  const [categories, products] = await Promise.all([
+  const [plan, categories, products] = await Promise.all([
+    planService.getById(business.planId),
     categoryService.getByBusinessId(business.id),
     productService.getByBusinessId(business.id),
   ]);
 
   return {
     business,
+    plan,
     categories,
     products: sortProducts(products),
   };
@@ -71,6 +76,7 @@ export function useProducts(ownerId) {
           setState({
             ownerId,
             business: null,
+            plan: null,
             categories: [],
             products: [],
             error: error instanceof Error ? error.message : "No se pudieron cargar los productos.",
@@ -102,6 +108,7 @@ export function useProducts(ownerId) {
 
   const isCurrentOwner = state.ownerId === ownerId;
   const business = isCurrentOwner ? state.business : null;
+  const plan = isCurrentOwner ? state.plan : null;
   const categories = isCurrentOwner ? state.categories : [];
   const products = isCurrentOwner ? state.products : [];
   const error = isCurrentOwner ? state.error : "";
@@ -145,16 +152,25 @@ export function useProducts(ownerId) {
   );
 
   const setProductActive = useCallback(
-    async (productId, active, maxActiveProducts) => {
-      await productService.setActive(productId, active, maxActiveProducts);
+    async (productId, active) => {
+      if (active && !plan) {
+        throw new Error("No se encontró el plan asignado al emprendimiento.");
+      }
+
+      if (active && !plan.active) {
+        throw new Error("El plan asignado no está activo.");
+      }
+
+      await productService.setActive(productId, active, plan?.maxActiveProducts ?? 0);
 
       await refresh();
     },
-    [refresh]
+    [plan, refresh]
   );
 
   return {
     business,
+    plan,
     categories,
     products,
     loading,

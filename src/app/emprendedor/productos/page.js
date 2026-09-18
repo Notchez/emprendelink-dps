@@ -25,14 +25,24 @@ function formatPrice(price) {
 
 export default function ProductsPage() {
   const { user, loading: authLoading } = useAuth();
-  const ownerId = user?.uid ?? null;
+  const ownerId = user?.id ?? null;
 
-  const { business, categories, products, loading, error, createProduct, updateProduct } =
-    useProducts(ownerId);
+  const {
+    business,
+    plan,
+    categories,
+    products,
+    loading,
+    error,
+    createProduct,
+    updateProduct,
+    setProductActive,
+  } = useProducts(ownerId);
 
   const [values, setValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [editingProductId, setEditingProductId] = useState(null);
+  const [changingProductId, setChangingProductId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -101,6 +111,27 @@ export default function ProductsPage() {
       );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleActiveChange(product) {
+    setChangingProductId(product.id);
+    setFeedback("");
+
+    try {
+      await setProductActive(product.id, !product.active);
+
+      setFeedback(
+        product.active ? "Producto desactivado correctamente." : "Producto activado correctamente."
+      );
+    } catch (activeError) {
+      setFeedback(
+        activeError instanceof Error
+          ? activeError.message
+          : "No se pudo cambiar el estado del producto."
+      );
+    } finally {
+      setChangingProductId(null);
     }
   }
 
@@ -200,6 +231,7 @@ export default function ProductsPage() {
                   disabled={saving}
                 >
                   <option value="">Selecciona una categoría</option>
+
                   {categories.map((category) => (
                     <option key={category.id} value={category.id} disabled={!category.active}>
                       {category.name}
@@ -207,6 +239,7 @@ export default function ProductsPage() {
                     </option>
                   ))}
                 </select>
+
                 {formErrors.categoryId ? (
                   <p className={styles.fieldError}>{formErrors.categoryId}</p>
                 ) : null}
@@ -227,6 +260,7 @@ export default function ProductsPage() {
                   onChange={updateField}
                   disabled={saving}
                 />
+
                 {formErrors.price ? <p className={styles.fieldError}>{formErrors.price}</p> : null}
               </div>
 
@@ -244,6 +278,7 @@ export default function ProductsPage() {
                   onChange={updateField}
                   disabled={saving}
                 />
+
                 {formErrors.imageUrl ? (
                   <p className={styles.fieldError}>{formErrors.imageUrl}</p>
                 ) : (
@@ -266,6 +301,7 @@ export default function ProductsPage() {
                   onChange={updateField}
                   disabled={saving}
                 />
+
                 {formErrors.description ? (
                   <p className={styles.fieldError}>{formErrors.description}</p>
                 ) : null}
@@ -312,6 +348,18 @@ export default function ProductsPage() {
             Productos registrados
           </h2>
 
+          {plan ? (
+            <p className={styles.planSummary}>
+              Plan {plan.name}: {products.filter((product) => product.active).length} de{" "}
+              {plan.maxActiveProducts} productos activos.
+            </p>
+          ) : (
+            <p className={styles.notice}>
+              El emprendimiento todavía no tiene un plan disponible. Puedes editar y desactivar
+              productos, pero no activarlos.
+            </p>
+          )}
+
           {products.length === 0 ? (
             <p className={styles.empty}>Todavía no has registrado productos.</p>
           ) : (
@@ -342,13 +390,36 @@ export default function ProductsPage() {
 
                     <strong className={styles.price}>{formatPrice(product.price)}</strong>
 
-                    <button
-                      className={styles.editButton}
-                      type="button"
-                      onClick={() => startEditing(product)}
-                    >
-                      Editar
-                    </button>
+                    <div className={styles.productActions}>
+                      <button
+                        className={styles.editButton}
+                        type="button"
+                        onClick={() => startEditing(product)}
+                        disabled={changingProductId === product.id}
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        className={product.active ? styles.dangerButton : styles.toggleButton}
+                        type="button"
+                        onClick={() => handleActiveChange(product)}
+                        disabled={
+                          changingProductId === product.id || (!product.active && !plan?.active)
+                        }
+                        title={
+                          !product.active && !plan?.active
+                            ? "Se necesita un plan activo para activar productos."
+                            : undefined
+                        }
+                      >
+                        {changingProductId === product.id
+                          ? "Actualizando..."
+                          : product.active
+                            ? "Desactivar"
+                            : "Activar"}
+                      </button>
+                    </div>
                   </div>
                 </article>
               ))}
