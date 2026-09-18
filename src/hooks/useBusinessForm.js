@@ -10,6 +10,7 @@ import { validateBusinessForm } from "@/utils/validateBusinessForm";
 const initialValues = {
   name: "",
   slug: "",
+  logoUrl: "",
   planId: "",
 };
 
@@ -64,6 +65,7 @@ export function useBusinessForm(ownerId) {
               ? {
                   name: data.business.name,
                   slug: data.business.slug,
+                  logoUrl: data.business.logoUrl ?? "",
                   planId: data.business.planId,
                 }
               : initialValues
@@ -131,6 +133,7 @@ export function useBusinessForm(ownerId) {
       ...values,
       name: values.name.trim(),
       slug: normalizeSlug(values.slug),
+      logoUrl: values.logoUrl.trim(),
     };
 
     const validationErrors = validateBusinessForm(normalizedValues);
@@ -162,12 +165,14 @@ export function useBusinessForm(ownerId) {
         ? await businessService.updateProfile(business.id, {
             name: normalizedValues.name,
             slug: normalizedValues.slug,
+            logoUrl: normalizedValues.logoUrl,
           })
         : await businessService.create({
             ownerId,
             planId: normalizedValues.planId,
             name: normalizedValues.name,
             slug: normalizedValues.slug,
+            logoUrl: normalizedValues.logoUrl,
           });
 
       setRequest((previous) => ({
@@ -180,6 +185,7 @@ export function useBusinessForm(ownerId) {
       setValues({
         name: savedBusiness.name,
         slug: savedBusiness.slug,
+        logoUrl: savedBusiness.logoUrl ?? "",
         planId: savedBusiness.planId,
       });
 

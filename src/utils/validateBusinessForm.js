@@ -1,5 +1,6 @@
 export function validateBusinessForm(values) {
   const errors = {};
+  const logoUrl = values.logoUrl.trim();
 
   if (!values.name.trim()) {
     errors.name = "Escribe el nombre de tu emprendimiento.";
@@ -13,6 +14,18 @@ export function validateBusinessForm(values) {
 
   if (!values.planId) {
     errors.planId = "Selecciona un plan para tu emprendimiento.";
+  }
+
+  if (logoUrl) {
+    try {
+      const parsedUrl = new URL(logoUrl);
+
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        errors.logoUrl = "El logotipo debe utilizar una URL válida.";
+      }
+    } catch {
+      errors.logoUrl = "Ingresa una URL válida para el logotipo.";
+    }
   }
 
   return errors;

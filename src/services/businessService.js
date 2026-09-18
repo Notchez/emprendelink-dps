@@ -9,6 +9,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+
 import { getFirebaseDb } from "@/lib/firebase/client";
 
 const BUSINESSES_COLLECTION = "businesses";
@@ -19,6 +20,36 @@ function requireText(value, fieldName) {
   }
 
   return value.trim();
+}
+
+function normalizeImageUrl(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value !== "string") {
+    throw new Error("La URL del logotipo no es válida.");
+  }
+
+  const normalizedUrl = value.trim();
+
+  if (!normalizedUrl) {
+    return null;
+  }
+
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(normalizedUrl);
+  } catch {
+    throw new Error("La URL del logotipo no es válida.");
+  }
+
+  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+    throw new Error("La URL del logotipo debe utilizar HTTP o HTTPS.");
+  }
+
+  return normalizedUrl;
 }
 
 function mapBusiness(documentSnapshot) {
@@ -46,6 +77,7 @@ async function findFirstBusiness(constraints) {
 
 async function getById(businessId) {
   const validBusinessId = requireText(businessId, "businessId");
+
   const businessReference = doc(getFirebaseDb(), BUSINESSES_COLLECTION, validBusinessId);
 
   const snapshot = await getDoc(businessReference);
@@ -69,7 +101,7 @@ async function getBySlug(slug) {
   return findFirstBusiness([where("slug", "==", validSlug)]);
 }
 
-async function create({ ownerId, planId, name, slug }) {
+async function create({ ownerId, planId, name, slug, logoUrl = null }) {
   const validOwnerId = requireText(ownerId, "ownerId");
   const validPlanId = requireText(planId, "planId");
   const validName = requireText(name, "name");
@@ -91,7 +123,7 @@ async function create({ ownerId, planId, name, slug }) {
     ownerId: validOwnerId,
     name: validName,
     slug: validSlug,
-    logoUrl: null,
+    logoUrl: normalizeImageUrl(logoUrl),
     planId: validPlanId,
     active: true,
   };
@@ -107,7 +139,7 @@ async function create({ ownerId, planId, name, slug }) {
   };
 }
 
-async function updateProfile(businessId, { name, slug }) {
+async function updateProfile(businessId, { name, slug, logoUrl }) {
   const validBusinessId = requireText(businessId, "businessId");
   const validName = requireText(name, "name");
   const validSlug = requireText(slug, "slug");
@@ -120,10 +152,16 @@ async function updateProfile(businessId, { name, slug }) {
 
   const businessReference = doc(getFirebaseDb(), BUSINESSES_COLLECTION, validBusinessId);
 
-  await updateDoc(businessReference, {
+  const changes = {
     name: validName,
     slug: validSlug,
-  });
+  };
+
+  if (logoUrl !== undefined) {
+    changes.logoUrl = normalizeImageUrl(logoUrl);
+  }
+
+  await updateDoc(businessReference, changes);
 
   const updatedSnapshot = await getDoc(businessReference);
 

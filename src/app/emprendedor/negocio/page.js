@@ -162,6 +162,48 @@ export default function BusinessSettingsPage() {
             </div>
 
             <div className={styles.field}>
+              <label htmlFor="business-logo" className={styles.label}>
+                URL del logotipo
+              </label>
+
+              <input
+                id="business-logo"
+                name="logoUrl"
+                type="url"
+                className={styles.input}
+                placeholder="https://..."
+                value={values.logoUrl}
+                onChange={(event) => updateField("logoUrl", event.target.value)}
+                aria-invalid={Boolean(errors.logoUrl)}
+                aria-describedby={errors.logoUrl ? "logo-help logo-error" : "logo-help"}
+                disabled={saving || Boolean(loadError)}
+              />
+
+              <p id="logo-help" className={styles.help}>
+                Usa el enlace público de una imagen. El campo es opcional.
+              </p>
+
+              {errors.logoUrl ? (
+                <p id="logo-error" className={styles.error} role="alert">
+                  {errors.logoUrl}
+                </p>
+              ) : null}
+
+              <div className={styles.logoPreview}>
+                {values.logoUrl && !errors.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    className={styles.logoImage}
+                    src={values.logoUrl}
+                    alt={`Vista previa del logotipo de ${values.name || "tu negocio"}`}
+                  />
+                ) : (
+                  <span className={styles.logoPlaceholder}>Sin logotipo</span>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.field}>
               <label htmlFor="business-plan" className={styles.label}>
                 Plan
               </label>
