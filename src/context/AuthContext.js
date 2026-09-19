@@ -1,51 +1,45 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { authService } from '../services/authService';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+export function AuthProvider({ children }) {
+  // Inicialización perezosa para evitar llamadas sincrónicas a setState dentro de useEffect
+  const [user, setUser] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          return JSON.parse(savedUser);
+        } catch (e) {
+          console.error('Error parseando usuario guardado', e);
+        }
+      }
     }
-    setLoading(false);
-  }, []);
+    return null;
+  });
+
+  const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
     setLoading(true);
-    try {
-      const data = await authService.login(email, password);
-      setUser(data.user);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('token', data.token);
-      router.push('/dashboard');
-    } catch (error) {
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    // Agrega aquí tu lógica de autenticación/llamada a API
+    setLoading(false);
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    router.push('/login');
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}
