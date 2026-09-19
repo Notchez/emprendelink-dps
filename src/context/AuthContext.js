@@ -1,19 +1,19 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   // Inicialización perezosa para evitar llamadas sincrónicas a setState dentro de useEffect
   const [user, setUser] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('user');
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("user");
       if (savedUser) {
         try {
           return JSON.parse(savedUser);
         } catch (e) {
-          console.error('Error parseando usuario guardado', e);
+          console.error("Error parseando usuario guardado", e);
         }
       }
     }
@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setUser(null);
   };
 
