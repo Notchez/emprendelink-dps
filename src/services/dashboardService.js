@@ -1,6 +1,12 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { entrepreneurDashboardMock } from "@/data/mock/dashboardMock";
+import { adminDashboardMock } from "@/data/mock/adminDashboardMock";
 
 export const dashboardService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async getEntrepreneurDashboard() {
+    return entrepreneurDashboardMock;
+  },
+
+  async getAdminDashboard() {
+    return adminDashboardMock;
+  },
 };
