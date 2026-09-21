@@ -10,6 +10,14 @@ negocio, convenciones y parámetros técnicos.
 
 ---
 
+## Integrantes del equipo
+
+- Marvin Francisco Pérez Calderón — PC253641
+- Rafael Mena Mejia — MM253045
+- Tito Mauricio Nochez Villagran — NV101005
+- Luis Miguel Granados Artiga — GA130557
+- Jorge Alfonzo Mendoza Padilla — MP241100
+
 ## 1. Objetivo de EmprendeLink
 
 EmprendeLink es una plataforma orientada a microemprendedores y pequeños negocios. Permitirá
