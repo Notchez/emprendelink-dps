@@ -1,7 +1,6 @@
 import { apiRequest } from "@/services/apiClient";
 
 export const orderService = {
-  // Consulta el listado de pedidos.
   async getOrders({ businessId, status, search } = {}) {
     const params = new URLSearchParams();
 
@@ -10,15 +9,14 @@ export const orderService = {
     if (search) params.set("search", search);
 
     const query = params.toString();
+
     return apiRequest(`/api/orders${query ? `?${query}` : ""}`);
   },
 
-  // Consulta el detalle de un pedido.
   async getOrder(id) {
     return apiRequest(`/api/orders/${id}`);
   },
 
-  // Envía los datos para crear un pedido.
   async createOrder(orderData) {
     return apiRequest("/api/orders", {
       method: "POST",
