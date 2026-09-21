@@ -1,22 +1,23 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
-const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // Inicialización perezosa para evitar llamadas sincrónicas a setState dentro de useEffect
   const [user, setUser] = useState(() => {
     if (typeof window !== "undefined") {
       const savedUser = localStorage.getItem("user");
+
       if (savedUser) {
         try {
           return JSON.parse(savedUser);
-        } catch (e) {
-          console.error("Error parseando usuario guardado", e);
+        } catch (error) {
+          console.error("Error parseando usuario guardado", error);
         }
       }
     }
+
     return null;
   });
 
@@ -24,7 +25,10 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     setLoading(true);
-    // Agrega aquí tu lógica de autenticación/llamada a API
+
+    // La autenticación real se implementará después de estabilizar la integración.
+    console.log("Inicio de sesión pendiente", { email, password });
+
     setLoading(false);
   };
 

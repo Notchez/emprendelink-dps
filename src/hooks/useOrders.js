@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+
 import { orderService } from "@/services/orderService";
 
 export function useOrders(businessId) {
@@ -10,8 +11,7 @@ export function useOrders(businessId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Carga los pedidos con los filtros seleccionados.
-  const loadOrders = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -21,7 +21,9 @@ export function useOrders(businessId) {
         status: statusFilter,
         search,
       });
+
       setOrders(data);
+      setError("");
     } catch (loadError) {
       setError(loadError.message);
     } finally {
@@ -30,8 +32,45 @@ export function useOrders(businessId) {
   }, [businessId, statusFilter, search]);
 
   useEffect(() => {
-    loadOrders();
-  }, [loadOrders]);
+    let active = true;
+
+    orderService
+      .getOrders({
+        businessId,
+        status: statusFilter,
+        search,
+      })
+      .then((data) => {
+        if (!active) return;
+
+        setOrders(data);
+        setError("");
+      })
+      .catch((loadError) => {
+        if (active) {
+          setError(loadError.message);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [businessId, statusFilter, search]);
+
+  function changeStatusFilter(status) {
+    setLoading(true);
+    setStatusFilter(status);
+  }
+
+  function changeSearch(value) {
+    setLoading(true);
+    setSearch(value);
+  }
 
   return {
     orders,
@@ -39,8 +78,8 @@ export function useOrders(businessId) {
     search,
     loading,
     error,
-    setStatusFilter,
-    setSearch,
-    refresh: loadOrders,
+    setStatusFilter: changeStatusFilter,
+    setSearch: changeSearch,
+    refresh,
   };
 }

@@ -8,15 +8,17 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const hasAccess = allowedRoles.length === 0 || allowedRoles.includes(user?.role);
+
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push("/login");
-      } else if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+      } else if (!hasAccess) {
         router.push("/unauthorized");
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, hasAccess]);
 
   if (loading || !user) {
     return <p style={{ textAlign: "center", marginTop: "50px" }}>Cargando...</p>;
