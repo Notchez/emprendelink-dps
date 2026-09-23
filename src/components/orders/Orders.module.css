@@ -1,0 +1,263 @@
+.page {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 3rem 0;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.header p {
+  margin: 0;
+}
+
+.eyebrow {
+  color: #46627f;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #d9e0e8;
+  border-radius: 12px;
+}
+
+.filters label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #c6d0da;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.orderGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.orderCard,
+.panel {
+  background: #ffffff;
+  border: 1px solid #d9e0e8;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.cardTop,
+.cardInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cardTop {
+  align-items: flex-start;
+}
+
+.cardInfo {
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.orderId {
+  margin: 0;
+  font-weight: 700;
+}
+
+.muted {
+  color: #607080;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #eaf0f6;
+}
+
+.pending {
+  background: #fff3cd;
+}
+
+.confirmed {
+  background: #dbeafe;
+}
+
+.preparing {
+  background: #ede9fe;
+}
+
+.ready {
+  background: #cffafe;
+}
+
+.delivered {
+  background: #dcfce7;
+}
+
+.cancelled {
+  background: #fee2e2;
+}
+
+.linkButton,
+.secondaryButton,
+.statusActions button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #31506f;
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.linkButton,
+.statusActions button {
+  background: #31506f;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background: #ffffff;
+  color: #31506f;
+}
+
+.statusActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.statusActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel {
+  margin-bottom: 1rem;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.historyList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.historyItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.historyItem p {
+  margin: 0.3rem 0 0;
+}
+
+.historyMeta {
+  display: grid;
+  justify-items: end;
+  gap: 0.25rem;
+  color: #607080;
+  font-size: 0.9rem;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.message,
+.error {
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.message {
+  background: #ffffff;
+  border: 1px solid #d9e0e8;
+}
+
+.error {
+  background: #fee2e2;
+  color: #8a1c1c;
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 2rem 0;
+  }
+
+  .header,
+  .cardTop,
+  .cardInfo,
+  .historyItem {
+    flex-direction: column;
+  }
+
+  .filters,
+  .orderGrid,
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .historyMeta {
+    justify-items: start;
+  }
+}

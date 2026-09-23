@@ -1,5 +1,6 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 
+import { plansMock } from "@/data/mock/plansMock";
 import { getFirebaseDb } from "@/lib/firebase/client";
 
 const PLANS_COLLECTION = "plans";
@@ -53,7 +54,12 @@ async function getActive() {
     });
 }
 
+async function getPlans() {
+  return plansMock;
+}
+
 export const planService = {
   getById,
   getActive,
+  getPlans,
 };

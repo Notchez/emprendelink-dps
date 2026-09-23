@@ -1,6 +1,10 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { apiRequest } from "@/services/apiClient";
 
 export const customerService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async createCustomer(customerData) {
+    return apiRequest("/api/customers", {
+      method: "POST",
+      body: JSON.stringify(customerData),
+    });
+  },
 };
