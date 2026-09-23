@@ -1,0 +1,76 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: #f8fafc;
+  color: #1f2937;
+  color-scheme: light;
+}
+.card {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+}
+.page h1,
+.page h2,
+.page h3 {
+  color: #1f2937;
+}
+.page a {
+  color: #1d4ed8;
+}
+.form {
+  display: grid;
+  gap: 0.7rem;
+}
+.form label {
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+.form input,
+.form textarea,
+.form select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #94a3b8;
+  border-radius: 7px;
+  color: #1f2937;
+  background: #ffffff;
+}
+.form button {
+  padding: 0.8rem;
+  border: 0;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  margin-top: 0.7rem;
+}
+.form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.error {
+  color: #991b1b;
+  background: #fef2f2;
+  padding: 0.7rem;
+  border-radius: 7px;
+}
+.success {
+  color: #166534;
+  background: #f0fdf4;
+  padding: 0.7rem;
+}
+.orders {
+  display: grid;
+  gap: 0.8rem;
+  list-style: none;
+  padding: 0;
+}
+.order {
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}

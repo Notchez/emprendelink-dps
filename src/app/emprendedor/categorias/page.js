@@ -37,7 +37,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.container}>
         <h1 className={styles.title}>Categorías</h1>
 
@@ -233,6 +233,6 @@ export default function CategoriesPage() {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

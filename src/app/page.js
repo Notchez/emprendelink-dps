@@ -1,58 +1,47 @@
-import { ModuleCard } from "@/components/ui/ModuleCard";
-
-const modules = [
-  {
-    title: "Autenticación y usuarios",
-    owner: "Integrante 1",
-    description: "Sesión, roles, rutas protegidas y administración básica de usuarios.",
-  },
-  {
-    title: "Negocio y productos",
-    owner: "Integrante 2",
-    description: "Emprendimiento, categorías, productos, imágenes y límites por plan.",
-  },
-  {
-    title: "Catálogo y cliente",
-    owner: "Integrante 3",
-    description: "Catálogo público, producto, carrito, checkout y confirmación.",
-  },
-  {
-    title: "Pedidos",
-    owner: "Integrante 4",
-    description: "Estados, historial, reglas del pedido y generación de comisión.",
-  },
-  {
-    title: "Dashboard y administración",
-    owner: "Integrante 5",
-    description: "Reportes, gráficas, planes, comisiones y estados de cuenta.",
-  },
-];
-
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { businessService } from "@/services/businessService";
+import { AccountActions } from "@/components/auth/AccountActions";
+import styles from "@/components/auth/Account.module.css";
 export default function HomePage() {
+  const [result, setResult] = useState(null);
+  useEffect(() => {
+    let active = true;
+    businessService
+      .getPublic()
+      .then((businesses) => {
+        if (active) setResult({ businesses });
+      })
+      .catch((error) => {
+        if (active) setResult({ error: error.message });
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
-    <main className="container">
-      <section className="hero">
-        <p className="eyebrow">DPS941 · Etapa 2</p>
+    <main className={styles.page}>
+      <div className="container">
+        <AccountActions />
         <h1>EmprendeLink</h1>
+        <p>Descubre negocios y compra directamente a sus emprendedores.</p>
         <p>
-          Esqueleto inicial compartido. Cada integrante debe desarrollar su módulo respetando los
-          contratos, arquitectura y reglas del repositorio.
+          <Link href="/registro">Crear cuenta de cliente o emprendedor</Link>
         </p>
-      </section>
-
-      <section className="grid" aria-label="Módulos del equipo">
-        {modules.map((module) => (
-          <ModuleCard key={module.title} {...module} />
-        ))}
-      </section>
-
-      <section className="status">
-        <h2>Estado de la base</h2>
-        <p>
-          Si esta pantalla carga correctamente, la base de Next.js está lista. La prueba de API se
-          encuentra en <code>/api/health</code>.
-        </p>
-      </section>
+        <h2>Negocios disponibles</h2>
+        {!result && <p role="status">Cargando negocios...</p>}
+        {result?.error && <p role="alert">{result.error}</p>}
+        {result?.businesses?.length === 0 && <p>Todavía no hay negocios publicados.</p>}
+        <ul className={styles.orders}>
+          {result?.businesses?.map((business) => (
+            <li key={business.id} className={styles.order}>
+              <h3>{business.name}</h3>
+              <Link href={`/catalogo/${encodeURIComponent(business.slug)}`}>Ver catálogo</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </main>
   );
 }

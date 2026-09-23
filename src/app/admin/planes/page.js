@@ -1,16 +1,12 @@
-import PlansList from "@/components/dashboard/PlansList";
-import { planService } from "@/services/planService";
+import PlansManager from "@/components/dashboard/PlansManager";
 
-export default async function Page() {
-  const plans = await planService.getPlans();
-
+export default function Page() {
   return (
-    <main className="container">
+    <div className="container">
       <p className="eyebrow">Panel del administrador</p>
-      <h1>Planes</h1>
+      <h1>Planes de suscripción</h1>
       <p>Administra los planes disponibles para los emprendimientos.</p>
-
-      <PlansList plans={plans} />
-    </main>
+      <PlansManager />
+    </div>
   );
 }

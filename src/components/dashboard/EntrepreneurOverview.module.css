@@ -1,0 +1,70 @@
+.wrapper {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1180px;
+}
+
+.businessHeader,
+.emptyState,
+.actions {
+  padding: 1.5rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 12px;
+  background: var(--el-surface, #fff);
+}
+
+.businessHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.businessHeader img {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.businessHeader h1,
+.businessHeader p,
+.emptyState h2,
+.emptyState p,
+.actions h2 {
+  margin-top: 0;
+}
+
+.businessHeader > div {
+  flex: 1;
+  min-width: 220px;
+}
+
+.businessHeader a:not(.primaryButton),
+.actionGrid a {
+  color: var(--el-link, #2563eb);
+}
+
+.primaryButton {
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.actionGrid a {
+  padding: 0.9rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 8px;
+  text-decoration: none;
+}

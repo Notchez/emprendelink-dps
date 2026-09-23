@@ -4,27 +4,15 @@ import Link from "next/link";
 import { ORDER_STATUS } from "@/lib/constants/orderStatus";
 import { useOrders } from "@/hooks/useOrders";
 import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
-import {
-  formatOrderDate,
-  formatOrderMoney,
-  getOrderStatusLabel,
-} from "@/utils/orderUtils";
+import { formatOrderDate, formatOrderMoney, getOrderStatusLabel } from "@/utils/orderUtils";
 import styles from "./Orders.module.css";
 
 export function OrdersView({ businessId }) {
-  const {
-    orders,
-    statusFilter,
-    search,
-    loading,
-    error,
-    setStatusFilter,
-    setSearch,
-    refresh,
-  } = useOrders(businessId);
+  const { orders, statusFilter, search, loading, error, setStatusFilter, setSearch, refresh } =
+    useOrders(businessId);
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>Gestión</p>
@@ -49,10 +37,7 @@ export function OrdersView({ businessId }) {
 
         <label>
           Estado
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             <option value="">Todos</option>
             {Object.values(ORDER_STATUS).map((status) => (
               <option key={status} value={status}>
@@ -94,6 +79,6 @@ export function OrdersView({ businessId }) {
           ))}
         </section>
       )}
-    </main>
+    </div>
   );
 }

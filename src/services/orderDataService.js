@@ -60,9 +60,10 @@ export const orderDataService = {
     const subtotal = Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
     const createdAt = new Date().toISOString();
     const order = {
-      id: `order-${Date.now()}`,
+      id: `order-${crypto.randomUUID()}`,
       businessId: data.businessId,
       customerId: data.customerId,
+      customer: data.customer,
       items,
       subtotal,
       deliveryAddress: data.deliveryAddress.trim(),
@@ -76,7 +77,7 @@ export const orderDataService = {
       orderId: order.id,
       oldStatus: null,
       newStatus: ORDER_STATUS.PENDING,
-      changedBy: data.createdBy || "cliente-publico",
+      changedBy: data.createdBy,
       changedAt: createdAt,
     });
 

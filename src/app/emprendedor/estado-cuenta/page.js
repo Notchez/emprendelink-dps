@@ -8,7 +8,7 @@ export default async function Page() {
   const commissions = await statementService.getCommissions(businessId);
 
   return (
-    <main className="container">
+    <div className="container">
       <p className="eyebrow">Panel del emprendedor</p>
       <h1>Estado de cuenta</h1>
       <p>Consulta las comisiones registradas de tu emprendimiento.</p>
@@ -19,6 +19,6 @@ export default async function Page() {
 
         <CommissionsTable commissions={commissions} />
       </section>
-    </main>
+    </div>
   );
 }

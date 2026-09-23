@@ -3,7 +3,7 @@ export const plansMock = [
     id: "plan-basic",
     name: "Básico",
     maxActiveProducts: 10,
-    commissionRate: 0.1,
+    commissionRate: 0.03,
     active: true,
   },
   {

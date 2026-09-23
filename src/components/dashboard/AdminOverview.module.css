@@ -1,0 +1,120 @@
+.wrapper {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1180px;
+}
+
+.heading,
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.heading h1,
+.heading p,
+.sectionHeading h2,
+.sectionHeading p {
+  margin-top: 0;
+}
+
+.heading h1 {
+  margin-bottom: 0.5rem;
+}
+
+.heading p,
+.sectionHeading p,
+.businessCard p,
+.actionCard span {
+  color: var(--el-muted, #64748b);
+}
+
+.refreshButton {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--el-border, #cbd5e1);
+  border-radius: 8px;
+  background: var(--el-surface, #fff);
+  color: var(--el-text, #172033);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--el-danger-bg, #fef2f2);
+  color: var(--el-danger, #b91c1c);
+}
+
+.actions,
+.businesses {
+  padding: 1.5rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 12px;
+  background: var(--el-surface, #fff);
+}
+
+.actionGrid,
+.businessGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.actionCard {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 10px;
+  color: var(--el-text, #172033);
+  text-decoration: none;
+}
+
+.actionCard:hover {
+  border-color: var(--el-link, #2563eb);
+}
+
+.businessCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 10px;
+}
+
+.businessCard h3,
+.businessCard p {
+  margin: 0 0 0.35rem;
+}
+
+.active,
+.inactive {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.active {
+  background: var(--el-success-bg, #dcfce7);
+  color: var(--el-success, #166534);
+}
+
+.inactive {
+  background: var(--el-subtle-bg, #f1f5f9);
+  color: var(--el-muted, #64748b);
+}

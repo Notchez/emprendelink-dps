@@ -1,7 +1,7 @@
 import { commissionsMock } from "@/data/mock/commissionsMock";
 import { ORDER_STATUS } from "@/lib/constants/orderStatus";
 
-const DEFAULT_COMMISSION_RATE = 0.1;
+const DEFAULT_COMMISSION_RATE = 0.03;
 
 export const commissionService = {
   // Busca si el pedido ya tiene comisión.

@@ -1,72 +1,33 @@
-import { apiRequest } from "./apiClient";
-
-/**
- * Servicio para el catálogo público de productos y negocios
- * Responsabilidad: Integrante 3
- */
+import { businessService } from "@/services/businessService";
+import { productService } from "@/services/productService";
+import { categoryService } from "@/services/categoryService";
 export const catalogService = {
-  /**
-   * Obtiene el catálogo completo de un negocio específico mediante su slug
-   * @param {string} slug
-   */
   async getCatalogBySlug(slug) {
     try {
-      if (typeof apiRequest === "function") {
-        const response = await apiRequest(`/catalog/${slug}`, { method: "GET" });
-        if (response && response.success) return response;
-      }
-      throw new Error("Error al conectar con la API");
-    } catch (error) {
-      // Datos mock de respaldo para desarrollo local (cumple con DATA_CONTRACTS.md)
+      const business = await businessService.getBySlug(slug);
+      if (!business || !business.active)
+        throw new Error("El catálogo no existe o no está disponible.");
+      const [categories, products] = await Promise.all([
+        categoryService.getByBusinessId(business.id),
+        productService.getByBusinessId(business.id),
+      ]);
       return {
         success: true,
         data: {
-          business: {
-            id: "business-001",
-            name: `Emprendimiento ${slug.toUpperCase()}`,
-            slug: slug,
-            logoUrl: null,
-            active: true,
-          },
+          business,
           categories: [
             { id: "cat_all", name: "Todos" },
-            { id: "cat_01", name: "Populares" },
-            { id: "cat_02", name: "Novedades" },
+            ...categories.filter((category) => category.active),
           ],
-          products: [
-            {
-              id: "prod_01",
-              businessId: "business-001",
-              categoryId: "cat_01",
-              name: "Producto Artesanal A",
-              description: "Elaborado con insumos locales de alta calidad.",
-              price: 12.5,
-              imageUrl: null,
-              active: true,
-            },
-            {
-              id: "prod_02",
-              businessId: "business-001",
-              categoryId: "cat_01",
-              name: "Combo Familiar B",
-              description: "Paquete especial listo para entrega inmediata.",
-              price: 25.0,
-              imageUrl: null,
-              active: true,
-            },
-            {
-              id: "prod_03",
-              businessId: "business-001",
-              categoryId: "cat_02",
-              name: "Accesorio Edición Limitada",
-              description: "Diseño exclusivo con garantía de fabricante.",
-              price: 8.75,
-              imageUrl: null,
-              active: true,
-            },
-          ],
+          products: products.filter((product) => product.active),
         },
         error: null,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        error: { message: error.message || "No se pudo cargar el catálogo." },
       };
     }
   },

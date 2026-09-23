@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useBusinessForm } from "@/hooks/useBusinessForm";
@@ -48,17 +49,17 @@ export default function BusinessSettingsPage() {
 
   if (authLoading) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <p className={styles.stateMessage}>Comprobando tu sesión...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.title}>Configuración del negocio</h1>
 
@@ -66,22 +67,22 @@ export default function BusinessSettingsPage() {
             La configuración del negocio estará disponible cuando inicies sesión.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <p className={styles.stateMessage}>Cargando información del negocio...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.container}>
         <h1 className={styles.title}>Configuración del negocio</h1>
 
@@ -95,7 +96,7 @@ export default function BusinessSettingsPage() {
 
         <section className={styles.card} aria-labelledby="business-info-title">
           <h2 id="business-info-title" className={styles.sectionTitle}>
-            Información general
+            Configuración de tu negocio
           </h2>
 
           <p className={styles.sectionDescription}>
@@ -267,8 +268,17 @@ export default function BusinessSettingsPage() {
               {feedback}
             </p>
           ) : null}
+
+          {business ? (
+            <p className={styles.catalogLink}>
+              Catálogo público: {" "}
+              <Link href={`/catalogo/${encodeURIComponent(business.slug)}`}>
+                Ver el catálogo de tu negocio
+              </Link>
+            </p>
+          ) : null}
         </section>
       </div>
-    </main>
+    </div>
   );
 }
