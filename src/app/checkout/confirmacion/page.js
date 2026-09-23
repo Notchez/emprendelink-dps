@@ -1,22 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+
+const LAST_ORDER_KEY = "emprendelink_last_order";
+
+function subscribe() {
+  return () => {};
+}
+
+function getClientSnapshot() {
+  return sessionStorage.getItem(LAST_ORDER_KEY) || "";
+}
+
+function getServerSnapshot() {
+  return "";
+}
 
 export default function ConfirmationPage() {
   const router = useRouter();
+  const storedOrder = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
-  const [order] = useState(() => {
-    if (typeof window === "undefined") return null;
-
+  const order = useMemo(() => {
     try {
-      const stored = sessionStorage.getItem("emprendelink_last_order");
-      return stored ? JSON.parse(stored) : null;
+      return storedOrder ? JSON.parse(storedOrder) : null;
     } catch (error) {
       console.error("Error al recuperar la orden", error);
       return null;
     }
-  });
+  }, [storedOrder]);
 
   return (
     <main
@@ -75,7 +87,7 @@ export default function ConfirmationPage() {
           </p>
 
           <p>
-            <strong>Dirección:</strong> {order.customer?.address}
+            <strong>Dirección:</strong> {order.deliveryAddress}
           </p>
 
           <p>

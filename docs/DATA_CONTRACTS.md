@@ -75,6 +75,8 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
   customerId: "string",
   items: [],
   subtotal: 0,
+  deliveryAddress: "string",
+  notes: "string | null",
   status: "PENDING",
   createdAt: "date"
 }

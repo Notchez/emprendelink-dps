@@ -1,78 +1,118 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 
 const CartContext = createContext(null);
 
-function readSavedCart() {
-  if (typeof window === "undefined") {
-    return { items: [], businessId: null };
-  }
+const CART_STORAGE_KEY = "emprendelink_cart";
+const CART_CHANGE_EVENT = "emprendelink-cart-change";
+const EMPTY_CART_SERIALIZED = JSON.stringify({
+  items: [],
+  businessId: null,
+});
 
+function parseCart(serializedCart) {
   try {
-    const savedCart = localStorage.getItem("emprendelink_cart");
+    const parsedCart = JSON.parse(serializedCart);
 
-    return savedCart ? JSON.parse(savedCart) : { items: [], businessId: null };
+    return {
+      items: Array.isArray(parsedCart.items) ? parsedCart.items : [],
+      businessId: typeof parsedCart.businessId === "string" ? parsedCart.businessId : null,
+    };
   } catch (error) {
     console.error("Error al recuperar carrito local", error);
     return { items: [], businessId: null };
   }
 }
 
-export function CartProvider({ children }) {
-  const [initialCart] = useState(readSavedCart);
-  const [items, setItems] = useState(initialCart.items || []);
-  const [businessId, setBusinessId] = useState(initialCart.businessId || null);
+function getClientSnapshot() {
+  try {
+    return localStorage.getItem(CART_STORAGE_KEY) || EMPTY_CART_SERIALIZED;
+  } catch (error) {
+    console.error("Error al leer carrito local", error);
+    return EMPTY_CART_SERIALIZED;
+  }
+}
 
-  useEffect(() => {
-    try {
-      localStorage.setItem("emprendelink_cart", JSON.stringify({ items, businessId }));
-    } catch (error) {
-      console.error("Error al persistir carrito", error);
-    }
-  }, [items, businessId]);
+function getServerSnapshot() {
+  return EMPTY_CART_SERIALIZED;
+}
+
+function subscribeToCart(callback) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(CART_CHANGE_EVENT, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(CART_CHANGE_EVENT, callback);
+  };
+}
+
+function saveCart(cart) {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    window.dispatchEvent(new Event(CART_CHANGE_EVENT));
+  } catch (error) {
+    console.error("Error al persistir carrito", error);
+  }
+}
+
+export function CartProvider({ children }) {
+  const serializedCart = useSyncExternalStore(
+    subscribeToCart,
+    getClientSnapshot,
+    getServerSnapshot
+  );
+
+  const { items, businessId } = useMemo(() => parseCart(serializedCart), [serializedCart]);
 
   const addItem = (product, quantity = 1) => {
-    if (businessId && businessId !== product.businessId) {
+    const currentCart = parseCart(getClientSnapshot());
+
+    if (currentCart.businessId && currentCart.businessId !== product.businessId) {
       const confirmChange = window.confirm(
         "Tu carrito contiene productos de otro emprendimiento. ¿Deseas vaciarlo para agregar de este nuevo negocio?"
       );
 
       if (!confirmChange) return false;
 
-      setItems([{ ...product, quantity }]);
-      setBusinessId(product.businessId);
+      saveCart({
+        items: [{ ...product, quantity }],
+        businessId: product.businessId,
+      });
 
       return true;
     }
 
-    setBusinessId(product.businessId);
+    const productExists = currentCart.items.some((item) => item.id === product.id);
 
-    setItems((previousItems) => {
-      const existingIndex = previousItems.findIndex((item) => item.id === product.id);
+    const updatedItems = productExists
+      ? currentCart.items.map((item) =>
+          item.id === product.id
+            ? {
+                ...item,
+                quantity: item.quantity + quantity,
+              }
+            : item
+        )
+      : [...currentCart.items, { ...product, quantity }];
 
-      if (existingIndex > -1) {
-        const updatedItems = [...previousItems];
-        updatedItems[existingIndex].quantity += quantity;
-
-        return updatedItems;
-      }
-
-      return [...previousItems, { ...product, quantity }];
+    saveCart({
+      items: updatedItems,
+      businessId: product.businessId,
     });
 
     return true;
   };
 
   const removeItem = (productId) => {
-    setItems((previousItems) => {
-      const filteredItems = previousItems.filter((item) => item.id !== productId);
+    const currentCart = parseCart(getClientSnapshot());
 
-      if (filteredItems.length === 0) {
-        setBusinessId(null);
-      }
+    const filteredItems = currentCart.items.filter((item) => item.id !== productId);
 
-      return filteredItems;
+    saveCart({
+      items: filteredItems,
+      businessId: filteredItems.length > 0 ? currentCart.businessId : null,
     });
   };
 
@@ -82,17 +122,23 @@ export function CartProvider({ children }) {
       return;
     }
 
-    setItems((previousItems) =>
-      previousItems.map((item) =>
+    const currentCart = parseCart(getClientSnapshot());
+
+    saveCart({
+      items: currentCart.items.map((item) =>
         item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+      ),
+      businessId: currentCart.businessId,
+    });
   };
 
   const clearCart = () => {
-    setItems([]);
-    setBusinessId(null);
-    localStorage.removeItem("emprendelink_cart");
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY);
+      window.dispatchEvent(new Event(CART_CHANGE_EVENT));
+    } catch (error) {
+      console.error("Error al vaciar carrito local", error);
+    }
   };
 
   const subtotal = items.reduce(

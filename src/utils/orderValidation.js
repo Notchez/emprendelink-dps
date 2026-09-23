@@ -7,6 +7,10 @@ export function validateOrderPayload(data) {
     return "El pedido debe incluir al menos un producto.";
   }
 
+  if (!data.deliveryAddress?.trim()) {
+    return "La dirección de entrega es obligatoria.";
+  }
+
   const invalidItem = data.items.some((item) => {
     const quantity = Number(item.quantity);
     const unitPrice = Number(item.unitPrice);

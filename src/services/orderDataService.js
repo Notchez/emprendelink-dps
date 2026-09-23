@@ -1,9 +1,6 @@
 import { ordersMock } from "@/data/mock/ordersMock";
 import { orderHistoryMock } from "@/data/mock/orderHistoryMock";
-import {
-  ORDER_STATUS,
-  canTransitionOrderStatus,
-} from "@/lib/constants/orderStatus";
+import { ORDER_STATUS, canTransitionOrderStatus } from "@/lib/constants/orderStatus";
 import { commissionService } from "@/services/commissionService";
 
 function createServiceError(code, message, status) {
@@ -45,8 +42,7 @@ export const orderDataService = {
       const value = search.toLowerCase();
       orders = orders.filter(
         (order) =>
-          order.id.toLowerCase().includes(value) ||
-          order.customerId.toLowerCase().includes(value)
+          order.id.toLowerCase().includes(value) || order.customerId.toLowerCase().includes(value)
       );
     }
 
@@ -61,9 +57,7 @@ export const orderDataService = {
   // Crea un pedido nuevo con estado pendiente.
   createOrder(data) {
     const items = prepareItems(data.items);
-    const subtotal = Number(
-      items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2)
-    );
+    const subtotal = Number(items.reduce((total, item) => total + item.lineTotal, 0).toFixed(2));
     const createdAt = new Date().toISOString();
     const order = {
       id: `order-${Date.now()}`,
@@ -71,6 +65,8 @@ export const orderDataService = {
       customerId: data.customerId,
       items,
       subtotal,
+      deliveryAddress: data.deliveryAddress.trim(),
+      notes: data.notes?.trim() || null,
       status: ORDER_STATUS.PENDING,
       createdAt,
     };
