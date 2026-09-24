@@ -1,76 +1,384 @@
 .page {
   min-height: 100vh;
+  display: grid;
+  align-items: center;
   padding: 2rem 1rem;
-  background: #f8fafc;
-  color: #1f2937;
-  color-scheme: light;
+  background: #161e2b;
+  color: #eef2f8;
+  color-scheme: dark;
 }
-.card {
-  max-width: 560px;
+
+.layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.9fr) minmax(0, 1fr);
+  width: min(1100px, 100%);
+  min-width: 0;
   margin: 0 auto;
-  padding: 2rem;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #506077;
+  border-radius: 20px;
+  background: #222c3b;
+  box-shadow: 0 24px 65px rgb(0 0 0 / 20%);
 }
-.page h1,
-.page h2,
-.page h3 {
-  color: #1f2937;
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  min-width: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background:
+    radial-gradient(circle at 0% 0%,
+      rgb(37 99 235 / 23%),
+      transparent 55%),
+    #192434;
+  border-right: 1px solid #506077;
 }
-.page a {
-  color: #1d4ed8;
+
+.brand,
+.mobileBrand {
+  width: fit-content;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  text-decoration: none;
 }
+
+.brand:hover,
+.mobileBrand:hover {
+  color: #ffffff;
+}
+
+.brand strong,
+.mobileBrand strong {
+  color: #93c5fd;
+}
+
+.welcomeContent {
+  display: grid;
+  align-content: center;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.eyebrow,
+.formEyebrow {
+  color: #a9c9f7;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.welcomeContent h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.15;
+}
+
+.welcomeContent>p {
+  margin: 0 0 0.5rem;
+  color: #c4cfdf;
+  line-height: 1.7;
+}
+
+.benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
+.benefitIcon {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 11px;
+  background: #344b6d;
+  font-size: 1.4rem;
+}
+
+.benefit strong {
+  color: #ffffff;
+}
+
+.benefit p {
+  margin: 0.3rem 0 0;
+  color: #c4cfdf;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.welcomeFooter {
+  margin: 0;
+  color: #a7b5ca;
+  font-size: 0.85rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: #222c3b;
+  color: #eef2f8;
+}
+
+.page>.card {
+  max-width: 560px;
+  border: 1px solid #506077;
+  border-radius: 16px;
+}
+
+.cardHeader {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.mobileBrand {
+  display: none;
+  margin-bottom: 1.25rem;
+}
+
+.card h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: #c4cfdf;
+  line-height: 1.6;
+}
+
 .form {
   display: grid;
   gap: 0.7rem;
 }
+
 .form label {
+  margin-top: 0.5rem;
+  color: #eef2f8;
   font-weight: 600;
-  margin-top: 0.4rem;
 }
+
 .form input,
 .form textarea,
 .form select {
+  display: block;
   width: 100%;
-  padding: 0.7rem;
-  border: 1px solid #94a3b8;
-  border-radius: 7px;
-  color: #1f2937;
-  background: #ffffff;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #506077;
+  border-radius: 9px;
+  background: #161e2b;
+  color: #eef2f8;
+  font: inherit;
 }
-.form button {
-  padding: 0.8rem;
-  border: 0;
-  border-radius: 7px;
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #a7b5ca;
+}
+
+.form input:focus-visible,
+.form textarea:focus-visible,
+.form select:focus-visible,
+.form button:focus-visible,
+.page a:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.form input:read-only,
+.form select:disabled {
+  background: #34445a;
+  color: #c4cfdf;
+}
+
+.form textarea {
+  resize: vertical;
+}
+
+.form .submitButton {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #2563eb;
+  border-radius: 9px;
   background: #2563eb;
   color: #ffffff;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 0.7rem;
 }
+
+.form .submitButton:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.form .recoverButton {
+  width: 100%;
+  padding: 0.6rem;
+  border: 0;
+  background: transparent;
+  color: #bfdbfe;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form .recoverButton:hover:not(:disabled) {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
 .form button:disabled {
   opacity: 0.6;
-  cursor: wait;
+  cursor: not-allowed;
 }
-.error {
-  color: #991b1b;
-  background: #fef2f2;
-  padding: 0.7rem;
-  border-radius: 7px;
-}
+
+.info,
+.error,
 .success {
-  color: #166534;
-  background: #f0fdf4;
-  padding: 0.7rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 9px;
+  line-height: 1.5;
 }
+
+.info {
+  border: 1px solid #3b5b88;
+  background: #1e3a5f;
+  color: #dbeafe;
+}
+
+.error {
+  border: 1px solid #a64848;
+  background: #41272b;
+  color: #ffb4b4;
+}
+
+.success {
+  border: 1px solid #087443;
+  background: #173b2c;
+  color: #b6f4d1;
+}
+
+.card a {
+  color: #bfdbfe;
+}
+
+.card a:hover {
+  color: #ffffff;
+}
+
+.switchAccount {
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid #506077;
+  color: #c4cfdf;
+  text-align: center;
+}
+
+.switchAccount a {
+  font-weight: 700;
+}
+
+.backHome {
+  align-self: center;
+  width: fit-content;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 0.7rem 1rem;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff !important;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.loadingMessage {
+  width: min(480px, 100%);
+  margin: auto;
+  padding: 2rem;
+  border: 1px solid #506077;
+  border-radius: 12px;
+  background: #222c3b;
+  text-align: center;
+}
+
+/* Conservamos estas clases por compatibilidad
+   con otras pantallas que importen este módulo. */
+
 .orders {
   display: grid;
   gap: 0.8rem;
-  list-style: none;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
+
 .order {
   padding: 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border: 1px solid #506077;
+  border-radius: 9px;
+  background: #263345;
+}
+
+@media (max-width: 800px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome {
+    display: none;
+  }
+
+  .mobileBrand {
+    display: inline-block;
+  }
+
+  .card {
+    max-width: none;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 0.5rem;
+  }
+
+  .layout {
+    border-radius: 12px;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
 }
