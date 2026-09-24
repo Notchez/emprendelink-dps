@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function hasRole(role) {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && profile().active == true && profile().role == role;
+    }
+    function admin() { return hasRole('ADMIN'); }
+    function ownsBusiness(id) {
+      return hasRole('ENTREPRENEUR')
+        && get(/databases/$(database)/documents/businesses/$(id)).data.ownerId == request.auth.uid;
+    }
+    function validProfile(data) {
+      return data.keys().hasAll(['name', 'email', 'phone', 'address', 'deliveryInstructions', 'role', 'active', 'createdAt'])
+        && data.keys().hasOnly(['name', 'email', 'phone', 'address', 'deliveryInstructions', 'role', 'active', 'createdAt'])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.email is string && data.email == request.auth.token.email.lower()
+        && data.phone is string && data.phone.size() <= 25
+        && data.address is string && data.address.size() <= 500
+        && data.deliveryInstructions is string && data.deliveryInstructions.size() <= 500
+        && data.createdAt is string
+        && (data.role != 'CUSTOMER' || (data.phone.size() >= 7 && data.address.size() >= 5));
+    }
+    match /users/{uid} {
+      allow read: if (signedIn() && request.auth.uid == uid) || admin();
+      allow create: if signedIn() && request.auth.uid == uid
+        && validProfile(request.resource.data)
+        && request.resource.data.role in ['CUSTOMER', 'ENTREPRENEUR']
+        && request.resource.data.active == true;
+      // Role, active, email and createdAt cannot be changed by the account owner.
+      // The first ADMIN is assigned through the Firebase Console by a project administrator.
+      allow update: if signedIn() && request.auth.uid == uid && profile().active == true
+        && validProfile(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name', 'phone', 'address', 'deliveryInstructions']);
+      allow delete: if false;
+    }
+    match /businesses/{id} {
+      // Business documents contain public catalog data, never account addresses or passwords.
+      allow read: if true;
+      allow create: if hasRole('ENTREPRENEUR')
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['ownerId', 'name', 'slug', 'logoUrl', 'planId', 'active'])
+        && request.resource.data.name is string && request.resource.data.name.size() >= 2
+        && request.resource.data.slug is string
+        && request.resource.data.planId is string
+        && get(/databases/$(database)/documents/plans/$(request.resource.data.planId)).data.active == true
+        && request.resource.data.active == true;
+      allow update: if admin() || (ownsBusiness(id)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'slug', 'logoUrl']));
+      allow delete: if admin();
+    }
+    match /plans/{id} {
+      allow read: if true;
+      allow write: if admin();
+    }
+    match /categories/{id} {
+      allow read: if true;
+      allow create: if ownsBusiness(request.resource.data.businessId)
+        && request.resource.data.keys().hasOnly(['businessId', 'name', 'active'])
+        && request.resource.data.name is string && request.resource.data.active is bool;
+      allow update: if ownsBusiness(resource.data.businessId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'active']);
+      allow delete: if false;
+    }
+    match /products/{id} {
+      allow read: if true;
+      allow create: if ownsBusiness(request.resource.data.businessId)
+        && request.resource.data.keys().hasOnly(['businessId', 'categoryId', 'name', 'description', 'price', 'imageUrl', 'active'])
+        && request.resource.data.price is number && request.resource.data.price >= 0
+        && request.resource.data.name is string && request.resource.data.description is string
+        && request.resource.data.active is bool
+        && get(/databases/$(database)/documents/categories/$(request.resource.data.categoryId)).data.businessId == request.resource.data.businessId;
+      allow update: if ownsBusiness(resource.data.businessId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['categoryId', 'name', 'description', 'price', 'imageUrl', 'active'])
+        && request.resource.data.price is number && request.resource.data.price >= 0
+        && request.resource.data.active is bool
+        && get(/databases/$(database)/documents/categories/$(request.resource.data.categoryId)).data.businessId == resource.data.businessId;
+      allow delete: if false;
+    }
+    // Orders/history/commissions are still handled by the existing server-side demo data service.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

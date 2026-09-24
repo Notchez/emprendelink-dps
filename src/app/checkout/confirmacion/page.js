@@ -1,116 +1,226 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-const LAST_ORDER_KEY = "emprendelink_last_order";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-function subscribe() {
-  return () => {};
+import { orderService } from "@/services/orderService";
+import { formatOrderDate, formatOrderMoney, getOrderStatusLabel } from "@/utils/orderUtils";
+
+import styles from "../Checkout.module.css";
+
+function formatOrderId(id) {
+  return `PED-${String(id).slice(0, 8).toUpperCase()}`;
 }
 
-function getClientSnapshot() {
-  return sessionStorage.getItem(LAST_ORDER_KEY) || "";
-}
+function Confirmation() {
+  const id = useSearchParams().get("id");
 
-function getServerSnapshot() {
-  return "";
+  const [result, setResult] = useState(null);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    let active = true;
+
+    orderService
+      .getOrder(id)
+      .then((order) => {
+        if (active) {
+          setResult({
+            id,
+            order,
+            error: "",
+          });
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setResult({
+            id,
+            order: null,
+            error: error instanceof Error ? error.message : "No se pudo consultar tu pedido.",
+          });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  const current = result?.id === id ? result : null;
+
+  if (!id) {
+    return (
+      <div className={styles.page}>
+        <section className={styles.emptyState}>
+          <h1>No hay un pedido para consultar</h1>
+
+          <p>Cuando confirmes una compra, podrás consultar su información aquí.</p>
+
+          <Link className={styles.primaryButton} href="/cliente#mis-pedidos">
+            Ver mis pedidos
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
+  if (!current) {
+    return (
+      <div className={styles.page}>
+        <p role="status">Consultando tu pedido...</p>
+      </div>
+    );
+  }
+
+  if (current.error || !current.order) {
+    return (
+      <div className={styles.page}>
+        <section className={styles.emptyState}>
+          <h1>No se pudo consultar el pedido</h1>
+
+          <p className={styles.error} role="alert">
+            {current.error || "El pedido no está disponible."}
+          </p>
+
+          <Link className={styles.primaryButton} href="/cliente#mis-pedidos">
+            Volver a mis pedidos
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
+  const { order } = current;
+
+  const detailHref = `/cliente/pedidos/${encodeURIComponent(order.id)}`;
+
+  return (
+    <div className={styles.page}>
+      <section className={styles.confirmationCard}>
+        <header className={styles.confirmationHeader}>
+          <div className={styles.confirmationIcon} aria-hidden="true">
+            ✓
+          </div>
+
+          <p className={styles.eyebrow}>Compra registrada</p>
+
+          <h1>¡Pedido recibido!</h1>
+
+          <p>
+            Tu pedido se registró correctamente y ya está disponible para que el emprendimiento
+            pueda gestionarlo.
+          </p>
+
+          <span className={styles.orderNumber} title={order.id}>
+            {formatOrderId(order.id)}
+          </span>
+
+          <p>{formatOrderDate(order.createdAt)}</p>
+        </header>
+
+        <div className={styles.successNotice}>
+          <strong>Estado actual: {getOrderStatusLabel(order.status)}</strong>
+
+          <p>Puedes consultar los cambios de estado desde el detalle de tu pedido.</p>
+        </div>
+
+        <div className={styles.confirmationGrid}>
+          <section className={styles.confirmationSection}>
+            <h2>Productos solicitados</h2>
+
+            <ul className={styles.confirmationProducts}>
+              {order.items?.map((item, index) => (
+                <li key={`${item.productId}-${index}`}>
+                  <span>
+                    {item.productName} × {item.quantity}
+                  </span>
+
+                  <strong>{formatOrderMoney(item.lineTotal)}</strong>
+                </li>
+              ))}
+            </ul>
+
+            <div className={styles.confirmationTotal}>
+              <span>Total del pedido</span>
+
+              <strong>{formatOrderMoney(order.subtotal)}</strong>
+            </div>
+          </section>
+
+          <section className={styles.confirmationSection}>
+            <h2>Información de entrega</h2>
+
+            <p>
+              <strong>Cliente:</strong> {order.customer?.name || "Cliente"}
+            </p>
+
+            <p>
+              <strong>Teléfono:</strong> {order.customer?.phone || "—"}
+            </p>
+
+            <p>
+              <strong>Dirección:</strong> {order.deliveryAddress}
+            </p>
+
+            {order.notes && (
+              <p>
+                <strong>Indicaciones:</strong> {order.notes}
+              </p>
+            )}
+          </section>
+
+          <section className={styles.confirmationSection}>
+            <h2>Método de pago</h2>
+
+            <strong>💵 Pago contra entrega</strong>
+
+            <p>
+              Pagarás al recibir tu pedido. No se realizó ningún cobro electrónico durante esta
+              compra.
+            </p>
+          </section>
+
+          <section className={styles.confirmationSection}>
+            <h2>Seguimiento</h2>
+
+            <p>
+              El emprendimiento actualizará el estado de tu pedido durante su preparación y entrega.
+            </p>
+
+            <Link className={styles.primaryButton} href={detailHref}>
+              Ver seguimiento del pedido
+            </Link>
+          </section>
+        </div>
+
+        <div className={styles.confirmationActions}>
+          <Link className={styles.primaryButton} href={detailHref}>
+            Ver detalle del pedido
+          </Link>
+
+          <Link className={styles.secondaryButton} href="/cliente#mis-pedidos">
+            Ver mis pedidos
+          </Link>
+
+          <Link className={styles.secondaryButton} href="/">
+            Explorar más negocios
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export default function ConfirmationPage() {
-  const router = useRouter();
-  const storedOrder = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
-
-  const order = useMemo(() => {
-    try {
-      return storedOrder ? JSON.parse(storedOrder) : null;
-    } catch (error) {
-      console.error("Error al recuperar la orden", error);
-      return null;
-    }
-  }, [storedOrder]);
-
   return (
-    <main
-      style={{
-        maxWidth: "650px",
-        margin: "3rem auto",
-        padding: "1.5rem",
-        textAlign: "center",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#c6f6d5",
-          color: "#22543d",
-          width: "64px",
-          height: "64px",
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "2rem",
-          margin: "0 auto 1.5rem",
-        }}
-      >
-        ✓
-      </div>
-
-      <h1 style={{ color: "#1a202c", marginBottom: "0.5rem" }}>¡Pedido recibido!</h1>
-
-      <p style={{ color: "#4a5568", marginBottom: "2rem" }}>
-        El emprendedor ha sido notificado y tu pedido ha ingresado en estado{" "}
-        <strong>PENDING</strong>.
-      </p>
-
-      {order && (
-        <div
-          style={{
-            backgroundColor: "#f7fafc",
-            border: "1px solid #e2e8f0",
-            borderRadius: "8px",
-            padding: "1.5rem",
-            textAlign: "left",
-            marginBottom: "2rem",
-          }}
-        >
-          <p>
-            <strong>N.º de orden:</strong> {order.id}
-          </p>
-
-          <p>
-            <strong>Cliente:</strong> {order.customer?.name}
-          </p>
-
-          <p>
-            <strong>Teléfono:</strong> {order.customer?.phone}
-          </p>
-
-          <p>
-            <strong>Dirección:</strong> {order.deliveryAddress}
-          </p>
-
-          <p>
-            <strong>Total:</strong> ${Number(order.subtotal || 0).toFixed(2)}
-          </p>
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={() => router.push("/catalogo/mi-tienda")}
-        style={{
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#3182ce",
-          color: "#ffffff",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontWeight: 600,
-        }}
-      >
-        Regresar al catálogo
-      </button>
-    </main>
+    <Suspense fallback={<p role="status">Cargando confirmación...</p>}>
+      <Confirmation />
+    </Suspense>
   );
 }

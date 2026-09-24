@@ -1,0 +1,184 @@
+.wrapper {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1180px;
+}
+
+.heading,
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.heading h1,
+.heading p,
+.sectionHeading h2,
+.sectionHeading p {
+  margin-top: 0;
+}
+
+.heading h1 {
+  margin-bottom: 0.5rem;
+}
+
+.heading p,
+.sectionHeading p,
+.businessCard p,
+.actionCard span {
+  color: var(--el-muted, #64748b);
+}
+
+.refreshButton,
+.primaryButton {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--el-border, #cbd5e1);
+  border-radius: 8px;
+  background: var(--el-surface, #fff);
+  color: var(--el-text, #172033);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.refreshButton:disabled,
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.error,
+.success {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.error {
+  background: var(--el-danger-bg, #fef2f2);
+  color: var(--el-danger, #b91c1c);
+}
+
+.success {
+  background: var(--el-success-bg, #dcfce7);
+  color: var(--el-success, #166534);
+}
+
+.actions,
+.businesses {
+  padding: 1.5rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 12px;
+  background: var(--el-surface, #fff);
+}
+
+.actionGrid,
+.businessGrid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.actionGrid {
+  grid-template-columns: repeat(auto-fit,
+      minmax(min(100%, 220px), 1fr));
+}
+
+.actionCard {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 10px;
+  color: var(--el-text, #172033);
+  text-decoration: none;
+}
+
+.actionCard:hover {
+  border-color: var(--el-link, #2563eb);
+}
+
+.businessCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 10px;
+}
+
+.businessInfo {
+  min-width: 0;
+}
+
+.businessInfo h3 {
+  margin: 0 0 0.75rem;
+}
+
+.businessInfo p {
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.businessInfo a {
+  color: var(--el-link, #93c5fd);
+}
+
+.businessControls {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.businessControls label {
+  font-weight: 700;
+}
+
+.businessControls select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--el-border, #506077);
+  border-radius: 8px;
+  background: var(--el-surface, #222c3b);
+  color: var(--el-text, #eef2f8);
+  font: inherit;
+}
+
+.active,
+.inactive {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.active {
+  background: var(--el-success-bg, #dcfce7);
+  color: var(--el-success, #166534);
+}
+
+.inactive {
+  background: var(--el-subtle-bg, #f1f5f9);
+  color: var(--el-muted, #64748b);
+}
+
+@media (max-width: 760px) {
+  .businessCard {
+    grid-template-columns: 1fr;
+  }
+
+  .businessControls {
+    width: 100%;
+  }
+}

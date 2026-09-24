@@ -1,8 +1,8 @@
 .chart {
   margin-top: 24px;
   padding: 24px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: var(--el-surface, #ffffff);
+  border: 1px solid var(--el-border, #e2e8f0);
   border-radius: 12px;
 }
 
@@ -15,7 +15,6 @@
 }
 
 .bar {
-  
   background-color: #2563eb;
   border-radius: 6px 6px 0 0;
   flex-shrink: 0;
@@ -30,7 +29,7 @@
   flex: 1;
   text-align: center;
   font-size: 14px;
-  color: #475569;
+  color: var(--el-muted, #475569);
 }
 
 .barWrapper {
@@ -46,5 +45,5 @@
   text-align: center;
   font-size: 12px;
   margin-bottom: 6px;
-  color: #334155;
+  color: var(--el-text, #334155);
 }

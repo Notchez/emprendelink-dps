@@ -1,0 +1,383 @@
+.page {
+    min-height: 100vh;
+    background: #161e2b;
+    color: #eef2f8;
+    color-scheme: dark;
+}
+
+.container {
+    width: min(1280px, calc(100% - 3rem));
+    margin: 0 auto;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #3d4b5f;
+}
+
+.brand {
+    color: #eef2f8;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: #eef2f8;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.navigation a {
+    color: #bfdbfe;
+    text-decoration: none;
+}
+
+.navigation a:hover {
+    color: #ffffff;
+}
+
+.navigation button {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid #506077;
+    border-radius: 9px;
+    background: #263345;
+    color: #eef2f8;
+    cursor: pointer;
+}
+
+.navigation .cartLink {
+    padding: 0.65rem 0.9rem;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(250px, 0.6fr);
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid #506077;
+    border-radius: 18px;
+    background: #222c3b;
+}
+
+.heroContent {
+    min-width: 0;
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    color: #a9c9f7;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    max-width: 740px;
+    margin: 0 0 1rem;
+    color: #ffffff;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.16;
+}
+
+.heroDescription {
+    max-width: 620px;
+    margin: 0;
+    color: #c4cfdf;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.primaryButton,
+.secondaryButton,
+.catalogButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.1rem;
+    border-radius: 10px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.primaryButton,
+.catalogButton {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.primaryButton:hover,
+.catalogButton:hover {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+.secondaryButton {
+    border: 1px solid #506077;
+    background: #34445a;
+    color: #eef2f8;
+}
+
+.secondaryButton:hover {
+    background: #405572;
+    color: #ffffff;
+}
+
+.paymentNote {
+    margin: 1.25rem 0 0;
+    color: #b6f4d1;
+    font-weight: 600;
+}
+
+.heroVisual {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 2rem 1.5rem;
+    border: 1px solid #506077;
+    border-radius: 16px;
+    background: #29384c;
+    text-align: center;
+}
+
+.heroVisualIcon {
+    display: grid;
+    width: 120px;
+    height: 120px;
+    place-items: center;
+    border-radius: 28px;
+    background: #344b6d;
+    font-size: 3.5rem;
+}
+
+.heroVisual strong {
+    color: #ffffff;
+    font-size: 1.25rem;
+}
+
+.heroVisual p {
+    margin: 0;
+    color: #c4cfdf;
+}
+
+.businessSection {
+    padding: 1.75rem;
+    border: 1px solid #506077;
+    border-radius: 18px;
+    background: #222c3b;
+    scroll-margin-top: 2rem;
+}
+
+.sectionHeading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.sectionHeading h2 {
+    margin: 0 0 0.4rem;
+    color: #ffffff;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.sectionHeading p:last-child {
+    margin: 0;
+    color: #c4cfdf;
+}
+
+.businessCount {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #506077;
+    border-radius: 999px;
+    color: #c4cfdf;
+    font-weight: 600;
+}
+
+.searchField {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.searchField input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid #506077;
+    border-radius: 10px;
+    background: #161e2b;
+    color: #eef2f8;
+}
+
+.searchField input::placeholder {
+    color: #a7b5ca;
+}
+
+.searchField input:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+.businessGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,
+            minmax(min(100%, 280px), 1fr));
+    gap: 1.25rem;
+}
+
+.businessCard {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #506077;
+    border-radius: 14px;
+    background: #263345;
+}
+
+.businessVisual {
+    display: grid;
+    min-height: 190px;
+    place-items: center;
+    padding: 1.5rem;
+    background: #192434;
+}
+
+.businessVisual img {
+    display: block;
+    width: 130px;
+    height: 130px;
+    border-radius: 18px;
+    background: #ffffff;
+    object-fit: contain;
+}
+
+.logoPlaceholder {
+    display: grid;
+    width: 120px;
+    height: 120px;
+    place-items: center;
+    border-radius: 18px;
+    background: #34445a;
+    font-size: 3rem;
+}
+
+.businessContent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1.35rem;
+}
+
+.availableBadge {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: #173b2c;
+    color: #b6f4d1;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.businessContent h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+.businessContent p {
+    flex: 1;
+    margin: 0;
+    color: #c4cfdf;
+    line-height: 1.5;
+}
+
+.catalogButton {
+    width: 100%;
+    margin-top: 0.35rem;
+}
+
+.message,
+.error {
+    padding: 1.25rem;
+    border: 1px solid #506077;
+    border-radius: 10px;
+    background: #263345;
+}
+
+.error {
+    border-color: #a64848;
+    color: #ffb4b4;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+    color: #c4cfdf;
+    font-size: 0.9rem;
+}
+
+.footer strong {
+    color: #eef2f8;
+}
+
+@media (max-width: 760px) {
+    .container {
+        width: min(100% - 1.5rem, 1280px);
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .heroVisual {
+        display: none;
+    }
+
+    .businessSection {
+        padding: 1rem;
+    }
+
+    .topbar {
+        align-items: flex-start;
+    }
+
+    .navigation {
+        width: 100%;
+    }
+}

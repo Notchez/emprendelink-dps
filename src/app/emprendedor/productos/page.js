@@ -137,52 +137,52 @@ export default function ProductsPage() {
 
   if (authLoading) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <p className={styles.status}>Comprobando tu sesión...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.title}>Productos</h1>
           <p className={styles.status}>
             La gestión de productos estará disponible cuando inicies sesión.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <p className={styles.status}>Cargando productos...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!business) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.title}>Productos</h1>
           <p className={styles.status}>
             Primero debes configurar la información de tu emprendimiento.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.container}>
         <header className={styles.header}>
           <div>
@@ -427,6 +427,6 @@ export default function ProductsPage() {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

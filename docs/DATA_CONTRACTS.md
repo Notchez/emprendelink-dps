@@ -9,7 +9,11 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
   id: "string",
   name: "string",
   email: "string",
-  role: "ADMIN | ENTREPRENEUR",
+  role: "ADMIN | ENTREPRENEUR | CUSTOMER",
+  phone: "string",
+  address: "string",
+  deliveryInstructions: "string", // Opcional: cadena vacía si no hay indicaciones.
+  createdAt: "ISO date",
   active: true
 }
 ```
@@ -56,15 +60,9 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
 
 ## Customer
 
-```js
-{
-  id: "string",
-  businessId: "string",
-  name: "string",
-  phone: "string",
-  email: "string | null"
-}
-```
+El cliente ahora es un User con role CUSTOMER. Su id es el UID de Firebase Authentication.
+No se crea otra identidad por compra ni por negocio. Nombre, correo, teléfono y dirección
+son obligatorios. La contraseña solo se administra en Firebase Authentication.
 
 ## Order
 
@@ -72,7 +70,8 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
 {
   id: "string",
   businessId: "string",
-  customerId: "string",
+  customerId: "Firebase Auth UID",
+  customer: { name: "string", phone: "string", email: "string" }, // Copia al crear el pedido.
   items: [],
   subtotal: 0,
   deliveryAddress: "string",
@@ -130,3 +129,12 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
   createdAt: "date"
 }
 ```
+
+## Autorización y estado de integración
+
+El servidor verifica el token con Firebase Auth REST y consulta users/{uid} mediante Firestore REST.
+CUSTOMER ve solo sus pedidos; ENTREPRENEUR solo los de su negocio; ADMIN ve todos.
+customerId y changedBy se determinan en el servidor, no desde el cuerpo de la solicitud.
+Los precios se consultan en products; no se acepta el precio del navegador.
+Las cuentas se persisten en Firebase. Pedidos, historial, comisiones y dashboards siguen usando
+los servicios mock existentes; aún falta migrarlos para persistencia real y pruebas completas.

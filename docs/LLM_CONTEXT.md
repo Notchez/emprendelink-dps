@@ -22,7 +22,7 @@ EmprendeLink es una plataforma para microemprendedores que permite administrar n
 - VS Code.
 - Vercel.
 
-No agregues Redux, Tailwind, Bootstrap, TypeScript, nuevas dependencias ni cambies versiones sin aprobación explícita del equipo.
+AdminLTE React 0.6.1, Bootstrap 5.3.8 y Bootstrap Icons 1.13.1 están aprobados para paneles internos. No agregues otras dependencias ni cambies versiones sin aprobación explícita del equipo.
 
 ## Arquitectura obligatoria
 
@@ -45,9 +45,10 @@ Usa únicamente las constantes compartidas:
 ```js
 ROLES.ADMIN;
 ROLES.ENTREPRENEUR;
+ROLES.CUSTOMER;
 ```
 
-El cliente es invitado en el alcance inicial.
+El cliente tiene cuenta (cambio aprobado). Solo CUSTOMER autenticado puede confirmar pedidos. Revisar docs/PRUEBAS_CUENTAS.md para configuración y limitaciones actuales.
 
 ## Estados de pedido
 

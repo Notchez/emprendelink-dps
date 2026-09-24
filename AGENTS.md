@@ -34,6 +34,8 @@ Objetivo de la etapa:
 - Next.js App Router.
 - CSS global + CSS Modules.
 - Context API + custom hooks.
+- AdminLTE React 0.6.1 para los paneles internos.
+- Bootstrap 5.3.8 + Bootstrap Icons 1.13.1 como base visual de AdminLTE.
 - npm.
 - VS Code.
 - Vercel.
@@ -45,7 +47,7 @@ No:
 - migrar a TypeScript;
 - agregar Redux;
 - agregar Tailwind;
-- agregar Bootstrap;
+- cambiar o retirar las versiones aprobadas de AdminLTE/Bootstrap;
 - cambiar App Router por Pages Router;
 - actualizar versiones;
 - instalar nuevas librerías;
@@ -53,6 +55,12 @@ No:
 - reorganizar toda la estructura.
 
 Si una dependencia parece necesaria, explicarla antes de proponer `npm install`.
+
+### Dependencias visuales aprobadas
+
+El Tech Lead aprobó AdminLTE 4 mediante su integración oficial para React/Next.js.
+Su alcance es el panel administrativo, el panel del emprendedor y la gestión de pedidos.
+El catálogo público, carrito, checkout y autenticación conservan su diseño independiente.
 
 ## 3. Arquitectura obligatoria
 
@@ -85,6 +93,7 @@ Usar únicamente:
 ```js
 ROLES.ADMIN;
 ROLES.ENTREPRENEUR;
+ROLES.CUSTOMER;
 ```
 
 Importar desde:
@@ -93,7 +102,7 @@ Importar desde:
 @/lib/constants/roles
 ```
 
-Cliente = invitado en el alcance inicial.
+Cambio de alcance aprobado por el Tech Lead: el cliente tiene cuenta. El catálogo se puede consultar sin sesión, pero confirmar pedidos exige CUSTOMER autenticado. Nombre, teléfono, correo y dirección son obligatorios; deliveryInstructions es opcional. ADMIN se asigna desde Firebase Console, nunca desde el registro público.
 
 ## 5. Estados de pedido
 

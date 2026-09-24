@@ -1,0 +1,146 @@
+.wrapper {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 12px;
+  background: var(--el-surface, #fff);
+}
+
+.header,
+.planHeader,
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.header {
+  margin-bottom: 1.25rem;
+}
+
+.header h2,
+.header p,
+.plan h3,
+.plan p {
+  margin-top: 0;
+}
+
+.header p,
+.plan p {
+  color: var(--el-muted, #64748b);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.form input:not([type="checkbox"]) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--el-border, #cbd5e1);
+  border-radius: 8px;
+  background: var(--el-surface, #fff);
+  color: var(--el-text, #172033);
+}
+
+.checkbox {
+  display: flex !important;
+  align-items: center;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-self: end;
+}
+
+.actions {
+  justify-content: flex-start;
+  grid-column: 1 / -1;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: #2563eb;
+  color: #fff;
+}
+
+.secondaryButton {
+  border-color: var(--el-border, #cbd5e1);
+  background: transparent;
+  color: var(--el-text, #172033);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error,
+.success {
+  margin: 1rem 0 0;
+}
+
+.error {
+  color: var(--el-danger, #b91c1c);
+}
+
+.success {
+  color: var(--el-success, #166534);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.plan {
+  padding: 1rem;
+  border: 1px solid var(--el-border, #d1d5db);
+  border-radius: 10px;
+}
+
+.planHeader h3 {
+  margin-bottom: 0;
+}
+
+.active,
+.inactive {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.active {
+  background: var(--el-success-bg, #dcfce7);
+  color: var(--el-success, #166534);
+}
+
+.inactive {
+  background: var(--el-subtle-bg, #f1f5f9);
+  color: var(--el-muted, #64748b);
+}

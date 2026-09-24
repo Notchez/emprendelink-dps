@@ -1,18 +1,9 @@
-import EntrepreneurDashboard from "@/components/dashboard/EntrepreneurDashboard";
-import { dashboardService } from "@/services/dashboardService";
+import EntrepreneurOverview from "@/components/dashboard/EntrepreneurOverview";
 
-export default async function Page() {
-  const dashboard = await dashboardService.getEntrepreneurDashboard();
+export default function Page() {
   return (
-    <main className="container">
-      <p className="eyebrow">Panel del emprendedor</p>
-      <h1>Mi emprendimiento</h1>
-
-      <EntrepreneurDashboard
-  businessName={dashboard.businessName}
-  kpis={dashboard.kpis}
-  salesByPeriod={dashboard.salesByPeriod}
-/>
-    </main>
+    <div className="container">
+      <EntrepreneurOverview />
+    </div>
   );
 }

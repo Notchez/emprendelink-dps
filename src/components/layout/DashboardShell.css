@@ -1,0 +1,105 @@
+.emprendelink-dashboard {
+  --bs-primary: #2563eb;
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-body-color: var(--el-text);
+  --bs-body-bg: var(--el-page-bg);
+  --bs-border-color: var(--el-border);
+  --bs-heading-color: var(--el-text);
+  --bs-secondary-color: var(--el-muted);
+  --el-text: #111827;
+  --el-muted: #64748b;
+  --el-surface: #ffffff;
+  --el-page-bg: #f8fafc;
+  --el-subtle-bg: #f1f5f9;
+  --el-border: #d1d5db;
+  --el-link: #2563eb;
+  --el-danger: #b91c1c;
+  --el-danger-bg: #fef2f2;
+  --el-success: #166534;
+  --el-success-bg: #dcfce7;
+  --el-warning: #92400e;
+  --el-warning-bg: #fff3cd;
+  --el-info-bg: #dbeafe;
+  --el-purple-bg: #ede9fe;
+  --el-cyan-bg: #cffafe;
+
+  color-scheme: light;
+  color: var(--el-text);
+  background-color: var(--el-page-bg);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+[data-bs-theme="dark"] .emprendelink-dashboard {
+  color-scheme: dark;
+  --el-text: #e5e7eb;
+  --el-muted: #b6c2d1;
+  --el-surface: #1f2937;
+  --el-page-bg: #111827;
+  --el-subtle-bg: #293548;
+  --el-border: #475569;
+  --el-link: #93c5fd;
+  --el-danger: #fca5a5;
+  --el-danger-bg: #451a1a;
+  --el-success: #86efac;
+  --el-success-bg: #143526;
+  --el-warning: #fde68a;
+  --el-warning-bg: #422f13;
+  --el-info-bg: #1e3a5f;
+  --el-purple-bg: #352451;
+  --el-cyan-bg: #16404a;
+}
+
+.emprendelink-dashboard .app-sidebar {
+  background-color: #111827 !important;
+}
+
+.emprendelink-dashboard .sidebar-brand {
+  border-bottom-color: rgb(255 255 255 / 12%);
+}
+
+.emprendelink-dashboard .brand-link {
+  color: #ffffff;
+}
+
+/* Hide the template's demo profile and unused brand placeholder. */
+.emprendelink-dashboard .app-header .user-menu,
+.emprendelink-dashboard .sidebar-brand .brand-image:empty {
+  display: none;
+}
+
+.emprendelink-dashboard .app-main {
+  min-height: calc(100vh - 7rem);
+  color: var(--el-text);
+  background-color: var(--el-page-bg);
+}
+
+.emprendelink-dashboard .app-content {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.emprendelink-dashboard .app-header,
+.emprendelink-dashboard .app-footer {
+  background-color: var(--el-surface);
+}
+
+.emprendelink-dashboard .app-footer,
+.emprendelink-dashboard .eyebrow {
+  color: var(--el-muted);
+}
+
+.emprendelink-dashboard .app-main code {
+  color: var(--el-text);
+  background-color: var(--el-subtle-bg);
+}
+
+.emprendelink-dashboard :where(.app-main input, .app-main select, .app-main textarea) {
+  color: var(--el-text);
+  background-color: var(--el-surface);
+}

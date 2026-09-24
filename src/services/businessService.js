@@ -169,6 +169,12 @@ async function updateProfile(businessId, { name, slug, logoUrl }) {
 }
 
 export const businessService = {
+  async getPublic() {
+    const snapshot = await getDocs(
+      query(collection(getFirebaseDb(), BUSINESSES_COLLECTION), where("active", "==", true))
+    );
+    return snapshot.docs.map(mapBusiness);
+  },
   getById,
   getByOwnerId,
   getBySlug,

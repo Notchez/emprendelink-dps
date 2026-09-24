@@ -1,15 +1,9 @@
-import AdminDashboard from "@/components/dashboard/AdminDashboard";
-import { dashboardService } from "@/services/dashboardService";
+import AdminOverview from "@/components/dashboard/AdminOverview";
 
-export default async function Page() {
-  const dashboard = await dashboardService.getAdminDashboard();
-
+export default function Page() {
   return (
-    <main className="container">
-      <p className="eyebrow">Panel del administrador</p>
-      <h1>Panel administrativo</h1>
-
-      <AdminDashboard kpis={dashboard.kpis} />
-    </main>
+    <div className="container">
+      <AdminOverview />
+    </div>
   );
 }

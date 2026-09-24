@@ -21,7 +21,7 @@
 }
 
 .eyebrow {
-  color: #46627f;
+  color: var(--el-muted, #46627f);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -34,8 +34,8 @@
   gap: 1rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  background: #ffffff;
-  border: 1px solid #d9e0e8;
+  background: var(--el-surface, #ffffff);
+  border: 1px solid var(--el-border, #d9e0e8);
   border-radius: 12px;
 }
 
@@ -49,9 +49,9 @@
 .filters select {
   width: 100%;
   padding: 0.7rem;
-  border: 1px solid #c6d0da;
+  border: 1px solid var(--el-border, #c6d0da);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--el-surface, #ffffff);
 }
 
 .orderGrid {
@@ -62,8 +62,8 @@
 
 .orderCard,
 .panel {
-  background: #ffffff;
-  border: 1px solid #d9e0e8;
+  background: var(--el-surface, #ffffff);
+  border: 1px solid var(--el-border, #d9e0e8);
   border-radius: 12px;
   padding: 1rem;
 }
@@ -90,7 +90,7 @@
 }
 
 .muted {
-  color: #607080;
+  color: var(--el-muted, #607080);
 }
 
 .statusBadge {
@@ -100,31 +100,31 @@
   padding: 0.35rem 0.65rem;
   font-size: 0.8rem;
   font-weight: 700;
-  background: #eaf0f6;
+  background: var(--el-subtle-bg, #eaf0f6);
 }
 
 .pending {
-  background: #fff3cd;
+  background: var(--el-warning-bg, #fff3cd);
 }
 
 .confirmed {
-  background: #dbeafe;
+  background: var(--el-info-bg, #dbeafe);
 }
 
 .preparing {
-  background: #ede9fe;
+  background: var(--el-purple-bg, #ede9fe);
 }
 
 .ready {
-  background: #cffafe;
+  background: var(--el-cyan-bg, #cffafe);
 }
 
 .delivered {
-  background: #dcfce7;
+  background: var(--el-success-bg, #dcfce7);
 }
 
 .cancelled {
-  background: #fee2e2;
+  background: var(--el-danger-bg, #fee2e2);
 }
 
 .linkButton,
@@ -147,8 +147,8 @@
 }
 
 .secondaryButton {
-  background: #ffffff;
-  color: #31506f;
+  background: var(--el-surface, #ffffff);
+  color: var(--el-link, #31506f);
 }
 
 .statusActions {
@@ -190,7 +190,7 @@
 .table td {
   text-align: left;
   padding: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--el-border, #e2e8f0);
 }
 
 .historyList {
@@ -203,7 +203,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--el-border, #e2e8f0);
 }
 
 .historyItem p {
@@ -214,7 +214,7 @@
   display: grid;
   justify-items: end;
   gap: 0.25rem;
-  color: #607080;
+  color: var(--el-muted, #607080);
   font-size: 0.9rem;
 }
 
@@ -230,13 +230,13 @@
 }
 
 .message {
-  background: #ffffff;
-  border: 1px solid #d9e0e8;
+  background: var(--el-surface, #ffffff);
+  border: 1px solid var(--el-border, #d9e0e8);
 }
 
 .error {
-  background: #fee2e2;
-  color: #8a1c1c;
+  background: var(--el-danger-bg, #fee2e2);
+  color: var(--el-danger, #8a1c1c);
 }
 
 @media (max-width: 720px) {

@@ -1,13 +1,22 @@
-import { orderDataService } from "@/services/orderDataService";
+import { orderFirestoreService } from "@/services/orderFirestoreService";
 import { errorResponse, successResponse } from "@/utils/apiResponse";
+import { requireSession, requireOrderAccess } from "@/lib/auth/server";
 
 export async function GET(request, context) {
-  const { id } = await context.params;
-  const order = orderDataService.getOrderById(id);
+  try {
+    const session = await requireSession(request);
+    const { id } = await context.params;
 
-  if (!order) {
-    return errorResponse("ORDER_NOT_FOUND", "El pedido no existe.", 404);
+    const order = await orderFirestoreService.getOrderById(id);
+
+    await requireOrderAccess(session, order);
+
+    return successResponse(order);
+  } catch (error) {
+    return errorResponse(
+      error.code || "ORDER_READ_ERROR",
+      error.status ? error.message : "No se pudo consultar el pedido.",
+      error.status || 503
+    );
   }
-
-  return successResponse(order);
 }

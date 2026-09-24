@@ -1,327 +1,300 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { useCart } from "@/hooks/useCart";
-import { customerService } from "@/services/customerService";
+import { useAuth } from "@/context/AuthContext";
 import { orderService } from "@/services/orderService";
 
+import styles from "./Checkout.module.css";
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(value || 0));
+}
+
 export default function CheckoutPage() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <p role="status">Cargando tu cuenta...</p>;
+  }
+
+  return <CheckoutForm key={user.id} user={user} />;
+}
+
+function CheckoutForm({ user }) {
   const router = useRouter();
+
   const { items, subtotal, businessId, clearCart } = useCart();
 
-  // Estados del formulario del cliente (cumple con Customer contract)
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    address: "",
-    notes: "",
-  });
+  const [address, setAddress] = useState(user.address || "");
 
-  const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState("");
+  const [notes, setNotes] = useState(user.deliveryInstructions || "");
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
+  const submitting = useRef(false);
 
-    // Validaciones obligatorias de UI
-    if (!formData.name.trim() || !formData.phone.trim() || !formData.address.trim()) {
-      setFormError("Por favor completa los campos obligatorios: Nombre, Teléfono y Dirección.");
+  const totalUnits = items.reduce((total, item) => total + Number(item.quantity || 0), 0);
+
+  async function submit(event) {
+    event.preventDefault();
+
+    if (submitting.current) {
       return;
     }
 
-    if (items.length === 0) {
-      setFormError("El carrito está vacío. Agrega productos antes de continuar.");
+    if (!businessId || items.length === 0) {
+      setError("Tu carrito está vacío o no tiene un emprendimiento asociado.");
+
       return;
     }
 
-    const validBusinessId = businessId || "business-001";
-    setLoading(true);
+    submitting.current = true;
+    setSaving(true);
+    setError("");
 
     try {
-      const customer = await customerService.createCustomer({
-        businessId: validBusinessId,
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-        email: formData.email.trim() || null,
-      });
-
       const order = await orderService.createOrder({
-        businessId: validBusinessId,
-        customerId: customer.id,
+        businessId,
+
         items: items.map((item) => ({
           productId: item.id,
-          productName: item.name,
           quantity: item.quantity,
-          unitPrice: Number(item.price),
         })),
-        deliveryAddress: formData.address.trim(),
-        notes: formData.notes.trim() || null,
-        createdBy: customer.id,
+
+        deliveryAddress: address.trim(),
+        notes: notes.trim(),
       });
 
-      sessionStorage.setItem("emprendelink_last_order", JSON.stringify({ ...order, customer }));
       clearCart();
-      router.push("/checkout/confirmacion");
-    } catch (error) {
-      setFormError(error.message || "Ocurrió un error al procesar tu pedido.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  if (items.length === 0) {
-    return (
-      <main
-        style={{ maxWidth: "600px", margin: "3rem auto", padding: "1.5rem", textAlign: "center" }}
-      >
-        <h2>Tu carrito está vacío</h2>
-        <p style={{ color: "#718096", margin: "1rem 0 2rem" }}>
-          No tienes artículos seleccionados para generar un pedido.
-        </p>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#3182ce",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Volver al catálogo
-        </button>
-      </main>
-    );
+      router.push(`/checkout/confirmacion?id=${encodeURIComponent(order.id)}`);
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "No se pudo confirmar tu pedido.");
+    } finally {
+      submitting.current = false;
+      setSaving(false);
+    }
   }
 
   return (
-    <main style={{ maxWidth: "800px", margin: "2rem auto", padding: "1.5rem" }}>
-      <button
-        type="button"
-        onClick={() => router.back()}
-        style={{
-          background: "none",
-          border: "none",
-          color: "#3182ce",
-          cursor: "pointer",
-          marginBottom: "1.5rem",
-          fontSize: "0.95rem",
-        }}
-      >
-        ← Volver al catálogo
-      </button>
+    <div className={styles.page}>
+      <header className={styles.heading}>
+        <div>
+          <p className={styles.eyebrow}>Finalizar compra</p>
 
-      <h1 style={{ marginBottom: "1.5rem", color: "#1a202c" }}>Finalizar Pedido</h1>
+          <h1>Confirmar pedido</h1>
 
-      {formError && (
-        <div
-          style={{
-            padding: "1rem",
-            backgroundColor: "#fed7d7",
-            color: "#c53030",
-            borderRadius: "6px",
-            marginBottom: "1.5rem",
-          }}
-        >
-          {formError}
+          <p>Revisa tu compra y confirma dónde deseas recibirla.</p>
         </div>
-      )}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: "2rem",
-        }}
-      >
-        {/* Formulario de datos del cliente */}
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-        >
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.3rem" }}>
-              Nombre completo *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Ej. Juan Pérez"
-              required
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "4px",
-              }}
-            />
+        <Link className={styles.secondaryButton} href="/cliente/carrito">
+          ← Volver al carrito
+        </Link>
+      </header>
+
+      {items.length === 0 ? (
+        <section className={styles.emptyState}>
+          <div className={styles.emptyIcon} aria-hidden="true">
+            🛒
           </div>
 
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.3rem" }}>
-              Teléfono / WhatsApp *
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Ej. 7000-0000"
-              required
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "4px",
-              }}
-            />
-          </div>
+          <h2>Tu carrito está vacío</h2>
 
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.3rem" }}>
-              Correo electrónico (opcional)
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="correo@ejemplo.com"
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "4px",
-              }}
-            />
-          </div>
+          <p>Agrega productos antes de confirmar un pedido.</p>
 
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.3rem" }}>
-              Dirección de entrega *
-            </label>
-            <textarea
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Colonia, calle, número de casa, punto de referencia"
-              rows={3}
-              required
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "4px",
-              }}
-            />
-          </div>
+          <Link className={styles.primaryButton} href="/">
+            Explorar negocios
+          </Link>
+        </section>
+      ) : (
+        <form className={styles.checkoutGrid} onSubmit={submit}>
+          <div className={styles.formColumn}>
+            <section className={styles.panel} aria-labelledby="delivery-title">
+              <div className={styles.sectionHeading}>
+                <span className={styles.stepNumber}>1</span>
 
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.3rem" }}>
-              Notas adicionales (opcional)
-            </label>
-            <input
-              type="text"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Instrucciones especiales para la entrega"
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "4px",
-              }}
-            />
-          </div>
+                <div>
+                  <h2 id="delivery-title">Datos de entrega</h2>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: "0.8rem",
-              backgroundColor: loading ? "#a0aec0" : "#38a169",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              cursor: loading ? "not-allowed" : "pointer",
-              marginTop: "0.5rem",
-            }}
-          >
-            {loading ? "Confirmando pedido..." : "Confirmar y Enviar Pedido"}
-          </button>
-        </form>
-
-        {/* Resumen del pedido */}
-        <aside
-          style={{
-            backgroundColor: "#f7fafc",
-            border: "1px solid #e2e8f0",
-            borderRadius: "8px",
-            padding: "1.25rem",
-            height: "fit-content",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: "1.2rem",
-              marginTop: 0,
-              borderBottom: "1px solid #e2e8f0",
-              paddingBottom: "0.5rem",
-            }}
-          >
-            Resumen de compra
-          </h2>
-          <div style={{ margin: "1rem 0" }}>
-            {items.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "0.5rem",
-                  fontSize: "0.9rem",
-                }}
-              >
-                <span>
-                  {item.quantity}x {item.name}
-                </span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <p>Esta información permitirá coordinar la entrega de tu pedido.</p>
+                </div>
               </div>
-            ))}
+
+              <div className={styles.contactInfo}>
+                <div>
+                  <span>Nombre</span>
+
+                  <strong>{user.name || "No registrado"}</strong>
+                </div>
+
+                <div>
+                  <span>Correo electrónico</span>
+
+                  <strong>{user.email || "No registrado"}</strong>
+                </div>
+
+                <div>
+                  <span>Teléfono</span>
+
+                  <strong>{user.phone || "No registrado"}</strong>
+                </div>
+              </div>
+
+              <Link className={styles.profileLink} href="/cliente#mis-datos">
+                Editar mis datos personales →
+              </Link>
+
+              <div className={styles.field}>
+                <label htmlFor="deliveryAddress">Dirección para este pedido</label>
+
+                <textarea
+                  id="deliveryAddress"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                  minLength={5}
+                  maxLength={500}
+                  rows={4}
+                  placeholder="Colonia, calle, número de casa y referencias..."
+                  disabled={saving}
+                  required
+                />
+
+                <small>
+                  Puedes utilizar una dirección diferente de la que tienes guardada en tu perfil.
+                </small>
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="deliveryNotes">
+                  Indicaciones de entrega
+                  <span className={styles.optional}> (opcional)</span>
+                </label>
+
+                <textarea
+                  id="deliveryNotes"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  placeholder="Ej.: portón azul, llamar al llegar..."
+                  disabled={saving}
+                />
+              </div>
+            </section>
+
+            <section className={styles.panel} aria-labelledby="payment-title">
+              <div className={styles.sectionHeading}>
+                <span className={styles.stepNumber}>2</span>
+
+                <div>
+                  <h2 id="payment-title">Método de pago</h2>
+
+                  <p>Así realizarás el pago de esta compra.</p>
+                </div>
+              </div>
+
+              <div className={styles.paymentMethod}>
+                <span className={styles.paymentIcon} aria-hidden="true">
+                  💵
+                </span>
+
+                <div>
+                  <strong>Pago contra entrega</strong>
+
+                  <p>Pagarás al recibir tu pedido. No necesitas ingresar datos de tarjeta.</p>
+                </div>
+
+                <span className={styles.selectedPayment} aria-label="Método de pago seleccionado">
+                  ✓
+                </span>
+              </div>
+            </section>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              borderTop: "2px solid #e2e8f0",
-              paddingTop: "0.75rem",
-              fontWeight: "bold",
-              fontSize: "1.1rem",
-              color: "#2b6cb0",
-            }}
-          >
-            <span>Total:</span>
-            <span>${subtotal.toFixed(2)}</span>
-          </div>
-        </aside>
-      </div>
-    </main>
+
+          <aside className={styles.summaryPanel} aria-labelledby="summary-title">
+            <h2 id="summary-title">Resumen de tu pedido</h2>
+
+            <p className={styles.summaryDescription}>
+              Comprueba los productos antes de confirmar tu compra.
+            </p>
+
+            <div className={styles.productsList}>
+              {items.map((item) => (
+                <article className={styles.product} key={item.id}>
+                  <div className={styles.productImage}>
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imageUrl} alt={item.name} />
+                    ) : (
+                      <span aria-hidden="true">🛍️</span>
+                    )}
+                  </div>
+
+                  <div className={styles.productInfo}>
+                    <strong>{item.name}</strong>
+
+                    <span>
+                      {item.quantity} × {formatMoney(item.price)}
+                    </span>
+
+                    <strong>{formatMoney(Number(item.price) * Number(item.quantity))}</strong>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <Link className={styles.editCartLink} href="/cliente/carrito">
+              Modificar productos o cantidades →
+            </Link>
+
+            <div className={styles.totals}>
+              <div className={styles.totalRow}>
+                <span>Productos</span>
+
+                <span>{totalUnits}</span>
+              </div>
+
+              <div className={styles.grandTotal}>
+                <strong>Total estimado</strong>
+
+                <strong>{formatMoney(subtotal)}</strong>
+              </div>
+            </div>
+
+            <p className={styles.priceNotice}>
+              El total definitivo se calculará con los precios vigentes al registrar tu pedido.
+            </p>
+
+            <div className={styles.paymentReminder}>
+              <span aria-hidden="true">✓</span>
+
+              <span>Pagarás contra entrega.</span>
+            </div>
+
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
+
+            <button className={styles.confirmButton} type="submit" disabled={saving}>
+              {saving ? "Registrando pedido..." : "Confirmar pedido"}
+            </button>
+
+            <p className={styles.confirmationNote}>
+              Al confirmar, tu pedido será enviado al emprendimiento para que pueda gestionarlo.
+            </p>
+          </aside>
+        </form>
+      )}
+    </div>
   );
 }
