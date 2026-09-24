@@ -1,4 +1,4 @@
-import { orderDataService } from "@/services/orderDataService";
+import { orderFirestoreService } from "@/services/orderFirestoreService";
 import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { requireSession, requireBusinessOwner, prepareOrder, accessError } from "@/lib/auth/server";
 import { ROLES } from "@/lib/constants/roles";
@@ -8,20 +8,23 @@ export async function GET(request) {
     const session = await requireSession(request);
     const { searchParams } = new URL(request.url);
     const businessId = searchParams.get("businessId") || "";
+
     if (session.user.role === ROLES.ENTREPRENEUR) {
-      if (!businessId) throw accessError("Selecciona tu negocio.", 400);
+      if (!businessId) {
+        throw accessError("Selecciona tu negocio.", 400);
+      }
+
       await requireBusinessOwner(session, businessId);
     }
-    const orders = orderDataService.getOrders({
+
+    const orders = await orderFirestoreService.getOrders({
       businessId,
+      customerId: session.user.role === ROLES.CUSTOMER ? session.user.id : "",
       status: searchParams.get("status") || "",
       search: searchParams.get("search") || "",
     });
-    return successResponse(
-      session.user.role === ROLES.CUSTOMER
-        ? orders.filter((order) => order.customerId === session.user.id)
-        : orders
-    );
+
+    return successResponse(orders);
   } catch (error) {
     return errorResponse(
       error.code || "ORDER_READ_ERROR",
@@ -30,11 +33,15 @@ export async function GET(request) {
     );
   }
 }
+
 export async function POST(request) {
   try {
     const session = await requireSession(request, [ROLES.CUSTOMER]);
     const data = await prepareOrder(session, await request.json());
-    return successResponse(orderDataService.createOrder(data), 201);
+
+    const order = await orderFirestoreService.createOrder(data);
+
+    return successResponse(order, 201);
   } catch (error) {
     return errorResponse(
       error.code || "ORDER_CREATE_ERROR",

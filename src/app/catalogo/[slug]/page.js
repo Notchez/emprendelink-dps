@@ -1,564 +1,449 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { use, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { AccountActions } from "@/components/auth/AccountActions";
 import { catalogService } from "@/services/catalogService";
 import { useCart } from "@/hooks/useCart";
 
-// --- Subcomponente 1: Tarjeta de Producto ---
-function ProductCard({ product, onSelectDetail, onAddToCart }) {
-  if (!product) return null;
+import styles from "./Catalog.module.css";
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(value || 0));
+}
+
+function ProductImage({ product, className }) {
+  if (!product.imageUrl) {
+    return (
+      <div className={`${className} ${styles.imagePlaceholder}`}>
+        <span>Sin imagen disponible</span>
+      </div>
+    );
+  }
 
   return (
-    <article
-      style={{
-        border: "1px solid #e2e8f0",
-        borderRadius: "8px",
-        padding: "1.25rem",
-        backgroundColor: "#ffffff",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <div>
-        <h3
-          style={{ fontSize: "1.15rem", fontWeight: 600, margin: "0 0 0.5rem 0", color: "#1a202c" }}
-        >
-          {product.name}
-        </h3>
-        <p
-          style={{ fontSize: "0.875rem", color: "#4a5568", marginBottom: "1rem", lineHeight: 1.4 }}
-        >
-          {product.description || "Sin descripción disponible."}
-        </p>
-      </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className={className} src={product.imageUrl} alt={product.name} loading="lazy" />
+  );
+}
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginTop: "auto",
-          paddingTop: "0.75rem",
-          borderTop: "1px solid #edf2f7",
-        }}
-      >
-        <span style={{ fontSize: "1.25rem", fontWeight: 700, color: "#2b6cb0" }}>
-          ${Number(product.price || 0).toFixed(2)}
-        </span>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button
-            type="button"
-            onClick={() => onSelectDetail(product)}
-            style={{
-              backgroundColor: "#edf2f7",
-              color: "#4a5568",
-              border: "none",
-              padding: "0.45rem 0.8rem",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Ver detalle
-          </button>
-          <button
-            type="button"
-            onClick={() => onAddToCart(product)}
-            style={{
-              backgroundColor: "#3182ce",
-              color: "#ffffff",
-              border: "none",
-              padding: "0.45rem 0.8rem",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
-          >
-            Agregar
-          </button>
+function ProductCard({ product, onSelectDetail, onAddToCart }) {
+  return (
+    <article className={styles.productCard}>
+      <ProductImage product={product} className={styles.productImage} />
+
+      <div className={styles.productContent}>
+        <div>
+          <h3>{product.name}</h3>
+
+          <p className={styles.description}>
+            {product.description || "Sin descripción disponible."}
+          </p>
+        </div>
+
+        <div className={styles.productFooter}>
+          <strong className={styles.price}>{formatMoney(product.price)}</strong>
+
+          <div className={styles.productActions}>
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              onClick={() => onSelectDetail(product)}
+            >
+              Ver detalle
+            </button>
+
+            <button
+              className={styles.primaryButton}
+              type="button"
+              onClick={() => onAddToCart(product)}
+            >
+              Agregar
+            </button>
+          </div>
         </div>
       </div>
     </article>
   );
 }
 
-// --- Subcomponente 2: Modal Detalle del Producto ---
 function ProductDetailModal({ product, onClose, onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
 
-  if (!product) return null;
+  function handleAdd() {
+    const added = onAddToCart(product, quantity);
 
-  const handleAdd = () => {
-    onAddToCart(product, quantity);
-    onClose();
-  };
+    if (added !== false) {
+      onClose();
+    }
+  }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 50,
-        padding: "1rem",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "8px",
-          maxWidth: "480px",
-          width: "100%",
-          padding: "1.5rem",
-          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-        }}
+    <div className={styles.overlay}>
+      <section
+        className={styles.productModal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="product-detail-title"
       >
-        <h2 style={{ marginTop: 0, color: "#1a202c" }}>{product.name}</h2>
-        <p style={{ color: "#4a5568", lineHeight: 1.5 }}>{product.description}</p>
-        <p style={{ fontSize: "1.35rem", fontWeight: "bold", color: "#2b6cb0", margin: "1rem 0" }}>
-          Precio: ${Number(product.price || 0).toFixed(2)}
-        </p>
+        <div className={styles.modalHeader}>
+          <h2 id="product-detail-title">{product.name}</h2>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", margin: "1.5rem 0" }}>
-          <label htmlFor="modal-qty">
-            <strong>Cantidad:</strong>
-          </label>
-          <input
-            id="modal-qty"
-            type="number"
-            min="1"
-            value={quantity}
-            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-            style={{
-              width: "65px",
-              padding: "0.35rem",
-              textAlign: "center",
-              borderRadius: "4px",
-              border: "1px solid #cbd5e0",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
           <button
+            className={styles.iconButton}
             type="button"
             onClick={onClose}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "#e2e8f0",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            aria-label="Cerrar detalle"
           >
+            ✕
+          </button>
+        </div>
+
+        <ProductImage product={product} className={styles.modalImage} />
+
+        <p className={styles.description}>{product.description || "Sin descripción disponible."}</p>
+
+        <p className={styles.modalPrice}>{formatMoney(product.price)}</p>
+
+        <label className={styles.quantityField} htmlFor="product-quantity">
+          Cantidad
+          <input
+            id="product-quantity"
+            type="number"
+            min="1"
+            max="999"
+            value={quantity}
+            onChange={(event) => {
+              const nextValue = Number(event.target.value);
+
+              setQuantity(
+                Number.isFinite(nextValue) ? Math.max(1, Math.min(999, Math.trunc(nextValue))) : 1
+              );
+            }}
+          />
+        </label>
+
+        <div className={styles.modalActions}>
+          <button className={styles.secondaryButton} type="button" onClick={onClose}>
             Cerrar
           </button>
-          <button
-            type="button"
-            onClick={handleAdd}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "#3182ce",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-          >
+
+          <button className={styles.primaryButton} type="button" onClick={handleAdd}>
             Agregar al carrito
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
 
-// --- Subcomponente 3: Drawer Lateral del Carrito ---
-function CartDrawer({ isOpen, onClose }) {
+function CartDrawer({ onClose }) {
   const router = useRouter();
+
   const { items, subtotal, updateQuantity, removeItem, clearCart } = useCart();
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        width: "100%",
-        maxWidth: "380px",
-        backgroundColor: "#ffffff",
-        boxShadow: "-2px 0 10px rgba(0,0,0,0.15)",
-        zIndex: 60,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          padding: "1rem",
-          borderBottom: "1px solid #e2e8f0",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+    <div className={styles.overlay}>
+      <aside
+        className={styles.cartDrawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
       >
-        <h2 style={{ margin: 0, fontSize: "1.2rem", color: "#1a202c" }}>Tu Carrito</h2>
-        <button
-          type="button"
-          onClick={onClose}
-          style={{
-            background: "transparent",
-            border: "none",
-            fontSize: "1.25rem",
-            cursor: "pointer",
-          }}
-        >
-          ✕
-        </button>
-      </div>
+        <div className={styles.drawerHeader}>
+          <h2 id="cart-title">Tu carrito</h2>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "1rem" }}>
-        {items.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#718096", marginTop: "2.5rem" }}>
-            El carrito está vacío.
-          </p>
-        ) : (
-          items.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-                paddingBottom: "0.75rem",
-                borderBottom: "1px solid #edf2f7",
-              }}
-            >
-              <div>
-                <strong style={{ display: "block", fontSize: "0.95rem", color: "#2d3748" }}>
-                  {item.name}
-                </strong>
-                <span style={{ fontSize: "0.85rem", color: "#4a5568" }}>
-                  ${Number(item.price || 0).toFixed(2)} c/u
-                </span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <button
-                  type="button"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  style={{
-                    padding: "0.2rem 0.55rem",
-                    background: "#edf2f7",
-                    border: "none",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                  }}
-                >
-                  -
-                </button>
-                <span style={{ minWidth: "22px", textAlign: "center", fontWeight: 600 }}>
-                  {item.quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  style={{
-                    padding: "0.2rem 0.55rem",
-                    background: "#edf2f7",
-                    border: "none",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                  }}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.id)}
-                  style={{
-                    marginLeft: "0.5rem",
-                    color: "#e53e3e",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {items.length > 0 && (
-        <div
-          style={{ padding: "1rem", borderTop: "1px solid #e2e8f0", backgroundColor: "#f7fafc" }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
-            <strong>Subtotal:</strong>
-            <strong style={{ color: "#2b6cb0", fontSize: "1.25rem" }}>
-              ${subtotal.toFixed(2)}
-            </strong>
-          </div>
           <button
+            className={styles.iconButton}
             type="button"
-            onClick={() => {
-              onClose();
-              router.push("/checkout");
-            }}
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              backgroundColor: "#38a169",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              marginBottom: "0.5rem",
-            }}
+            onClick={onClose}
+            aria-label="Cerrar carrito"
           >
-            Continuar al Checkout
-          </button>
-          <button
-            type="button"
-            onClick={clearCart}
-            style={{
-              width: "100%",
-              padding: "0.4rem",
-              background: "transparent",
-              border: "none",
-              color: "#718096",
-              fontSize: "0.85rem",
-              cursor: "pointer",
-            }}
-          >
-            Vaciar Carrito
+            ✕
           </button>
         </div>
-      )}
+
+        <div className={styles.cartItems}>
+          {items.length === 0 ? (
+            <p className={styles.emptyMessage}>Tu carrito está vacío.</p>
+          ) : (
+            items.map((item) => (
+              <article className={styles.cartItem} key={item.id}>
+                <div>
+                  <strong>{item.name}</strong>
+
+                  <p>{formatMoney(item.price)} por unidad</p>
+                </div>
+
+                <div className={styles.cartControls}>
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    aria-label={`Quitar una unidad de ${item.name}`}
+                  >
+                    −
+                  </button>
+
+                  <span>{item.quantity}</span>
+
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.id, Math.min(999, item.quantity + 1))}
+                    aria-label={`Agregar una unidad de ${item.name}`}
+                  >
+                    +
+                  </button>
+
+                  <button
+                    type="button"
+                    className={styles.removeButton}
+                    onClick={() => removeItem(item.id)}
+                    aria-label={`Eliminar ${item.name} del carrito`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <div className={styles.cartFooter}>
+            <div className={styles.cartSubtotal}>
+              <strong>Subtotal</strong>
+
+              <strong>{formatMoney(subtotal)}</strong>
+            </div>
+
+            <button
+              className={styles.checkoutButton}
+              type="button"
+              onClick={() => {
+                onClose();
+                router.push("/checkout");
+              }}
+            >
+              Continuar al checkout
+            </button>
+
+            <button className={styles.clearButton} type="button" onClick={clearCart}>
+              Vaciar carrito
+            </button>
+          </div>
+        )}
+      </aside>
     </div>
   );
 }
 
-// --- Componente Principal de la Página ---
 export default function CatalogPage({ params }) {
-  const resolvedParams = use(params);
-  const slug = resolvedParams.slug;
+  const { slug } = use(params);
 
   const { addItem, totalItemsCount } = useCart();
 
+  const [catalog, setCatalog] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [business, setBusiness] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [error, setError] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState("cat_all");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
-    async function loadCatalog() {
-      setLoading(true);
-      setError(null);
-      const res = await catalogService.getCatalogBySlug(slug);
+    let active = true;
 
-      if (res.success && res.data) {
-        setBusiness(res.data.business);
-        setCategories(res.data.categories || []);
-        setProducts(res.data.products || []);
-      } else {
-        setError(res.error?.message || "Error al cargar el catálogo");
+    async function loadCatalog() {
+      try {
+        const result = await catalogService.getCatalogBySlug(slug);
+
+        if (!active) return;
+
+        if (!result.success || !result.data) {
+          setError(result.error?.message || "No se pudo cargar el catálogo.");
+
+          setCatalog(null);
+          return;
+        }
+
+        setCatalog(result.data);
+        setError("");
+      } catch (caughtError) {
+        if (active) {
+          setError(
+            caughtError instanceof Error ? caughtError.message : "No se pudo cargar el catálogo."
+          );
+
+          setCatalog(null);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     }
 
     if (slug) {
-      loadCatalog();
+      void loadCatalog();
     }
+
+    return () => {
+      active = false;
+    };
   }, [slug]);
 
-  const filteredProducts = products.filter((prod) => {
-    if (!prod.active) return false;
-    const matchCat = selectedCategory === "cat_all" || prod.categoryId === selectedCategory;
-    const matchQuery =
-      prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (prod.description && prod.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchCat && matchQuery;
+  const business = catalog?.business;
+  const categories = catalog?.categories || [];
+  const products = catalog?.products || [];
+
+  const filteredProducts = products.filter((product) => {
+    if (!product.active) return false;
+
+    const matchesCategory =
+      selectedCategory === "cat_all" || product.categoryId === selectedCategory;
+
+    const query = searchQuery.trim().toLowerCase();
+
+    const matchesSearch =
+      !query ||
+      product.name.toLowerCase().includes(query) ||
+      String(product.description || "")
+        .toLowerCase()
+        .includes(query);
+
+    return matchesCategory && matchesSearch;
   });
 
   return (
-    <main
-      style={{
-        maxWidth: "1100px",
-        margin: "0 auto",
-        padding: "1.5rem",
-        background: "#fff",
-        color: "#1f2937",
-        colorScheme: "light",
-      }}
-    >
-      <AccountActions />
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <button
-          type="button"
-          onClick={() => setIsCartOpen(true)}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#2b6cb0",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "600",
-          }}
-        >
-          🛒 Ver Carrito ({totalItemsCount})
-        </button>
-      </div>
+    <main className={styles.catalogPage}>
+      <div className={styles.container}>
+        <nav className={styles.topbar} aria-label="Navegación del catálogo">
+          <Link className={styles.brand} href="/">
+            <strong>Emprende</strong>Link
+          </Link>
 
-      {loading && (
-        <div style={{ textAlign: "center", padding: "4rem 0", color: "#4a5568" }}>
-          <p>Cargando catálogo del emprendimiento...</p>
-        </div>
-      )}
+          <div className={styles.topbarActions}>
+            <AccountActions />
 
-      {!loading && error && (
-        <div
-          style={{
-            padding: "1.5rem",
-            backgroundColor: "#fed7d7",
-            color: "#c53030",
-            borderRadius: "6px",
-            textAlign: "center",
-          }}
-        >
-          <p>
-            <strong>Error:</strong> {error}
+            <button className={styles.cartButton} type="button" onClick={() => setIsCartOpen(true)}>
+              🛒 Carrito ({totalItemsCount})
+            </button>
+          </div>
+        </nav>
+
+        {loading && (
+          <p className={styles.message} role="status">
+            Cargando catálogo del emprendimiento...
           </p>
-        </div>
-      )}
+        )}
 
-      {!loading && !error && business && (
-        <div>
-          <header
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              marginBottom: "2rem",
-              borderBottom: "1px solid #e2e8f0",
-              paddingBottom: "1rem",
-            }}
-          >
-            {business.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={business.logoUrl}
-                alt={`Logotipo de ${business.name}`}
-                style={{
-                  width: "76px",
-                  height: "76px",
-                  borderRadius: "12px",
-                  objectFit: "cover",
-                  border: "1px solid #e2e8f0",
-                }}
-              />
-            ) : null}
-            <div>
-              <h1 style={{ fontSize: "2rem", margin: "0 0 0.5rem 0", color: "#1a202c" }}>
-                {business.name}
-              </h1>
-              <p style={{ color: "#718096", margin: 0 }}>Catálogo oficial de productos</p>
-            </div>
-          </header>
+        {!loading && error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
 
-          <section style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                flex: "1 1 250px",
-                padding: "0.5rem 1rem",
-                border: "1px solid #cbd5e0",
-                borderRadius: "6px",
-              }}
-            />
-
-            {categories.length > 0 && (
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  border: "1px solid #cbd5e0",
-                  borderRadius: "6px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </section>
-
-          {filteredProducts.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem 0", color: "#718096" }}>
-              <p>No se encontraron productos disponibles en esta categoría o búsqueda.</p>
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: "1.5rem",
-              }}
-            >
-              {filteredProducts.map((prod) => (
-                <ProductCard
-                  key={prod.id}
-                  product={prod}
-                  onSelectDetail={(p) => setSelectedProduct(p)}
-                  onAddToCart={(p) => addItem(p, 1)}
+        {!loading && !error && business && (
+          <>
+            <header className={styles.businessHeader}>
+              {business.logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className={styles.businessLogo}
+                  src={business.logoUrl}
+                  alt={`Logotipo de ${business.name}`}
                 />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+              )}
+
+              <div>
+                <p className={styles.eyebrow}>Catálogo del emprendimiento</p>
+
+                <h1>{business.name}</h1>
+
+                <p>Explora nuestros productos disponibles.</p>
+              </div>
+            </header>
+
+            <section className={styles.catalogSection} aria-label="Productos disponibles">
+              <div className={styles.sectionHeading}>
+                <div>
+                  <h2>Productos disponibles</h2>
+
+                  <p>
+                    {filteredProducts.length}{" "}
+                    {filteredProducts.length === 1
+                      ? "producto encontrado"
+                      : "productos encontrados"}
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.filters}>
+                <label className={styles.searchField} htmlFor="catalog-search">
+                  Buscar productos
+                  <input
+                    id="catalog-search"
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Nombre o descripción"
+                  />
+                </label>
+
+                <label className={styles.categoryField} htmlFor="catalog-category">
+                  Categoría
+                  <select
+                    id="catalog-category"
+                    value={selectedCategory}
+                    onChange={(event) => setSelectedCategory(event.target.value)}
+                  >
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              {filteredProducts.length === 0 ? (
+                <p className={styles.message}>
+                  No se encontraron productos disponibles con estos filtros.
+                </p>
+              ) : (
+                <div className={styles.productGrid}>
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelectDetail={setSelectedProduct}
+                      onAddToCart={(selected) => addItem(selected, 1)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
 
       {selectedProduct && (
         <ProductDetailModal
+          key={selectedProduct.id}
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
-          onAddToCart={(p, q) => addItem(p, q)}
+          onAddToCart={addItem}
         />
       )}
 
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {isCartOpen && <CartDrawer onClose={() => setIsCartOpen(false)} />}
     </main>
   );
 }

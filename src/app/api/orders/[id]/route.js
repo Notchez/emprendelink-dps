@@ -1,12 +1,16 @@
-import { orderDataService } from "@/services/orderDataService";
+import { orderFirestoreService } from "@/services/orderFirestoreService";
 import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { requireSession, requireOrderAccess } from "@/lib/auth/server";
+
 export async function GET(request, context) {
   try {
     const session = await requireSession(request);
     const { id } = await context.params;
-    const order = orderDataService.getOrderById(id);
+
+    const order = await orderFirestoreService.getOrderById(id);
+
     await requireOrderAccess(session, order);
+
     return successResponse(order);
   } catch (error) {
     return errorResponse(
