@@ -1,0 +1,388 @@
+.page {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--el-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.heading h1 {
+    margin: 0 0 0.6rem;
+    color: var(--el-text);
+}
+
+.heading p:last-child {
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.primaryButton,
+.secondaryButton,
+.checkoutButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 43px;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 9px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font: inherit;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.primaryButton,
+.checkoutButton {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.primaryButton:hover,
+.checkoutButton:hover {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+.secondaryButton:hover {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.checkoutButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.contentGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 350px);
+    align-items: start;
+    gap: 1.25rem;
+}
+
+.productsPanel,
+.summaryPanel,
+.emptyState {
+    min-width: 0;
+    padding: 1.5rem;
+    border: 1px solid var(--el-border);
+    border-radius: 14px;
+    background: var(--el-surface);
+}
+
+.panelHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.panelHeading h2,
+.summaryPanel h2 {
+    margin: 0 0 0.5rem;
+    color: var(--el-text);
+    font-size: 1.35rem;
+}
+
+.panelHeading p {
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.clearButton,
+.removeButton {
+    padding: 0.4rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--el-danger);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clearButton:hover,
+.removeButton:hover {
+    text-decoration: underline;
+}
+
+.businessNotice {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+}
+
+.businessNotice span,
+.businessNotice p {
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.businessNotice strong {
+    color: var(--el-text);
+}
+
+.businessNotice a {
+    margin-top: 0.35rem;
+    color: var(--el-link);
+    font-weight: 600;
+}
+
+.productsList {
+    display: grid;
+}
+
+.product {
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.product:last-child {
+    border-bottom: 0;
+}
+
+.productVisual {
+    display: grid;
+    width: 105px;
+    height: 105px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+    font-size: 2rem;
+}
+
+.productVisual img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.productInfo {
+    min-width: 0;
+}
+
+.productInfo h3 {
+    margin: 0 0 0.5rem;
+    color: var(--el-text);
+    font-size: 1.1rem;
+    overflow-wrap: anywhere;
+}
+
+.productInfo p {
+    margin: 0 0 0.35rem;
+    color: var(--el-muted);
+}
+
+.productControls {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+}
+
+.productControls>strong {
+    color: var(--el-text);
+    white-space: nowrap;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.2rem;
+    border: 1px solid var(--el-border);
+    border-radius: 9px;
+    background: var(--el-subtle-bg);
+}
+
+.quantityControls button {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border: 0;
+    border-radius: 7px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.quantityControls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantityControls span {
+    min-width: 2ch;
+    color: var(--el-text);
+    font-weight: 700;
+    text-align: center;
+}
+
+.summaryPanel {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.summaryPanel h2 {
+    margin: 0;
+}
+
+.summaryRow,
+.summaryTotal {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.summaryRow {
+    color: var(--el-muted);
+}
+
+.summaryTotal {
+    padding-top: 1rem;
+    border-top: 1px solid var(--el-border);
+    color: var(--el-text);
+    font-size: 1.15rem;
+}
+
+.priceNotice {
+    margin: 0;
+    color: var(--el-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.paymentBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+}
+
+.paymentIcon {
+    font-size: 1.5rem;
+}
+
+.paymentBox strong {
+    color: var(--el-text);
+}
+
+.paymentBox p {
+    margin: 0.4rem 0 0;
+    color: var(--el-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.checkoutButton {
+    width: 100%;
+}
+
+.backLink {
+    color: var(--el-link);
+    text-align: center;
+    text-decoration: none;
+}
+
+.backLink:hover {
+    text-decoration: underline;
+}
+
+.emptyState {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 3.5rem;
+}
+
+.emptyState h2 {
+    margin: 0;
+    color: var(--el-text);
+}
+
+.emptyState p {
+    max-width: 440px;
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.error {
+    margin: 0;
+    padding: 0.8rem;
+    border-radius: 9px;
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
+}
+
+@media (max-width: 990px) {
+    .contentGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 580px) {
+
+    .productsPanel,
+    .summaryPanel {
+        padding: 1rem;
+    }
+
+    .product {
+        grid-template-columns: 75px minmax(0, 1fr);
+    }
+
+    .productVisual {
+        width: 75px;
+        height: 75px;
+    }
+
+    .productControls {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

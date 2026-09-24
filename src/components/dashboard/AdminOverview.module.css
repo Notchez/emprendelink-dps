@@ -31,7 +31,8 @@
   color: var(--el-muted, #64748b);
 }
 
-.refreshButton {
+.refreshButton,
+.primaryButton {
   padding: 0.65rem 0.9rem;
   border: 1px solid var(--el-border, #cbd5e1);
   border-radius: 8px;
@@ -42,17 +43,33 @@
   cursor: pointer;
 }
 
-.refreshButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.primaryButton {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
 }
 
-.error {
+.refreshButton:disabled,
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.error,
+.success {
   margin: 0;
   padding: 0.75rem 1rem;
   border-radius: 8px;
+}
+
+.error {
   background: var(--el-danger-bg, #fef2f2);
   color: var(--el-danger, #b91c1c);
+}
+
+.success {
+  background: var(--el-success-bg, #dcfce7);
+  color: var(--el-success, #166534);
 }
 
 .actions,
@@ -66,9 +83,13 @@
 .actionGrid,
 .businessGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.actionGrid {
+  grid-template-columns: repeat(auto-fit,
+      minmax(min(100%, 220px), 1fr));
 }
 
 .actionCard {
@@ -86,18 +107,51 @@
 }
 
 .businessCard {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+  gap: 1.5rem;
+  padding: 1.25rem;
   border: 1px solid var(--el-border, #d1d5db);
   border-radius: 10px;
 }
 
-.businessCard h3,
-.businessCard p {
-  margin: 0 0 0.35rem;
+.businessInfo {
+  min-width: 0;
+}
+
+.businessInfo h3 {
+  margin: 0 0 0.75rem;
+}
+
+.businessInfo p {
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.businessInfo a {
+  color: var(--el-link, #93c5fd);
+}
+
+.businessControls {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.businessControls label {
+  font-weight: 700;
+}
+
+.businessControls select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--el-border, #506077);
+  border-radius: 8px;
+  background: var(--el-surface, #222c3b);
+  color: var(--el-text, #eef2f8);
+  font: inherit;
 }
 
 .active,
@@ -117,4 +171,14 @@
 .inactive {
   background: var(--el-subtle-bg, #f1f5f9);
   color: var(--el-muted, #64748b);
+}
+
+@media (max-width: 760px) {
+  .businessCard {
+    grid-template-columns: 1fr;
+  }
+
+  .businessControls {
+    width: 100%;
+  }
 }

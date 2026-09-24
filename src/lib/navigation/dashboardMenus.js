@@ -8,6 +8,12 @@ export const adminMenuItems = [
   },
   {
     type: "item",
+    text: "Usuarios",
+    href: "/admin/usuarios",
+    icon: "bi bi-people",
+  },
+  {
+    type: "item",
     text: "Planes",
     href: "/admin/planes",
     icon: "bi bi-card-checklist",
@@ -17,6 +23,18 @@ export const adminMenuItems = [
     text: "Pedidos",
     href: "/orders",
     icon: "bi bi-bag-check",
+  },
+  {
+    type: "item",
+    text: "Ventas",
+    href: "/admin/ventas",
+    icon: "bi bi-graph-up-arrow",
+  },
+  {
+    type: "item",
+    text: "Comisiones",
+    href: "/admin/comisiones",
+    icon: "bi bi-cash-coin",
   },
 ];
 
@@ -71,5 +89,39 @@ export const entrepreneurMenuItems = [
     text: "Estado de cuenta",
     href: "/emprendedor/estado-cuenta",
     icon: "bi bi-receipt",
+  },
+];
+
+export const customerMenuItems = [
+  { type: "header", text: "MI CUENTA" },
+  {
+    type: "item",
+    text: "Mi inicio",
+    href: "/cliente",
+    icon: "bi bi-house-door",
+  },
+  {
+    type: "item",
+    text: "Explorar negocios",
+    href: "/",
+    icon: "bi bi-shop",
+  },
+  {
+    type: "item",
+    text: "Revisar mi compra",
+    href: "/cliente/carrito",
+    icon: "bi bi-cart3",
+  },
+  {
+    type: "item",
+    text: "Mis pedidos",
+    href: "/cliente#mis-pedidos",
+    icon: "bi bi-bag-check",
+  },
+  {
+    type: "item",
+    text: "Mis datos",
+    href: "/cliente#mis-datos",
+    icon: "bi bi-person-circle",
   },
 ];
