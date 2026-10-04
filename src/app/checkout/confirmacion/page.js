@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { orderService } from "@/services/orderService";
+
 import { formatOrderDate, formatOrderMoney, getOrderStatusLabel } from "@/utils/orderUtils";
 
 import styles from "../Checkout.module.css";
@@ -29,22 +30,22 @@ function Confirmation() {
     orderService
       .getOrder(id)
       .then((order) => {
-        if (active) {
-          setResult({
-            id,
-            order,
-            error: "",
-          });
-        }
+        if (!active) return;
+
+        setResult({
+          id,
+          order,
+          error: "",
+        });
       })
       .catch((error) => {
-        if (active) {
-          setResult({
-            id,
-            order: null,
-            error: error instanceof Error ? error.message : "No se pudo consultar tu pedido.",
-          });
-        }
+        if (!active) return;
+
+        setResult({
+          id,
+          order: null,
+          error: error instanceof Error ? error.message : "No se pudo consultar tu pedido.",
+        });
       });
 
     return () => {
@@ -60,9 +61,9 @@ function Confirmation() {
         <section className={styles.emptyState}>
           <h1>No hay un pedido para consultar</h1>
 
-          <p>Cuando confirmes una compra, podrás consultar su información aquí.</p>
+          <p>Cuando confirmes una compra podrás consultar su información aquí.</p>
 
-          <Link className={styles.primaryButton} href="/cliente#mis-pedidos">
+          <Link className={styles.primaryButton} href="/cliente/pedidos">
             Ver mis pedidos
           </Link>
         </section>
@@ -88,7 +89,7 @@ function Confirmation() {
             {current.error || "El pedido no está disponible."}
           </p>
 
-          <Link className={styles.primaryButton} href="/cliente#mis-pedidos">
+          <Link className={styles.primaryButton} href="/cliente/pedidos">
             Volver a mis pedidos
           </Link>
         </section>
@@ -112,10 +113,7 @@ function Confirmation() {
 
           <h1>¡Pedido recibido!</h1>
 
-          <p>
-            Tu pedido se registró correctamente y ya está disponible para que el emprendimiento
-            pueda gestionarlo.
-          </p>
+          <p>Tu pedido se registró correctamente y ya fue enviado al emprendimiento.</p>
 
           <span className={styles.orderNumber} title={order.id}>
             {formatOrderId(order.id)}
@@ -127,7 +125,7 @@ function Confirmation() {
         <div className={styles.successNotice}>
           <strong>Estado actual: {getOrderStatusLabel(order.status)}</strong>
 
-          <p>Puedes consultar los cambios de estado desde el detalle de tu pedido.</p>
+          <p>Puedes seguir el avance desde Mis pedidos.</p>
         </div>
 
         <div className={styles.confirmationGrid}>
@@ -138,7 +136,7 @@ function Confirmation() {
               {order.items?.map((item, index) => (
                 <li key={`${item.productId}-${index}`}>
                   <span>
-                    {item.productName} × {item.quantity}
+                    {item.quantity} × {item.productName}
                   </span>
 
                   <strong>{formatOrderMoney(item.lineTotal)}</strong>
@@ -180,36 +178,31 @@ function Confirmation() {
 
             <strong>💵 Pago contra entrega</strong>
 
-            <p>
-              Pagarás al recibir tu pedido. No se realizó ningún cobro electrónico durante esta
-              compra.
-            </p>
+            <p>Pagarás al recibir tu pedido.</p>
           </section>
 
           <section className={styles.confirmationSection}>
             <h2>Seguimiento</h2>
 
-            <p>
-              El emprendimiento actualizará el estado de tu pedido durante su preparación y entrega.
-            </p>
+            <p>El emprendimiento actualizará el estado mientras prepara tu pedido.</p>
 
             <Link className={styles.primaryButton} href={detailHref}>
-              Ver seguimiento del pedido
+              Ver seguimiento
             </Link>
           </section>
         </div>
 
         <div className={styles.confirmationActions}>
           <Link className={styles.primaryButton} href={detailHref}>
-            Ver detalle del pedido
+            Ver mi pedido
           </Link>
 
-          <Link className={styles.secondaryButton} href="/cliente#mis-pedidos">
-            Ver mis pedidos
+          <Link className={styles.secondaryButton} href="/cliente/pedidos">
+            Mis pedidos
           </Link>
 
           <Link className={styles.secondaryButton} href="/">
-            Explorar más negocios
+            Seguir comprando
           </Link>
         </div>
       </section>

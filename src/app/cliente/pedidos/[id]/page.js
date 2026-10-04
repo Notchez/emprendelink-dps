@@ -1,5 +1,7 @@
-import { OrderDetailView } from "@/components/orders/OrderDetailView";
-export default async function Page({ params }) {
+import { CustomerOrderDetail } from "@/components/customer/CustomerOrderDetail";
+
+export default async function CustomerOrderPage({ params }) {
   const { id } = await params;
-  return <OrderDetailView orderId={id} readOnly />;
+
+  return <CustomerOrderDetail orderId={id} />;
 }

@@ -1,246 +1,20 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { use, useEffect, useMemo, useState } from "react";
 
-import { AccountActions } from "@/components/auth/AccountActions";
+import Link from "next/link";
+
+import { CustomerShell } from "@/components/customer/CustomerShell";
+
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductDetailModal } from "@/components/catalog/ProductDetailModal";
+import CartDrawer from "@/components/catalog/CartDrawer";
+
 import { catalogService } from "@/services/catalogService";
+
 import { useCart } from "@/hooks/useCart";
 
 import styles from "./Catalog.module.css";
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Number(value || 0));
-}
-
-function ProductImage({ product, className }) {
-  if (!product.imageUrl) {
-    return (
-      <div className={`${className} ${styles.imagePlaceholder}`}>
-        <span>Sin imagen disponible</span>
-      </div>
-    );
-  }
-
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img className={className} src={product.imageUrl} alt={product.name} loading="lazy" />
-  );
-}
-
-function ProductCard({ product, onSelectDetail, onAddToCart }) {
-  return (
-    <article className={styles.productCard}>
-      <ProductImage product={product} className={styles.productImage} />
-
-      <div className={styles.productContent}>
-        <div>
-          <h3>{product.name}</h3>
-
-          <p className={styles.description}>
-            {product.description || "Sin descripción disponible."}
-          </p>
-        </div>
-
-        <div className={styles.productFooter}>
-          <strong className={styles.price}>{formatMoney(product.price)}</strong>
-
-          <div className={styles.productActions}>
-            <button
-              className={styles.secondaryButton}
-              type="button"
-              onClick={() => onSelectDetail(product)}
-            >
-              Ver detalle
-            </button>
-
-            <button
-              className={styles.primaryButton}
-              type="button"
-              onClick={() => onAddToCart(product)}
-            >
-              Agregar
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function ProductDetailModal({ product, onClose, onAddToCart }) {
-  const [quantity, setQuantity] = useState(1);
-
-  function handleAdd() {
-    const added = onAddToCart(product, quantity);
-
-    if (added !== false) {
-      onClose();
-    }
-  }
-
-  return (
-    <div className={styles.overlay}>
-      <section
-        className={styles.productModal}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="product-detail-title"
-      >
-        <div className={styles.modalHeader}>
-          <h2 id="product-detail-title">{product.name}</h2>
-
-          <button
-            className={styles.iconButton}
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar detalle"
-          >
-            ✕
-          </button>
-        </div>
-
-        <ProductImage product={product} className={styles.modalImage} />
-
-        <p className={styles.description}>{product.description || "Sin descripción disponible."}</p>
-
-        <p className={styles.modalPrice}>{formatMoney(product.price)}</p>
-
-        <label className={styles.quantityField} htmlFor="product-quantity">
-          Cantidad
-          <input
-            id="product-quantity"
-            type="number"
-            min="1"
-            max="999"
-            value={quantity}
-            onChange={(event) => {
-              const nextValue = Number(event.target.value);
-
-              setQuantity(
-                Number.isFinite(nextValue) ? Math.max(1, Math.min(999, Math.trunc(nextValue))) : 1
-              );
-            }}
-          />
-        </label>
-
-        <div className={styles.modalActions}>
-          <button className={styles.secondaryButton} type="button" onClick={onClose}>
-            Cerrar
-          </button>
-
-          <button className={styles.primaryButton} type="button" onClick={handleAdd}>
-            Agregar al carrito
-          </button>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function CartDrawer({ onClose }) {
-  const router = useRouter();
-
-  const { items, subtotal, updateQuantity, removeItem, clearCart } = useCart();
-
-  return (
-    <div className={styles.overlay}>
-      <aside
-        className={styles.cartDrawer}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cart-title"
-      >
-        <div className={styles.drawerHeader}>
-          <h2 id="cart-title">Tu carrito</h2>
-
-          <button
-            className={styles.iconButton}
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar carrito"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className={styles.cartItems}>
-          {items.length === 0 ? (
-            <p className={styles.emptyMessage}>Tu carrito está vacío.</p>
-          ) : (
-            items.map((item) => (
-              <article className={styles.cartItem} key={item.id}>
-                <div>
-                  <strong>{item.name}</strong>
-
-                  <p>{formatMoney(item.price)} por unidad</p>
-                </div>
-
-                <div className={styles.cartControls}>
-                  <button
-                    type="button"
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    aria-label={`Quitar una unidad de ${item.name}`}
-                  >
-                    −
-                  </button>
-
-                  <span>{item.quantity}</span>
-
-                  <button
-                    type="button"
-                    onClick={() => updateQuantity(item.id, Math.min(999, item.quantity + 1))}
-                    aria-label={`Agregar una unidad de ${item.name}`}
-                  >
-                    +
-                  </button>
-
-                  <button
-                    type="button"
-                    className={styles.removeButton}
-                    onClick={() => removeItem(item.id)}
-                    aria-label={`Eliminar ${item.name} del carrito`}
-                  >
-                    ✕
-                  </button>
-                </div>
-              </article>
-            ))
-          )}
-        </div>
-
-        {items.length > 0 && (
-          <div className={styles.cartFooter}>
-            <div className={styles.cartSubtotal}>
-              <strong>Subtotal</strong>
-
-              <strong>{formatMoney(subtotal)}</strong>
-            </div>
-
-            <button
-              className={styles.checkoutButton}
-              type="button"
-              onClick={() => {
-                onClose();
-                router.push("/checkout");
-              }}
-            >
-              Continuar al checkout
-            </button>
-
-            <button className={styles.clearButton} type="button" onClick={clearCart}>
-              Vaciar carrito
-            </button>
-          </div>
-        )}
-      </aside>
-    </div>
-  );
-}
 
 export default function CatalogPage({ params }) {
   const { slug } = use(params);
@@ -251,48 +25,43 @@ export default function CatalogPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("cat_all");
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
 
-    async function loadCatalog() {
-      try {
-        const result = await catalogService.getCatalogBySlug(slug);
-
+    catalogService
+      .getCatalogBySlug(slug)
+      .then((result) => {
         if (!active) return;
 
         if (!result.success || !result.data) {
+          setCatalog(null);
           setError(result.error?.message || "No se pudo cargar el catálogo.");
 
-          setCatalog(null);
           return;
         }
 
         setCatalog(result.data);
         setError("");
-      } catch (caughtError) {
-        if (active) {
-          setError(
-            caughtError instanceof Error ? caughtError.message : "No se pudo cargar el catálogo."
-          );
+      })
+      .catch((failure) => {
+        if (!active) return;
 
-          setCatalog(null);
-        }
-      } finally {
+        setCatalog(null);
+
+        setError(failure instanceof Error ? failure.message : "No se pudo cargar el catálogo.");
+      })
+      .finally(() => {
         if (active) {
           setLoading(false);
         }
-      }
-    }
-
-    if (slug) {
-      void loadCatalog();
-    }
+      });
 
     return () => {
       active = false;
@@ -303,147 +72,168 @@ export default function CatalogPage({ params }) {
   const categories = catalog?.categories || [];
   const products = catalog?.products || [];
 
-  const filteredProducts = products.filter((product) => {
-    if (!product.active) return false;
+  const filteredProducts = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-    const matchesCategory =
-      selectedCategory === "cat_all" || product.categoryId === selectedCategory;
+    return products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === "cat_all" || product.categoryId === selectedCategory;
 
-    const query = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        String(product.name || "")
+          .toLowerCase()
+          .includes(query) ||
+        String(product.description || "")
+          .toLowerCase()
+          .includes(query);
 
-    const matchesSearch =
-      !query ||
-      product.name.toLowerCase().includes(query) ||
-      String(product.description || "")
-        .toLowerCase()
-        .includes(query);
+      return product.active && matchesCategory && matchesSearch;
+    });
+  }, [products, search, selectedCategory]);
 
-    return matchesCategory && matchesSearch;
-  });
+  function addProduct(product, quantity = 1) {
+    return addItem(
+      {
+        id: product.id,
+        businessId: product.businessId,
+        name: product.name,
+        description: product.description || "",
+        price: product.price,
+        imageUrl: product.imageUrl || null,
+      },
+      quantity
+    );
+  }
+
+  if (loading) {
+    return (
+      <CustomerShell>
+        <div className={styles.message}>Cargando catálogo...</div>
+      </CustomerShell>
+    );
+  }
+
+  if (error || !business) {
+    return (
+      <CustomerShell>
+        <div className={styles.error}>
+          <h1>Catálogo no disponible</h1>
+
+          <p>{error || "No pudimos encontrar este negocio."}</p>
+
+          <Link href="/">Volver a negocios</Link>
+        </div>
+      </CustomerShell>
+    );
+  }
 
   return (
-    <main className={styles.catalogPage}>
-      <div className={styles.container}>
-        <nav className={styles.topbar} aria-label="Navegación del catálogo">
-          <Link className={styles.brand} href="/">
-            <strong>Emprende</strong>Link
-          </Link>
+    <CustomerShell>
+      <div className={styles.page}>
+        <Link className={styles.backLink} href="/">
+          <i className="bi bi-chevron-left" aria-hidden="true"></i>
+          Negocios
+        </Link>
 
-          <div className={styles.topbarActions}>
-            <AccountActions />
-
-            <button className={styles.cartButton} type="button" onClick={() => setIsCartOpen(true)}>
-              🛒 Carrito ({totalItemsCount})
-            </button>
+        <header className={styles.businessHeader}>
+          <div className={styles.businessLogo}>
+            {business.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={business.logoUrl} alt={`Logotipo de ${business.name}`} />
+            ) : (
+              <i className="bi bi-shop" aria-hidden="true"></i>
+            )}
           </div>
-        </nav>
 
-        {loading && (
-          <p className={styles.message} role="status">
-            Cargando catálogo del emprendimiento...
-          </p>
+          <div className={styles.businessInfo}>
+            <p className={styles.eyebrow}>EMPRENDIMIENTO</p>
+
+            <h1>{business.name}</h1>
+
+            <p>Explora los productos disponibles.</p>
+          </div>
+
+          <button className={styles.cartButton} type="button" onClick={() => setCartOpen(true)}>
+            <i className="bi bi-cart3" aria-hidden="true"></i>
+
+            <span>Carrito</span>
+
+            {totalItemsCount > 0 && <strong>{totalItemsCount}</strong>}
+          </button>
+        </header>
+
+        <label className={styles.searchBox}>
+          <i className="bi bi-search" aria-hidden="true"></i>
+
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Buscar productos..."
+            aria-label="Buscar productos"
+          />
+        </label>
+
+        {categories.length > 0 && (
+          <div className={styles.categories} aria-label="Categorías">
+            {categories.map((category) => (
+              <button
+                className={selectedCategory === category.id ? styles.activeCategory : ""}
+                type="button"
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
         )}
 
-        {!loading && error && (
-          <p className={styles.error} role="alert">
-            {error}
-          </p>
-        )}
+        <section className={styles.productsSection}>
+          <div className={styles.sectionHeading}>
+            <h2>Productos</h2>
 
-        {!loading && !error && business && (
-          <>
-            <header className={styles.businessHeader}>
-              {business.logoUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  className={styles.businessLogo}
-                  src={business.logoUrl}
-                  alt={`Logotipo de ${business.name}`}
+            <span>
+              {filteredProducts.length} {filteredProducts.length === 1 ? "producto" : "productos"}
+            </span>
+          </div>
+
+          {filteredProducts.length === 0 ? (
+            <div className={styles.empty}>
+              <i className="bi bi-search" aria-hidden="true"></i>
+
+              <p>No encontramos productos con estos filtros.</p>
+            </div>
+          ) : (
+            <div className={styles.productsGrid}>
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onOpen={setSelectedProduct}
+                  onAdd={addProduct}
                 />
-              )}
+              ))}
+            </div>
+          )}
+        </section>
 
-              <div>
-                <p className={styles.eyebrow}>Catálogo del emprendimiento</p>
-
-                <h1>{business.name}</h1>
-
-                <p>Explora nuestros productos disponibles.</p>
-              </div>
-            </header>
-
-            <section className={styles.catalogSection} aria-label="Productos disponibles">
-              <div className={styles.sectionHeading}>
-                <div>
-                  <h2>Productos disponibles</h2>
-
-                  <p>
-                    {filteredProducts.length}{" "}
-                    {filteredProducts.length === 1
-                      ? "producto encontrado"
-                      : "productos encontrados"}
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles.filters}>
-                <label className={styles.searchField} htmlFor="catalog-search">
-                  Buscar productos
-                  <input
-                    id="catalog-search"
-                    type="search"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Nombre o descripción"
-                  />
-                </label>
-
-                <label className={styles.categoryField} htmlFor="catalog-category">
-                  Categoría
-                  <select
-                    id="catalog-category"
-                    value={selectedCategory}
-                    onChange={(event) => setSelectedCategory(event.target.value)}
-                  >
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              {filteredProducts.length === 0 ? (
-                <p className={styles.message}>
-                  No se encontraron productos disponibles con estos filtros.
-                </p>
-              ) : (
-                <div className={styles.productGrid}>
-                  {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onSelectDetail={setSelectedProduct}
-                      onAddToCart={(selected) => addItem(selected, 1)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          </>
+        {selectedProduct && (
+          <ProductDetailModal
+            key={selectedProduct.id}
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onAdd={addProduct}
+          />
         )}
-      </div>
 
-      {selectedProduct && (
-        <ProductDetailModal
-          key={selectedProduct.id}
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onAddToCart={addItem}
+        <CartDrawer
+          isOpen={cartOpen}
+          onClose={() => setCartOpen(false)}
+          businessName={business.name}
         />
-      )}
-
-      {isCartOpen && <CartDrawer onClose={() => setIsCartOpen(false)} />}
-    </main>
+      </div>
+    </CustomerShell>
   );
 }
