@@ -1,11 +1,12 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { CustomerShell } from "@/components/customer/CustomerShell";
+
 import { ROLES } from "@/lib/constants/roles";
 
 export default function CheckoutLayout({ children }) {
   return (
     <ProtectedRoute allowedRoles={[ROLES.CUSTOMER]}>
-      <DashboardShell section="customer">{children}</DashboardShell>
+      <CustomerShell>{children}</CustomerShell>
     </ProtectedRoute>
   );
 }

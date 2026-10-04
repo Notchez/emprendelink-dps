@@ -1,0 +1,222 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgb(0 0 0 / 58%);
+}
+
+.drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 430px);
+    border-left: 1px solid var(--el-border);
+    background: var(--el-surface);
+    color: var(--el-text);
+    box-shadow: -12px 0 40px rgb(0 0 0 / 20%);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.header h2 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.3rem;
+}
+
+.header p {
+    margin: 0.3rem 0 0;
+    color: var(--el-muted);
+    font-size: 0.82rem;
+}
+
+.closeButton {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    place-items: center;
+    border: 1px solid var(--el-border);
+    border-radius: 50%;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    cursor: pointer;
+}
+
+.items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1.2rem;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.itemImage {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+}
+
+.itemImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.itemInfo {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.itemInfo strong {
+    overflow: hidden;
+    color: var(--el-text);
+    font-size: 0.92rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.itemInfo span {
+    color: var(--el-muted);
+    font-size: 0.82rem;
+}
+
+.itemInfo button {
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--el-danger);
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.quantity button {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid var(--el-border);
+    border-radius: 50%;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    cursor: pointer;
+}
+
+.quantity span {
+    min-width: 18px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    padding: 4rem 1rem;
+    color: var(--el-muted);
+    text-align: center;
+}
+
+.empty i {
+    font-size: 3rem;
+}
+
+.empty p {
+    margin: 0;
+}
+
+.footer {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1.2rem;
+    border-top: 1px solid var(--el-border);
+    background: var(--el-surface);
+}
+
+.subtotal {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+    color: var(--el-text);
+    font-size: 1.1rem;
+}
+
+.viewCartButton,
+.checkoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    border-radius: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.viewCartButton {
+    border: 1px solid var(--el-border);
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.checkoutButton {
+    border: 0;
+    background: #2563eb;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.checkoutButton:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 480px) {
+    .drawer {
+        width: 100%;
+        border-left: 0;
+    }
+
+    .item {
+        grid-template-columns: 56px minmax(0, 1fr);
+    }
+
+    .itemImage {
+        width: 56px;
+        height: 56px;
+    }
+
+    .quantity {
+        grid-column: 2;
+    }
+}

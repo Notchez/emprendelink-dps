@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run lint && npm run build"
+    "check": "npm run lint && npm run build",
+    "test": "tsx --conditions=react-server --tsconfig jsconfig.json --test tests/account-access.test.mjs"
   },
   "dependencies": {
     "@adminlte/react": "0.6.1",
@@ -23,12 +24,14 @@
     "firebase-admin": "^14.5.0",
     "next": "16.3.3",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "^9.0.0",
     "eslint-config-next": "16.3.3",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "tsx": "^4.23.15"
   },
   "allowScripts": {
     "@firebase/util@1.15.3": true,

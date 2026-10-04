@@ -1,0 +1,156 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 65%);
+}
+
+.modal {
+    position: relative;
+    width: min(100%, 560px);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    border: 1px solid var(--el-border);
+    border-radius: 22px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    box-shadow: 0 25px 70px rgb(0 0 0 / 30%);
+}
+
+.closeButton {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    z-index: 2;
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 65%);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.image {
+    display: grid;
+    width: 100%;
+    height: 280px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 22px 22px 0 0;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+    font-size: 3rem;
+}
+
+.image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.body {
+    display: grid;
+    gap: 1rem;
+    padding: 1.4rem;
+}
+
+.body h2 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.5rem;
+}
+
+.body p {
+    margin: 0;
+    color: var(--el-muted);
+    line-height: 1.55;
+}
+
+.price {
+    color: var(--el-text);
+    font-size: 1.35rem;
+}
+
+.quantityRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--el-border);
+}
+
+.quantityRow>span {
+    color: var(--el-text);
+    font-weight: 700;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.quantity button {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 1px solid var(--el-border);
+    border-radius: 50%;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.quantity strong {
+    min-width: 24px;
+    text-align: center;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 50px;
+    padding: 0.8rem 1rem;
+    border: 0;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+    .overlay {
+        padding: 0;
+    }
+
+    .modal {
+        width: 100%;
+        max-height: 92vh;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 22px 22px 0 0;
+    }
+
+    .image {
+        height: 235px;
+    }
+}

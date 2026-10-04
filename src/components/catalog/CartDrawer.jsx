@@ -1,145 +1,139 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/hooks/useCart';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function CartDrawer({ isOpen, onClose }) {
+import { useCart } from "@/hooks/useCart";
+
+import styles from "./CartDrawer.module.css";
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("es-SV", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(value) || 0);
+}
+
+export default function CartDrawer({ isOpen, onClose, businessName }) {
   const router = useRouter();
-  const { items, subtotal, updateQuantity, removeItem, clearCart } = useCart();
 
-  if (!isOpen) return null;
+  const { items, subtotal, updateQuantity, removeItem } = useCart();
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%',
-        maxWidth: '380px',
-        backgroundColor: '#ffffff',
-        boxShadow: '-2px 0 8px rgba(0,0,0,0.15)',
-        zIndex: 60,
-        display: 'flex',
-        flexDirection: 'column',
+      className={styles.overlay}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
       }}
     >
-      <div
-        style={{
-          padding: '1rem',
-          borderBottom: '1px solid #e2e8f0',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
+      <aside
+        className={styles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-drawer-title"
       >
-        <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Tu Carrito</h2>
-        <button
-          type="button"
-          onClick={onClose}
-          style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
-        >
-          ✕
-        </button>
-      </div>
+        <header className={styles.header}>
+          <div>
+            <h2 id="cart-drawer-title">Tu carrito</h2>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
-        {items.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#718096', marginTop: '2rem' }}>
-            El carrito está vacío.
-          </p>
-        ) : (
-          items.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '1rem',
-                paddingBottom: '0.75rem',
-                borderBottom: '1px solid #edf2f7',
+            {businessName && <p>{businessName}</p>}
+          </div>
+
+          <button
+            className={styles.closeButton}
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar carrito"
+          >
+            <i className="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div className={styles.items}>
+          {items.length === 0 ? (
+            <div className={styles.empty}>
+              <i className="bi bi-cart3" aria-hidden="true"></i>
+
+              <p>Tu carrito está vacío.</p>
+            </div>
+          ) : (
+            items.map((item) => (
+              <article className={styles.item} key={item.id}>
+                <div className={styles.itemImage}>
+                  {item.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.imageUrl} alt={item.name} />
+                  ) : (
+                    <i className="bi bi-image" aria-hidden="true"></i>
+                  )}
+                </div>
+
+                <div className={styles.itemInfo}>
+                  <strong>{item.name}</strong>
+
+                  <span>{formatMoney(item.price)}</span>
+
+                  <button type="button" onClick={() => removeItem(item.id)}>
+                    Eliminar
+                  </button>
+                </div>
+
+                <div className={styles.quantity}>
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    aria-label={`Restar ${item.name}`}
+                  >
+                    −
+                  </button>
+
+                  <span>{item.quantity}</span>
+
+                  <button
+                    type="button"
+                    disabled={item.quantity >= 999}
+                    onClick={() => updateQuantity(item.id, Math.min(999, item.quantity + 1))}
+                    aria-label={`Agregar ${item.name}`}
+                  >
+                    +
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <footer className={styles.footer}>
+            <div className={styles.subtotal}>
+              <span>Subtotal</span>
+
+              <strong>{formatMoney(subtotal)}</strong>
+            </div>
+
+            <Link className={styles.viewCartButton} href="/carrito" onClick={onClose}>
+              Ver carrito
+            </Link>
+
+            <button
+              className={styles.checkoutButton}
+              type="button"
+              onClick={() => {
+                onClose();
+                router.push("/checkout");
               }}
             >
-              <div>
-                <strong style={{ display: 'block', fontSize: '0.95rem' }}>{item.name}</strong>
-                <span style={{ fontSize: '0.85rem', color: '#4a5568' }}>
-                  ${Number(item.price).toFixed(2)} c/u
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <button
-                  type="button"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  style={{ padding: '0.2rem 0.5rem', background: '#edf2f7', border: 'none', cursor: 'pointer' }}
-                >
-                  -
-                </button>
-                <span style={{ minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  style={{ padding: '0.2rem 0.5rem', background: '#edf2f7', border: 'none', cursor: 'pointer' }}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.id)}
-                  style={{ marginLeft: '0.5rem', color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))
+              Continuar al checkout
+            </button>
+          </footer>
         )}
-      </div>
-
-      {items.length > 0 && (
-        <div style={{ padding: '1rem', borderTop: '1px solid #e2e8f0', backgroundColor: '#f7fafc' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <strong>Subtotal:</strong>
-            <strong style={{ color: '#2b6cb0', fontSize: '1.2rem' }}>${subtotal.toFixed(2)}</strong>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              router.push('/checkout');
-            }}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              backgroundColor: '#38a169',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Continuar al Checkout
-          </button>
-          <button
-            type="button"
-            onClick={clearCart}
-            style={{
-              width: '100%',
-              padding: '0.4rem',
-              background: 'transparent',
-              border: 'none',
-              color: '#718096',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-            }}
-          >
-            Vaciar Carrito
-          </button>
-        </div>
-      )}
+      </aside>
     </div>
   );
 }
