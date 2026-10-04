@@ -39,7 +39,7 @@ export default function HomePage() {
     };
   }, []);
 
-  const businesses = result?.businesses || [];
+  const businesses = useMemo(() => result?.businesses ?? [], [result?.businesses]);
 
   const filteredBusinesses = useMemo(() => {
     const query = search.trim().toLowerCase();

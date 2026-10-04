@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/context/AuthContext";
+
 import { orderService } from "@/services/orderService";
 
 import styles from "./Checkout.module.css";
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("es-SV", {
     style: "currency",
     currency: "USD",
   }).format(Number(value || 0));
@@ -88,22 +89,23 @@ function CheckoutForm({ user }) {
     <div className={styles.page}>
       <header className={styles.heading}>
         <div>
-          <p className={styles.eyebrow}>Finalizar compra</p>
+          <p className={styles.eyebrow}>FINALIZAR COMPRA</p>
 
           <h1>Confirmar pedido</h1>
 
           <p>Revisa tu compra y confirma dónde deseas recibirla.</p>
         </div>
 
-        <Link className={styles.secondaryButton} href="/cliente/carrito">
-          ← Volver al carrito
+        <Link className={styles.secondaryButton} href="/carrito">
+          <i className="bi bi-chevron-left" aria-hidden="true"></i>
+          Volver al carrito
         </Link>
       </header>
 
       {items.length === 0 ? (
         <section className={styles.emptyState}>
           <div className={styles.emptyIcon} aria-hidden="true">
-            🛒
+            <i className="bi bi-cart3"></i>
           </div>
 
           <h2>Tu carrito está vacío</h2>
@@ -148,7 +150,7 @@ function CheckoutForm({ user }) {
                 </div>
               </div>
 
-              <Link className={styles.profileLink} href="/cliente#mis-datos">
+              <Link className={styles.profileLink} href="/cliente/perfil">
                 Editar mis datos personales →
               </Link>
 
@@ -167,9 +169,7 @@ function CheckoutForm({ user }) {
                   required
                 />
 
-                <small>
-                  Puedes utilizar una dirección diferente de la que tienes guardada en tu perfil.
-                </small>
+                <small>Puedes utilizar una dirección diferente de la guardada en tu perfil.</small>
               </div>
 
               <div className={styles.field}>
@@ -203,7 +203,7 @@ function CheckoutForm({ user }) {
 
               <div className={styles.paymentMethod}>
                 <span className={styles.paymentIcon} aria-hidden="true">
-                  💵
+                  <i className="bi bi-cash"></i>
                 </span>
 
                 <div>
@@ -234,7 +234,7 @@ function CheckoutForm({ user }) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.imageUrl} alt={item.name} />
                     ) : (
-                      <span aria-hidden="true">🛍️</span>
+                      <i className="bi bi-image" aria-hidden="true"></i>
                     )}
                   </div>
 
@@ -251,7 +251,7 @@ function CheckoutForm({ user }) {
               ))}
             </div>
 
-            <Link className={styles.editCartLink} href="/cliente/carrito">
+            <Link className={styles.editCartLink} href="/carrito">
               Modificar productos o cantidades →
             </Link>
 
@@ -274,7 +274,7 @@ function CheckoutForm({ user }) {
             </p>
 
             <div className={styles.paymentReminder}>
-              <span aria-hidden="true">✓</span>
+              <i className="bi bi-check-circle" aria-hidden="true"></i>
 
               <span>Pagarás contra entrega.</span>
             </div>

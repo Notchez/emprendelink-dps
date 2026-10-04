@@ -1,5 +1,8 @@
 export const adminMenuItems = [
-  { type: "header", text: "ADMINISTRACIÓN" },
+  {
+    type: "header",
+    text: "ADMINISTRACIÓN",
+  },
   {
     type: "item",
     text: "Panel administrativo",
@@ -39,7 +42,10 @@ export const adminMenuItems = [
 ];
 
 export const entrepreneurMenuItems = [
-  { type: "header", text: "MI EMPRENDIMIENTO" },
+  {
+    type: "header",
+    text: "MI EMPRENDIMIENTO",
+  },
   {
     type: "item",
     text: "Panel principal",
@@ -77,7 +83,10 @@ export const entrepreneurMenuItems = [
     href: "/orders",
     icon: "bi bi-bag-check",
   },
-  { type: "header", text: "ANÁLISIS" },
+  {
+    type: "header",
+    text: "ANÁLISIS",
+  },
   {
     type: "item",
     text: "Reportes",
@@ -89,39 +98,5 @@ export const entrepreneurMenuItems = [
     text: "Estado de cuenta",
     href: "/emprendedor/estado-cuenta",
     icon: "bi bi-receipt",
-  },
-];
-
-export const customerMenuItems = [
-  { type: "header", text: "MI CUENTA" },
-  {
-    type: "item",
-    text: "Mi inicio",
-    href: "/cliente",
-    icon: "bi bi-house-door",
-  },
-  {
-    type: "item",
-    text: "Explorar negocios",
-    href: "/",
-    icon: "bi bi-shop",
-  },
-  {
-    type: "item",
-    text: "Revisar mi compra",
-    href: "/cliente/carrito",
-    icon: "bi bi-cart3",
-  },
-  {
-    type: "item",
-    text: "Mis pedidos",
-    href: "/cliente#mis-pedidos",
-    icon: "bi bi-bag-check",
-  },
-  {
-    type: "item",
-    text: "Mis datos",
-    href: "/cliente#mis-datos",
-    icon: "bi bi-person-circle",
   },
 ];

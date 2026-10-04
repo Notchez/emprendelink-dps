@@ -70,7 +70,7 @@ export default function CatalogPage({ params }) {
 
   const business = catalog?.business;
   const categories = catalog?.categories || [];
-  const products = catalog?.products || [];
+  const products = useMemo(() => catalog?.products ?? [], [catalog?.products]);
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
