@@ -1,8 +1,26 @@
-# Contratos de datos iniciales
+# Contratos de datos — EmprendeLink
 
-Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutirlo con el equipo.
+Estos contratos representan las estructuras compartidas actuales.
 
-## User
+No cambiar nombres de campos o significados sin coordinación del equipo.
+
+---
+
+# User
+
+Colección:
+
+```text
+users
+```
+
+ID del documento:
+
+```text
+Firebase Auth UID
+```
+
+Estructura:
 
 ```js
 {
@@ -12,18 +30,32 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
   role: "ADMIN | ENTREPRENEUR | CUSTOMER",
   phone: "string",
   address: "string",
-  deliveryInstructions: "string", // Opcional: cadena vacía si no hay indicaciones.
+  deliveryInstructions: "string",
   createdAt: "ISO date",
   active: true
 }
 ```
 
-## Business
+`deliveryInstructions` puede ser cadena vacía.
+
+La contraseña nunca se almacena en Firestore.
+
+Firebase Authentication administra la contraseña.
+
+---
+
+# Business
+
+Colección:
+
+```text
+businesses
+```
 
 ```js
 {
   id: "string",
-  ownerId: "string",
+  ownerId: "Firebase Auth UID",
   name: "string",
   slug: "string",
   logoUrl: "string | null",
@@ -32,7 +64,17 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
 }
 ```
 
-## Category
+Un Emprendedor solo debe administrar su propio Business.
+
+---
+
+# Category
+
+Colección:
+
+```text
+categories
+```
 
 ```js
 {
@@ -43,7 +85,15 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
 }
 ```
 
-## Product
+---
+
+# Product
+
+Colección:
+
+```text
+products
+```
 
 ```js
 {
@@ -58,30 +108,129 @@ Estos contratos son conceptuales. Antes de cambiar nombres compartidos, discutir
 }
 ```
 
-## Customer
+---
 
-El cliente ahora es un User con role CUSTOMER. Su id es el UID de Firebase Authentication.
-No se crea otra identidad por compra ni por negocio. Nombre, correo, teléfono y dirección
-son obligatorios. La contraseña solo se administra en Firebase Authentication.
+# Customer
 
-## Order
+No existe una colección independiente `customers`.
+
+Un Cliente es un documento de:
+
+```text
+users
+```
+
+con:
+
+```js
+role: "CUSTOMER";
+```
+
+Su ID es el UID de Firebase Authentication.
+
+---
+
+# Plan
+
+Colección:
+
+```text
+plans
+```
 
 ```js
 {
   id: "string",
-  businessId: "string",
-  customerId: "Firebase Auth UID",
-  customer: { name: "string", phone: "string", email: "string" }, // Copia al crear el pedido.
-  items: [],
-  subtotal: 0,
-  deliveryAddress: "string",
-  notes: "string | null",
-  status: "PENDING",
-  createdAt: "date"
+  name: "string",
+  maxActiveProducts: 10,
+  commissionRate: 0.03,
+  active: true
 }
 ```
 
-## Order item
+Importante:
+
+```text
+commissionRate
+```
+
+se guarda como decimal.
+
+Ejemplo:
+
+```text
+3% = 0.03
+7% = 0.07
+```
+
+---
+
+# Order
+
+Colección:
+
+```text
+orders
+```
+
+```js
+{
+  id: "string",
+
+  businessId: "string",
+
+  customerId: "Firebase Auth UID",
+
+  customer: {
+    name: "string",
+    phone: "string",
+    email: "string"
+  },
+
+  items: [],
+
+  subtotal: 0,
+
+  deliveryAddress: "string",
+
+  notes: "string | null",
+
+  status: "PENDING",
+
+  createdAt: "ISO date",
+
+  commissionPlanId: "string",
+
+  commissionPlanName: "string",
+
+  commissionRate: 0.03
+}
+```
+
+Los campos:
+
+```text
+customer
+productName
+unitPrice
+commissionPlanId
+commissionPlanName
+commissionRate
+```
+
+guardan información histórica.
+
+Si posteriormente cambia el usuario, producto o plan, un pedido existente debe conservar la información utilizada cuando fue creado.
+
+---
+
+# Order Item
+
+Dentro de:
+
+```text
+order.items
+```
 
 ```js
 {
@@ -93,48 +242,150 @@ son obligatorios. La contraseña solo se administra en Firebase Authentication.
 }
 ```
 
-## Order status history
+El servidor consulta el producto real.
+
+No confiar en el precio enviado por el navegador.
+
+---
+
+# Order status
+
+Valores permitidos:
+
+```text
+PENDING
+CONFIRMED
+PREPARING
+READY
+DELIVERED
+CANCELLED
+```
+
+No inventar valores nuevos sin cambiar el contrato oficial.
+
+---
+
+# Order History
+
+Colección:
+
+```text
+orderHistory
+```
 
 ```js
 {
   orderId: "string",
   oldStatus: "string | null",
   newStatus: "string",
-  changedBy: "string",
-  changedAt: "date"
+  changedBy: "Firebase Auth UID",
+  changedAt: "ISO date"
 }
 ```
 
-## Plan
+Al crear un pedido:
 
-```js
-{
-  id: "string",
-  name: "string",
-  maxActiveProducts: 0,
-  commissionRate: 0,
-  active: true
-}
+```text
+oldStatus = null
+newStatus = PENDING
 ```
 
-## Commission
+---
+
+# Commission
+
+Colección:
+
+```text
+commissions
+```
+
+El documento utiliza actualmente el ID del pedido para impedir múltiples comisiones por el mismo pedido.
 
 ```js
 {
-  id: "string",
+  id: "orderId",
   orderId: "string",
   businessId: "string",
-  rate: 0,
+  rate: 0.03,
   amount: 0,
-  createdAt: "date"
+  createdAt: "ISO date",
+  planId: "string | opcional"
 }
 ```
 
-## Autorización y estado de integración
+Se crea únicamente cuando el pedido llega a:
 
-El servidor verifica el token con Firebase Auth REST y consulta users/{uid} mediante Firestore REST.
-CUSTOMER ve solo sus pedidos; ENTREPRENEUR solo los de su negocio; ADMIN ve todos.
-customerId y changedBy se determinan en el servidor, no desde el cuerpo de la solicitud.
-Los precios se consultan en products; no se acepta el precio del navegador.
-Las cuentas se persisten en Firebase. Pedidos, historial, comisiones y dashboards siguen usando
-los servicios mock existentes; aún falta migrarlos para persistencia real y pruebas completas.
+```text
+DELIVERED
+```
+
+---
+
+# Persistencia
+
+Actualmente estas colecciones utilizan Firebase/Firestore real:
+
+```text
+users
+businesses
+plans
+categories
+products
+orders
+orderHistory
+commissions
+```
+
+Pedidos, historial y comisiones utilizan Firebase Admin desde el servidor.
+
+---
+
+# Autorización
+
+El servidor verifica identidad utilizando Firebase Authentication.
+
+Nunca confiar en valores proporcionados por el navegador para determinar:
+
+```text
+customerId
+changedBy
+rol
+propietario
+precio
+```
+
+CUSTOMER:
+
+```text
+solo sus pedidos
+```
+
+ENTREPRENEUR:
+
+```text
+solo pedidos de su negocio
+```
+
+ADMIN:
+
+```text
+acceso administrativo permitido por las rutas correspondientes
+```
+
+---
+
+# Regla final
+
+Antes de cambiar uno de estos contratos revisar:
+
+```text
+services
+Route Handlers
+firestore.rules
+tests
+UI que consume el dato
+documentación
+```
+
+Un cambio de contrato debe coordinarse con el equipo.

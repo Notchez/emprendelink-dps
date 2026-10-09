@@ -1,73 +1,299 @@
-# START HERE — pasos del responsable que publica el repositorio
+# START HERE — EmprendeLink
 
-1. Descomprimir este esqueleto.
-2. Abrir la carpeta en VS Code.
-3. Verificar Node:
+Si acabas de descargar/clonar el proyecto y no sabes qué hacer, comienza aquí.
+
+---
+
+# 1. Instala las herramientas
+
+Necesitas:
+
+```text
+Git
+Node.js 24.x
+VS Code
+```
+
+Comprueba:
 
 ```bash
+git --version
 node -v
+npm -v
 ```
 
-Debe mostrar `v24.21.0` si se usa exactamente la versión acordada.
+---
 
-4. Instalar:
+# 2. Clona el repositorio
 
 ```bash
-npm install
+git clone https://github.com/Notchez/emprendelink-dps.git
 ```
 
-Esto generará `package-lock.json`.
+Entra:
 
-5. Probar:
+```bash
+cd emprendelink-dps
+```
+
+Cambia a:
+
+```bash
+git switch develop
+```
+
+Actualiza:
+
+```bash
+git pull origin develop
+```
+
+---
+
+# 3. Instala las dependencias
+
+```bash
+npm ci
+```
+
+No necesitas instalar manualmente:
+
+```text
+Next.js
+React
+Firebase
+AdminLTE
+Bootstrap
+tsx
+```
+
+`npm ci` instala todo lo definido por el proyecto.
+
+---
+
+# 4. Crea tu propio Firebase
+
+NO uses el Firebase de otro integrante.
+
+Lee:
+
+```text
+docs/FIREBASE_SETUP.md
+```
+
+Ese documento explica desde cero:
+
+```text
+crear Firebase
+activar Authentication
+crear Firestore
+publicar reglas
+crear Service Account
+crear .env.local
+crear ADMIN
+crear planes
+crear cuentas de prueba
+```
+
+---
+
+# 5. Crea `.env.local`
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+macOS/Linux:
+
+```bash
+cp .env.example .env.local
+```
+
+Completa ese archivo utilizando TU Firebase.
+
+Nunca subas:
+
+```text
+.env.local
+```
+
+---
+
+# 6. Comprueba el proyecto
+
+Primero:
+
+```bash
+npm test
+```
+
+Después:
 
 ```bash
 npm run check
+```
+
+Finalmente:
+
+```bash
 npm run dev
 ```
 
-6. **Commit obligatorio:** incluir `package-lock.json` para que todos usen el mismo árbol de
-   dependencias.
+Abre:
 
-7. Inicializar Git si la carpeta todavía no es repo:
-
-```bash
-git init
-git branch -M main
-git add .
-git commit -m "chore(project): initialize EmprendeLink stage 2 skeleton"
+```text
+http://localhost:3000
 ```
 
-8. Crear el repositorio remoto vacío en GitHub y enlazarlo:
+---
 
-```bash
-git remote add origin <URL_DEL_REPOSITORIO>
-git push -u origin main
+# 7. Si vas a programar
+
+Nunca programes directamente en:
+
+```text
+main
 ```
 
-9. Crear `develop`:
+Tampoco debes desarrollar normalmente directamente en:
 
-```bash
-git checkout -b develop
-git push -u origin develop
+```text
+develop
 ```
 
-10. En GitHub:
-
-- agregar a los 5 integrantes como colaboradores;
-- proteger `main`;
-- requerir Pull Request para `main`;
-- si es posible, proteger también `develop`.
-
-11. Los compañeros clonan:
+Primero:
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd emprendelink-dps
-git checkout develop
-npm install
+git switch develop
+git pull origin develop
 ```
 
-12. Cada uno crea su rama desde `develop`.
+Luego crea una rama.
 
-No comenzar a programar módulos antes de que `package-lock.json`, `main` y `develop` hayan sido
-subidos correctamente.
+Ejemplos:
+
+```bash
+git switch -c feature/products-edit
+```
+
+```bash
+git switch -c fix/orders-status
+```
+
+```bash
+git switch -c docs/update-readme
+```
+
+---
+
+# 8. Antes de subir cambios
+
+Ejecuta:
+
+```bash
+npm test
+npm run check
+```
+
+Después:
+
+```bash
+git status
+git diff
+```
+
+Luego crea tu commit y haz push.
+
+---
+
+# 9. Pull Request
+
+El flujo normal es:
+
+```text
+tu rama
+   ↓
+Pull Request
+   ↓
+develop
+```
+
+GitHub ejecutará automáticamente el CI.
+
+El CI realiza:
+
+```text
+npm ci
+npm test
+npm run check
+```
+
+No hagas merge si los checks están rojos.
+
+---
+
+# 10. Si utilizas ChatGPT, Claude, Copilot u otro LLM
+
+Si el LLM puede leer el repositorio, dile:
+
+```text
+Antes de modificar código, lee AGENTS.md, README.md,
+docs/LLM_CONTEXT.md y los documentos relacionados
+con el módulo que vas a trabajar.
+Respeta las reglas del repositorio.
+```
+
+Si el LLM NO puede leer archivos:
+
+```text
+copia y pega docs/LLM_CONTEXT.md
+```
+
+antes de pedirle código.
+
+Nunca envíes a un LLM:
+
+```text
+.env.local
+Service Account
+contraseñas
+tokens
+private keys
+```
+
+---
+
+# 11. Documentos importantes
+
+```text
+README.md
+AGENTS.md
+CONTRIBUTING.md
+
+docs/FIREBASE_SETUP.md
+docs/LLM_CONTEXT.md
+docs/ARCHITECTURE.md
+docs/API_CONVENTIONS.md
+docs/DATA_CONTRACTS.md
+docs/RESPONSIBILITIES.md
+docs/GIT_WORKFLOW.md
+docs/CI_CD.md
+docs/PRUEBAS_CUENTAS.md
+```
+
+---
+
+# Regla simple
+
+Si no sabes qué hacer:
+
+```text
+1. No improvises.
+2. No cambies dependencias.
+3. No toques main.
+4. No compartas credenciales.
+5. Lee la documentación.
+6. Pregunta antes de romper contratos compartidos.
+```

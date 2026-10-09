@@ -2,15 +2,11 @@
 
 Proyecto de cátedra de **Diseño y Programación de Software Multiplataforma (DPS941)**.
 
-Este repositorio contiene la base común para la **Etapa 2 — Desarrollo Base Web**.  
-La meta es que los cinco integrantes trabajen en paralelo con la misma arquitectura, reglas de
-negocio, convenciones y parámetros técnicos.
-
-> **Antes de programar:** todos deben leer este README, `AGENTS.md` y `CONTRIBUTING.md`.
+EmprendeLink es una plataforma para microemprendedores que permite administrar negocios, productos, catálogos, clientes, pedidos, planes, comisiones y reportes.
 
 ---
 
-## Integrantes del equipo
+# Integrantes
 
 - Marvin Francisco Pérez Calderón — PC253641
 - Rafael Mena Mejia — MM253045
@@ -18,68 +14,208 @@ negocio, convenciones y parámetros técnicos.
 - Luis Miguel Granados Artiga — GA130557
 - Jorge Alfonzo Mendoza Padilla — MP241100
 
-## 1. Objetivo de EmprendeLink
-
-EmprendeLink es una plataforma orientada a microemprendedores y pequeños negocios. Permitirá
-publicar un catálogo digital, recibir pedidos de forma estructurada, gestionar productos,
-clientes y pedidos, aplicar reglas de planes/comisiones y consultar reportes.
-
-### Roles
-
-- **Administrador**: gestiona usuarios/emprendedores, planes, estados de cuenta y reportes globales.
-- **Emprendedor**: administra su negocio, productos, pedidos, clientes y reportes.
-- **Cliente**: visitante público; consulta catálogo y realiza pedidos sin cuenta en el alcance inicial.
-
 ---
 
-## 2. Stack congelado para Etapa 2
+# Antes de comenzar
 
-| Herramienta          | Versión / decisión             |
-| -------------------- | ------------------------------ |
-| Node.js              | **24.21.0 LTS**                |
-| Next.js              | **16.3.3 Active LTS**          |
-| React                | **19.2.7**                     |
-| Firebase JS SDK      | **12.18.0**                    |
-| Lenguaje             | **JavaScript**                 |
-| Router               | **App Router**                 |
-| Estilos              | **CSS global + CSS Modules**   |
-| Estado compartido    | **Context API + custom hooks** |
-| Editor               | **VS Code**                    |
-| Despliegue           | **Vercel**                     |
-| Control de versiones | **Git + GitHub**               |
+Si acabas de clonar el repositorio, empieza por:
 
-**Regla:** no actualizar versiones, cambiar de lenguaje, agregar Tailwind/Bootstrap/Redux ni
-introducir una dependencia nueva sin acuerdo del equipo.
-
-React no maneja una línea LTS propia como Node o Next.js; por estabilidad del proyecto se deja
-fijada la versión indicada y no se actualiza durante la entrega sin necesidad real.
-
----
-
-## 3. Instalación
-
-### Requisitos
-
-1. Git.
-2. Node.js 24.21.0 LTS.
-3. VS Code.
-4. npm incluido con Node.
-5. Las extensiones recomendadas por `.vscode/extensions.json`.
-
-### Primera instalación
-
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd emprendelink-dps
-npm install
-cp .env.example .env.local
-npm run dev
+```text
+START_HERE.md
 ```
 
-En Windows PowerShell, para crear `.env.local`:
+Después lee:
+
+```text
+AGENTS.md
+CONTRIBUTING.md
+docs/FIREBASE_SETUP.md
+```
+
+---
+
+# Stack del proyecto
+
+| Herramienta          | Versión / decisión                        |
+| -------------------- | ----------------------------------------- |
+| Node.js              | 24.x                                      |
+| Next.js              | 16.3.3                                    |
+| React                | 19.2.7                                    |
+| Firebase JS SDK      | 12.18.0                                   |
+| Firebase Admin       | 14.x                                      |
+| Lenguaje             | JavaScript                                |
+| Router               | App Router                                |
+| Estilos              | CSS + CSS Modules                         |
+| Estado               | Context API + hooks                       |
+| Panel interno        | AdminLTE React                            |
+| UI base panel        | Bootstrap + Bootstrap Icons               |
+| Testing              | Node Test Runner + tsx                    |
+| CI                   | GitHub Actions                            |
+| CD                   | Vercel — pendiente de configuración final |
+| Control de versiones | Git + GitHub                              |
+
+No cambiar dependencias, versiones o arquitectura compartida sin aprobación del equipo.
+
+---
+
+# Roles
+
+## ADMIN
+
+Puede administrar:
+
+```text
+usuarios
+planes
+negocios
+ventas
+comisiones
+visión global
+```
+
+ADMIN no se crea desde el registro público.
+
+---
+
+## ENTREPRENEUR
+
+Puede administrar:
+
+```text
+su negocio
+categorías
+productos
+pedidos
+reportes
+estado de cuenta
+```
+
+Solo debe acceder a los datos de su propio negocio.
+
+---
+
+## CUSTOMER
+
+Puede:
+
+```text
+explorar negocios
+consultar catálogos
+usar carrito
+realizar pedidos
+consultar sus pedidos
+editar su perfil
+```
+
+El catálogo puede consultarse públicamente.
+
+Confirmar un pedido requiere una cuenta CUSTOMER autenticada.
+
+---
+
+# Arquitectura
+
+```text
+UI / componentes
+      ↓
+Context / hooks / lógica
+      ↓
+Services / Route Handlers
+      ↓
+Firebase
+```
+
+Los componentes visuales no deben contener acceso directo complejo a datos ni reglas críticas de negocio.
+
+Ver:
+
+```text
+docs/ARCHITECTURE.md
+```
+
+---
+
+# Firebase
+
+Cada integrante del equipo utiliza su propio Firebase durante desarrollo.
+
+```text
+Mismo código
+   ↓
+Firebase diferente por desarrollador
+```
+
+No necesitas acceso al Firebase de otro integrante.
+
+Configuración completa:
+
+```text
+docs/FIREBASE_SETUP.md
+```
+
+---
+
+# Variables de entorno
+
+Crear:
+
+```text
+.env.local
+```
+
+desde:
+
+```text
+.env.example
+```
+
+Windows:
 
 ```powershell
 Copy-Item .env.example .env.local
+```
+
+macOS/Linux:
+
+```bash
+cp .env.example .env.local
+```
+
+Nunca subir `.env.local`.
+
+Variables necesarias:
+
+```text
+NEXT_PUBLIC_FIREBASE_API_KEY
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+NEXT_PUBLIC_FIREBASE_PROJECT_ID
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+NEXT_PUBLIC_FIREBASE_APP_ID
+FIREBASE_SERVICE_ACCOUNT_JSON
+```
+
+---
+
+# Instalación
+
+```bash
+git clone https://github.com/Notchez/emprendelink-dps.git
+cd emprendelink-dps
+git switch develop
+npm ci
+```
+
+Luego configura Firebase:
+
+```text
+docs/FIREBASE_SETUP.md
+```
+
+Finalmente:
+
+```bash
+npm run dev
 ```
 
 Abrir:
@@ -88,93 +224,144 @@ Abrir:
 http://localhost:3000
 ```
 
-Comprobar API base:
+Health check:
 
 ```text
 http://localhost:3000/api/health
 ```
 
-Antes de subir cambios:
+---
+
+# Scripts
+
+Desarrollo:
+
+```bash
+npm run dev
+```
+
+Tests:
+
+```bash
+npm test
+```
+
+Lint:
 
 ```bash
 npm run lint
+```
+
+Build:
+
+```bash
 npm run build
 ```
 
----
+Validación completa:
 
-## 4. Arquitectura obligatoria
+```bash
+npm run check
+```
 
-Cada funcionalidad debe respetar:
+`npm run check` ejecuta:
 
 ```text
-UI / componentes
-      ↓
-hooks / context / lógica de aplicación
-      ↓
-services / API
-      ↓
-Firebase / Firestore u origen de datos acordado
+lint
++
+build
 ```
 
-### Regla principal
+Antes de un Pull Request ejecutar:
 
-**Un componente visual NO debe contener directamente reglas complejas de negocio ni acceso a
-Firestore.**
-
-La explicación completa está en:
-
-- `docs/ARCHITECTURE.md`
-- `docs/API_CONVENTIONS.md`
+```bash
+npm test
+npm run check
+```
 
 ---
 
-## 5. Estructura del proyecto
+# CI
+
+GitHub Actions valida automáticamente Pull Requests hacia:
 
 ```text
-src/
-├── app/                  # rutas, layouts y Route Handlers
-├── components/           # componentes visuales
-├── context/              # estado global compartido
-├── hooks/                # custom hooks
-├── services/             # acceso a API / Firebase
-├── lib/
-│   ├── constants/        # contratos comunes
-│   └── firebase/         # configuración Firebase
-├── data/mock/            # datos temporales para desarrollo
-└── utils/                # utilidades puras
+develop
+main
 ```
 
-No crear carpetas paralelas que dupliquen estas responsabilidades sin discutirlo primero.
+El pipeline ejecuta:
+
+```text
+npm ci
+npm test
+npm run check
+```
+
+Si el check:
+
+```text
+validate
+```
+
+falla, el cambio no debe integrarse.
+
+Ver:
+
+```text
+docs/CI_CD.md
+```
 
 ---
 
-## 6. División de trabajo
+# Git
 
-| Integrante | Dominio                                                 |
-| ---------- | ------------------------------------------------------- |
-| 1          | Autenticación, roles y usuarios                         |
-| 2          | Negocio, categorías, productos e imágenes               |
-| 3          | Catálogo público, carrito y cliente                     |
-| 4          | Pedidos y lógica central                                |
-| 5          | Dashboard, reportes, planes y administración financiera |
+Ramas permanentes:
 
-Ver detalles y fronteras en `docs/RESPONSIBILITIES.md`.
+```text
+main
+develop
+```
+
+Flujo:
+
+```text
+develop
+   ↓
+feature / fix / docs / chore
+   ↓
+Pull Request
+   ↓
+CI
+   ↓
+develop
+```
+
+Cuando existe una versión estable:
+
+```text
+develop
+   ↓
+Pull Request
+   ↓
+CI
+   ↓
+main
+```
+
+Nunca trabajar directamente sobre `main`.
+
+Ver:
+
+```text
+docs/GIT_WORKFLOW.md
+```
 
 ---
 
-## 7. Contratos comunes
+# Estados de pedido
 
-### Roles
-
-```js
-ROLES.ADMIN;
-ROLES.ENTREPRENEUR;
-```
-
-El cliente público no utiliza rol autenticado en el alcance inicial.
-
-### Estados del pedido
+Usar únicamente:
 
 ```text
 PENDING
@@ -185,213 +372,137 @@ DELIVERED
 CANCELLED
 ```
 
-Las constantes oficiales están en:
-
-```text
-src/lib/constants/roles.js
-src/lib/constants/orderStatus.js
-```
-
-No escribir strings alternativos como `"admin"`, `"Administrador"` o `"entregado"` dispersos por
-el proyecto. Consumir las constantes comunes.
-
-### Respuesta estándar de API
-
-Éxito:
-
-```json
-{
-  "success": true,
-  "data": {},
-  "error": null
-}
-```
-
-Error:
-
-```json
-{
-  "success": false,
-  "data": null,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Mensaje comprensible"
-  }
-}
-```
+No inventar estados nuevos.
 
 ---
 
-## 8. Reglas de negocio que NO deben romperse
+# Datos persistidos
 
-1. Un emprendedor solo puede acceder/modificar datos de su propio negocio.
-2. El número de productos activos no puede superar el límite del plan vigente.
-3. Desactivar un producto conserva su historial.
-4. Un pedido solo puede avanzar mediante transiciones válidas.
-5. Cada cambio de estado debe conservar historial.
-6. La comisión se genera solamente cuando el pedido llega a `DELIVERED`.
-7. Un pedido cancelado no genera comisión.
-8. Las validaciones deben existir en UI y reforzarse en lógica/datos.
-9. Ningún secreto debe subirse a GitHub.
-10. Los cambios de contrato o alcance deben discutirse antes de implementarse.
+Actualmente Firebase contiene:
+
+```text
+users
+businesses
+plans
+categories
+products
+orders
+orderHistory
+commissions
+```
+
+Pedidos, historial y comisiones se administran server-side mediante Firebase Admin.
 
 ---
 
-## 9. Git y ramas
+# Uso de LLM
 
-Ramas permanentes:
-
-```text
-main
-develop
-```
-
-Trabajo normal:
+Si ChatGPT, Claude, Copilot u otro asistente puede leer el repositorio:
 
 ```text
-feature/<modulo>-<descripcion>
-fix/<modulo>-<descripcion>
-docs/<descripcion>
+debe leer AGENTS.md antes de modificar código
 ```
 
-Ejemplos:
+También debe consultar los documentos relevantes dentro de:
 
 ```text
-feature/auth-login
-feature/products-create
-feature/orders-status-history
-fix/catalog-mobile-layout
+docs/
 ```
 
-Nunca desarrollar directamente sobre `main`.
-
-Flujo:
+Si NO puede leer el repositorio, copia y pega:
 
 ```text
-develop
-   ↓
-feature/...
-   ↓
-Pull Request
-   ↓
-develop
-   ↓
-main (entregas estables)
+docs/LLM_CONTEXT.md
 ```
 
-Leer `CONTRIBUTING.md` y `docs/GIT_WORKFLOW.md`.
-
----
-
-## 10. Commits
-
-Formato recomendado:
-
-```text
-tipo(modulo): descripción corta
-```
-
-Ejemplos:
-
-```text
-feat(auth): add login form validation
-feat(products): implement product list
-fix(orders): prevent invalid status transition
-docs(readme): update local setup
-refactor(catalog): extract product card component
-```
-
-Evitar:
-
-```text
-cambios
-arreglos
-update
-ya quedo
-final final
-```
-
----
-
-## 11. Uso de asistentes LLM
-
-Cada integrante puede usar el asistente que prefiera. Si el asistente tiene acceso al repositorio, debe leer `AGENTS.md`. Si no puede leer archivos, se le debe copiar completo `docs/LLM_CONTEXT.md` antes de pedirle código.
-
-La guía obliga al asistente a:
-
-- respetar la arquitectura;
-- respetar versiones;
-- no inventar cambios de alcance;
-- no modificar módulos de otros integrantes sin necesidad;
-- usar los contratos comunes;
-- producir código explicable;
-- identificar archivos afectados;
-- evitar dependencias innecesarias;
-- mantener el código defendible por el estudiante.
-
-**La IA ayuda; el responsable del módulo debe comprender y poder explicar cada cambio integrado.**
-
----
-
-## 12. Variables de entorno
-
-Crear:
+Nunca compartir con un LLM:
 
 ```text
 .env.local
+Service Accounts
+private keys
+contraseñas
+tokens
 ```
 
-a partir de:
+---
+
+# Contratos comunes
+
+Documentación:
 
 ```text
-.env.example
+docs/DATA_CONTRACTS.md
+docs/API_CONVENTIONS.md
+docs/RESPONSIBILITIES.md
 ```
 
-Nunca subir `.env.local`.
-
-Las claves públicas de configuración de Firebase se administrarán mediante variables de entorno.
-Ninguna clave privada o credencial administrativa debe quedar dentro del repositorio.
+No cambiar contratos compartidos unilateralmente.
 
 ---
 
-## 13. Definición de terminado de una tarea
+# Documentación
 
-Una funcionalidad no está terminada solo porque “se ve”.
+```text
+START_HERE.md
+README.md
+AGENTS.md
+CONTRIBUTING.md
 
-Debe cumplir:
-
-- funciona en el flujo principal;
-- valida entradas;
-- maneja loading cuando aplica;
-- maneja errores;
-- maneja estado vacío cuando aplica;
-- es responsive;
-- respeta roles/permisos;
-- respeta arquitectura;
-- no incluye secretos;
-- `npm run lint` pasa;
-- `npm run build` pasa;
-- tiene commits claros;
-- el autor puede explicar el código.
-
----
-
-## 14. Documentos del repositorio
-
-- `AGENTS.md` — instrucciones automáticas para agentes que leen el repositorio.
-- `docs/LLM_CONTEXT.md` — contexto listo para copiar/pegar en cualquier LLM.
-- `CONTRIBUTING.md` — reglas de colaboración.
-- `docs/ARCHITECTURE.md` — arquitectura del proyecto.
-- `docs/API_CONVENTIONS.md` — estándar REST.
-- `docs/GIT_WORKFLOW.md` — flujo Git.
-- `docs/RESPONSIBILITIES.md` — división de módulos.
-- `docs/DATA_CONTRACTS.md` — estructuras iniciales compartidas.
+docs/ARCHITECTURE.md
+docs/API_CONVENTIONS.md
+docs/DATA_CONTRACTS.md
+docs/FIREBASE_SETUP.md
+docs/GIT_WORKFLOW.md
+docs/CI_CD.md
+docs/LLM_CONTEXT.md
+docs/PRUEBAS_CUENTAS.md
+docs/RESPONSIBILITIES.md
+```
 
 ---
 
-## 15. Regla final
+# Definición de terminado
 
-Si un cambio afecta **contratos compartidos, estructura global, dependencias, arquitectura,
-autenticación común o reglas de negocio**, no debe integrarse unilateralmente.
+Una funcionalidad debe:
 
-Primero se comunica al equipo, luego se modifica.
+```text
+funcionar
+validar entradas
+manejar errores
+manejar loading cuando aplique
+manejar estado vacío cuando aplique
+ser responsive
+respetar roles
+respetar arquitectura
+no incluir secretos
+pasar tests
+pasar lint
+pasar build
+```
+
+Antes del PR:
+
+```bash
+npm test
+npm run check
+```
+
+---
+
+# Regla final
+
+Si un cambio afecta:
+
+```text
+arquitectura
+Firebase
+autenticación
+roles
+contratos
+dependencias
+reglas de negocio
+CI/CD
+```
+
+debe comunicarse al equipo antes de integrarse.
