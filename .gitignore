@@ -15,6 +15,13 @@
 .env.test.local
 .env.production.local
 
+# Firebase / Google credentials
+*firebase-adminsdk*.json
+service-account*.json
+serviceAccount*.json
+firebase-service-account*.json
+google-credentials*.json
+
 # vercel
 .vercel
 
