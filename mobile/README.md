@@ -42,19 +42,21 @@ Correo: cliente@emprendelink.demo
 Contraseña: Demo1234
 ```
 
-También puedes crear una cuenta desde Registro. Las cuentas creadas viven solo durante la
-ejecución actual porque Foro 1 usa un servicio mock en memoria.
+También puedes crear una cuenta desde Registro. Las cuentas creadas y los pedidos nuevos viven
+solo durante la ejecución actual porque Foro 1 usa servicios mock en memoria. Un pedido creado sí
+permanece al hacer pull-to-refresh o al salir y volver a Pedidos durante esa ejecución; se pierde al
+reiniciar la aplicación.
 
 ## Flujo funcional
 
 ```text
 Login / Registro
-        ↓
-Tabs: Negocios · Pedidos · Perfil
-        ↓
-Negocio → Catálogo → Producto → Carrito → Pedido
-                                      ↓
-                              Mis pedidos → Detalle
+        ├── CUSTOMER → Tabs: Negocios · Pedidos · Perfil
+        │                    ↓
+        │       Negocio → Catálogo → Producto → Carrito → Pedido
+        │                                             ↓
+        │                                     Mis pedidos → Detalle
+        └── ENTREPRENEUR / ADMIN → aviso de módulo futuro → Cerrar sesión
 ```
 
 No hay botones decorativos: las acciones principales navegan, validan, modifican el carrito,
@@ -64,11 +66,14 @@ crean un pedido temporal o cierran sesión.
 
 - `LoginScreen`: validación, error de credenciales, loading, mostrar/ocultar contraseña y acceso demo.
 - `RegisterScreen`: rol CUSTOMER/ENTREPRENEUR, validaciones y registro temporal.
+- `RolePendingScreen`: salida segura y profesional para ENTREPRENEUR/ADMIN sin suplantar el flujo
+  CUSTOMER; informa el alcance y permite cerrar sesión.
 - `BusinessesScreen`: búsqueda, loading, error, vacío y acceso a catálogo.
 - `CatalogScreen`: búsqueda, categorías, productos y acceso al carrito.
 - `ProductDetailScreen`: imagen, cantidad, total y agregado al carrito.
 - `CartScreen`: cantidades, eliminación, subtotal y confirmación de pedido temporal.
-- `OrdersScreen`: listado, pull-to-refresh, estados y acceso al detalle.
+- `OrdersScreen`: listado, pull-to-refresh, estados y acceso al detalle; conserva pedidos creados
+  durante la ejecución actual.
 - `OrderDetailScreen`: productos, subtotal y entrega.
 - `ProfileScreen`: datos de la cuenta y logout.
 
@@ -83,8 +88,8 @@ mobile/
 │   ├── context/      sesión, carrito y pedidos
 │   ├── data/         datos temporales centralizados
 │   ├── hooks/        carga de negocios y catálogo
-│   ├── navigation/   auth stack, app stack y bottom tabs
-│   ├── screens/      pantallas auth y módulo cliente
+│   ├── navigation/   selección por rol, auth stack, app stack y bottom tabs
+│   ├── screens/      pantallas auth, módulo cliente y estado de roles futuros
 │   ├── services/     frontera reemplazable de datos
 │   ├── theme/        colores, spacing, tipografía, radios y sombras
 │   └── utils/        validaciones y formatos puros
@@ -104,7 +109,9 @@ por la API web: `success`, `data` y `error`.
 
 Los mocks respetan `docs/DATA_CONTRACTS.md`: `User`, `Business`, `Category`, `Product`,
 `Order` y `Order Item`. Los roles se limitan a `ADMIN`, `ENTREPRENEUR` y `CUSTOMER`; los
-pedidos usan únicamente estados oficiales.
+pedidos usan únicamente estados oficiales. `orderService` inicializa una colección runtime a
+partir del seed sin mutar `mockOrders`, guarda allí cada pedido nuevo y usa esa misma colección al
+refrescar.
 
 Para Foro 2 se reemplazarán principalmente:
 
@@ -135,13 +142,18 @@ npx expo-doctor
 ```
 
 `export:android` genera un bundle de producción en `mobile/dist/` para detectar imports o
-errores de Metro. `dist/` y `.expo/` están ignorados por Git.
+errores de Metro. `dist/` y `.expo/` están ignorados por Git. Las 18 pruebas actuales cubren
+validaciones, invariantes del carrito, almacenamiento runtime de pedidos y selección de flujo por
+rol.
 
 ## Limitaciones de Foro 1
 
-- No hay persistencia después de reiniciar la app.
+- No hay persistencia después de reiniciar la app; los pedidos solo sobreviven refresh durante la
+  ejecución actual.
 - No hay Firebase Authentication ni Google Sign-In móvil.
 - No se realizan lecturas o escrituras Firestore desde el móvil.
-- El módulo móvil implementado se concentra en la experiencia de cliente; el rol emprendedor
-  puede registrarse para demostrar el contrato, pero su panel móvil corresponde a trabajo futuro.
+- El módulo móvil implementado se concentra en la experiencia de cliente. El rol emprendedor puede
+  registrarse, pero recibe una pantalla informativa con logout y no puede acceder a negocios,
+  carrito ni pedidos como CUSTOMER. El panel móvil de emprendedor corresponde a trabajo futuro.
+- Una eventual sesión ADMIN recibe la misma salida segura; el registro público no ofrece ese rol.
 - Las imágenes de demostración requieren conexión a internet; existe fallback visual si fallan.

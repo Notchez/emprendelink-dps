@@ -105,26 +105,30 @@ npm run export:android
 
 ## 6. Navegación móvil
 
-La navegación combina dos patrones. Un stack de autenticación contiene Login y Registro. Después
-de iniciar sesión, un stack de aplicación contiene las tabs principales y los flujos de detalle.
-Las tabs inferiores muestran Negocios, Pedidos y Perfil; React Navigation describe este patrón como
-una barra que permite cambiar entre rutas principales, con inicialización diferida de pantallas
-(React Navigation, s. f.).
+La navegación combina dos patrones y una decisión previa por rol. Un stack de autenticación
+contiene Login y Registro. Después de iniciar sesión, solo CUSTOMER entra al stack de aplicación
+con las tabs y flujos de compra. ENTREPRENEUR y ADMIN reciben una pantalla informativa con logout,
+sin acceso a rutas de cliente. Las tabs inferiores muestran Negocios, Pedidos y Perfil; React
+Navigation describe este patrón como una barra que permite cambiar entre rutas principales, con
+inicialización diferida de pantallas (React Navigation, s. f.).
 
 ```text
 Auth Stack
 ├── Login
 └── Registro
 
-App Stack
-├── Main Tabs
-│   ├── Negocios
-│   ├── Pedidos
-│   └── Perfil
-├── Catálogo
-├── Detalle de producto
-├── Carrito
-└── Detalle de pedido
+Sesión por rol
+├── CUSTOMER → App Stack
+│   ├── Main Tabs
+│   │   ├── Negocios
+│   │   ├── Pedidos
+│   │   └── Perfil
+│   ├── Catálogo
+│   ├── Detalle de producto
+│   ├── Carrito
+│   └── Detalle de pedido
+├── ENTREPRENEUR → Módulo futuro + logout
+└── ADMIN → Panel móvil no incluido + logout
 ```
 
 Las tabs representan destinos frecuentes. Catálogo, producto, carrito y detalle de pedido se
@@ -156,7 +160,8 @@ entrega.
 La UI presenta mensajes junto al campo, un error general cuando el servicio rechaza credenciales y
 un indicador de carga que deshabilita envíos repetidos. `PasswordInput` permite mostrar u ocultar el
 valor. Las pruebas unitarias cubren escenarios válidos, campos requeridos, requisitos por rol y
-coincidencia de contraseñas.
+coincidencia de contraseñas. La suite también verifica el almacenamiento temporal de pedidos, las
+invariantes del carrito y la selección segura del flujo por rol.
 
 ## 9. Diseño UX/UI
 
@@ -202,37 +207,42 @@ Login → Negocios → Catálogo → Producto → Carrito → Confirmar pedido
 El usuario puede buscar negocios, filtrar productos por texto y categoría, cambiar cantidades y
 crear un pedido temporal. El carrito impide mezclar productos de dos negocios sin confirmación,
 porque el contrato real del pedido contiene un único `businessId`. Los pedidos usan exclusivamente
-los estados `PENDING`, `CONFIRMED`, `PREPARING`, `READY`, `DELIVERED` y `CANCELLED`.
+los estados `PENDING`, `CONFIRMED`, `PREPARING`, `READY`, `DELIVERED` y `CANCELLED`. Cada pedido
+nuevo se conserva en una colección runtime del servicio: continúa visible después de pull-to-refresh
+dentro de la misma ejecución, aunque no persiste al reiniciar Expo.
 
 ## 12. Arquitectura móvil implementada
 
 ```text
 mobile/src/
 ├── screens/auth        Login y Registro
-├── screens/app         Negocios, catálogo, producto, carrito, pedidos y perfil
+├── screens/app         Cliente y pantalla informativa para roles futuros
 ├── components          UI reutilizable
-├── navigation          Root stack y bottom tabs
+├── navigation          Selección por rol, root stack y bottom tabs
 ├── context             Auth, Cart y Orders
 ├── hooks               carga de negocios y catálogo
 ├── services            auth, catálogo y pedidos
 ├── data                mockData centralizado
 ├── constants           roles y estados
-├── utils               validación y formato
+├── utils               validación, formato y estado puro del carrito
 └── theme               tokens visuales
 ```
 
 `authService` mantiene credenciales solo en memoria y devuelve perfiles sin contraseña. Los mocks
 respetan los nombres de campos documentados para User, Business, Category, Product, Order y Order
 Item. `orderService` produce un pedido `PENDING` con snapshot de nombre, precio, plan y tasa, igual
-que exige el contrato web.
+que exige el contrato web. El servicio clona el seed `mockOrders` en una colección privada y agrega
+allí los pedidos creados; de esta forma una recarga consulta el mismo estado sin mutar los exports
+originales de datos.
 
 ## 13. Flujo de navegación
 
-Al abrir la app se muestra Login. El acceso válido o el registro actualizan `AuthContext`, lo que
-cambia automáticamente al App Stack. Negocios es el destino inicial. Desde una tarjeta se abre el
-catálogo; desde un producto se abre su detalle; agregar conduce al carrito. Confirmar crea un pedido
-temporal, limpia el carrito y ofrece abrir Pedidos. Perfil permite cerrar sesión y regresar al Auth
-Stack. Android y el encabezado del stack ofrecen navegación hacia atrás en pantallas secundarias.
+Al abrir la app se muestra Login. El acceso válido o el registro actualizan `AuthContext` y
+`RootNavigator` elige explícitamente el flujo por rol. Para CUSTOMER, Negocios es el destino inicial;
+desde una tarjeta se abre el catálogo, desde un producto su detalle y agregar conduce al carrito.
+Confirmar crea un pedido temporal, limpia el carrito y ofrece abrir Pedidos. Para ENTREPRENEUR o
+ADMIN se muestra `RolePendingScreen`, que explica el alcance y solo permite cerrar sesión. Android y
+el encabezado del stack ofrecen navegación hacia atrás en las pantallas secundarias del cliente.
 
 ## 14. Comparación diseño → implementación
 
@@ -276,8 +286,12 @@ credenciales reales.
 4. **Servicios reemplazables:** ninguna pantalla importa mocks directamente.
 5. **Context API:** conserva el patrón conocido por el equipo para sesión, carrito y pedidos.
 6. **Carrito de un negocio:** refleja el único `businessId` del contrato `Order`.
-7. **Sin secretos:** no se copiaron variables, cuentas de servicio ni credenciales Firebase.
-8. **Sin escritura real:** el avance no toca datos productivos y respeta el alcance de Foro 1.
+7. **Estado coherente del carrito:** artículos y negocio se transforman juntos; un carrito vacío
+   siempre conserva `business === null`.
+8. **Navegación por rol:** solo CUSTOMER recibe rutas de compra; los demás roles fallan de forma
+   segura hacia una pantalla informativa.
+9. **Sin secretos:** no se copiaron variables, cuentas de servicio ni credenciales Firebase.
+10. **Sin escritura real:** el avance no toca datos productivos y respeta el alcance de Foro 1.
 
 ## 17. Ventajas y limitaciones
 
@@ -292,9 +306,11 @@ credenciales reales.
 
 ### Limitaciones
 
-- sesión, cuentas y pedidos se pierden al reiniciar;
+- sesión, cuentas y pedidos se pierden al reiniciar, aunque los pedidos sobreviven refresh durante
+  la misma ejecución;
 - no hay Firebase Authentication, Google Sign-In ni Firestore móvil;
-- el rol emprendedor puede registrarse, pero su panel móvil no forma parte de Foro 1;
+- el rol emprendedor puede registrarse y recibe una salida segura con logout, pero su panel móvil no
+  forma parte de Foro 1;
 - las imágenes de demostración son remotas y requieren internet;
 - falta comparar píxel a píxel con Figma porque no se encontró acceso al archivo;
 - las capturas y el video requieren ejecución visual por el equipo.
@@ -310,17 +326,20 @@ dispositivos de distintos tamaños y completar el panel móvil del emprendedor s
 
 ## 19. Verificación realizada
 
-La aplicación móvil fue verificada mediante cinco pruebas unitarias de validación y una exportación
-Android de producción con Metro. La exportación resolvió 949 módulos y generó el bundle sin imports
-rotos. El proyecto web debe validarse antes de cerrar la entrega con `npm test` y `npm run check`.
-Las evidencias exactas y fecha de ejecución final se registran en el checklist del repositorio.
+La aplicación móvil fue verificada mediante 18 pruebas unitarias: cinco de validación, cinco del
+carrito, tres del servicio de pedidos y cinco de selección de flujo por rol. La exportación Android
+de producción con Metro comprueba que el bundle se genera sin imports rotos. El proyecto web se
+valida con `npm test` y `npm run check`; los resultados exactos y la fecha de ejecución final se
+registran en el checklist del repositorio.
 
 ## 20. Conclusiones
 
 El avance cumple el objetivo de presentar una aplicación móvil funcional sin sobrepasar el alcance
 de Foro 1. La solución no es una maqueta estática: permite autenticarse, registrarse, navegar,
-filtrar, agregar productos, confirmar un pedido temporal, consultarlo y cerrar sesión. La separación
-entre UI, estado, servicios y datos reduce el costo de incorporar Firebase en la siguiente etapa.
+filtrar, agregar productos, confirmar un pedido temporal, refrescarlo sin perderlo, consultarlo y
+cerrar sesión. Además, el registro de emprendedor conserva su rol sin conceder acceso al flujo de
+cliente. La separación entre UI, estado, servicios y datos reduce el costo de incorporar Firebase
+en la siguiente etapa.
 
 La adaptación conserva la identidad actual de EmprendeLink, pero utiliza patrones propios del
 teléfono. La principal evidencia pendiente depende del equipo: capturas reales, contraste final con

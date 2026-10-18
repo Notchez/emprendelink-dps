@@ -9,13 +9,15 @@ Fecha de validación técnica: 17 de octubre de 2026.
 - [x] App compila: exportación Android de producción completada.
 - [x] Login funcional con servicio temporal.
 - [x] Registro funcional con roles permitidos.
-- [x] Navegación auth stack, app stack y bottom tabs.
+- [x] Navegación auth stack, selección segura por rol, app stack y bottom tabs.
+- [x] CUSTOMER accede al flujo completo; ENTREPRENEUR/ADMIN no entran al flujo de compra.
 - [x] Negocios con búsqueda y estados de UI.
 - [x] Catálogo con búsqueda y categorías.
-- [x] Pedidos con creación temporal, listado y detalle.
+- [x] Pedidos con creación temporal, listado, detalle y permanencia después de pull-to-refresh
+  durante la ejecución.
 - [x] Perfil con datos de usuario y logout.
 - [x] Detalle de producto.
-- [x] Carrito con cantidades, eliminación y subtotal.
+- [x] Carrito con cantidades, eliminación, subtotal e invariante `vacío → business === null`.
 - [x] Validaciones separadas de la UI.
 - [x] Componentes reutilizables y sistema visual.
 - [x] Diseño coherente con la web actual de EmprendeLink.
@@ -38,7 +40,7 @@ Fecha de validación técnica: 17 de octubre de 2026.
 
 ## Pruebas
 
-- [x] `mobile/npm test`: 5/5 pruebas aprobadas.
+- [x] `mobile/npm test`: 18/18 pruebas aprobadas (validación, carrito, pedidos y roles).
 - [x] `mobile/npm run export:android`: bundle generado sin imports rotos.
 - [x] `mobile/npx expo-doctor`: 21/21 comprobaciones aprobadas.
 - [ ] Prueba visual en emulador o teléfono: requiere dispositivo conectado.
@@ -65,4 +67,4 @@ Fecha de validación técnica: 17 de octubre de 2026.
 
 Estos cuatro puntos no se marcan como defectos de esta entrega: están documentados como trabajo de
 Foro 2. Antes de enviar, el equipo debe completar exclusivamente las evidencias pendientes que
-requieren acceso humano: docente, Figma, capturas, video, push/PR y revisión visual en dispositivo.
+requieren acceso humano: docente, Figma, capturas, video, PR/CI y revisión visual en dispositivo.
