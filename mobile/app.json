@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "EmprendeLink",
+    "slug": "emprendelink-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/emprendelink-icon.png",
+    "userInterfaceStyle": "light",
+    "description": "Avance móvil de EmprendeLink para DPS941",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "sv.edu.udb.emprendelink"
+    },
+    "android": {
+      "package": "sv.edu.udb.emprendelink",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/emprendelink-icon.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/emprendelink-icon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
