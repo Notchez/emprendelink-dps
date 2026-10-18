@@ -10,9 +10,11 @@ import { OrderDetailScreen } from "../screens/app/OrderDetailScreen";
 import { OrdersScreen } from "../screens/app/OrdersScreen";
 import { ProductDetailScreen } from "../screens/app/ProductDetailScreen";
 import { ProfileScreen } from "../screens/app/ProfileScreen";
+import { RolePendingScreen } from "../screens/app/RolePendingScreen";
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { RegisterScreen } from "../screens/auth/RegisterScreen";
 import { colors, typography } from "../theme";
+import { getRootFlow, ROOT_FLOWS } from "./roleFlow";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,10 +33,24 @@ function MainTabs() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarHideOnKeyboard: true,
-        tabBarLabelStyle: { fontSize: typography.tiny, fontWeight: "700", marginBottom: 2 },
-        tabBarStyle: { height: 68, paddingTop: 7, paddingBottom: 8, borderTopColor: colors.border, backgroundColor: colors.surface },
+        tabBarLabelStyle: {
+          fontSize: typography.tiny,
+          fontWeight: "700",
+          marginBottom: 2,
+        },
+        tabBarStyle: {
+          height: 68,
+          paddingTop: 7,
+          paddingBottom: 8,
+          borderTopColor: colors.border,
+          backgroundColor: colors.surface,
+        },
         tabBarIcon: ({ color, focused, size }) => (
-          <Ionicons name={tabIcons[route.name][focused ? 0 : 1]} color={color} size={size} />
+          <Ionicons
+            name={tabIcons[route.name][focused ? 0 : 1]}
+            color={color}
+            size={size}
+          />
         ),
       })}
     >
@@ -45,18 +61,16 @@ function MainTabs() {
   );
 }
 
-export function RootNavigator() {
-  const { user } = useAuth();
+function AuthNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+    </Stack.Navigator>
+  );
+}
 
-  if (!user) {
-    return (
-      <Stack.Navigator screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-      </Stack.Navigator>
-    );
-  }
-
+function CustomerNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -69,10 +83,33 @@ export function RootNavigator() {
       }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
-      <Stack.Screen name="Catalog" component={CatalogScreen} options={({ route }) => ({ title: route.params?.businessName || "Catálogo" })} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: "Detalle del producto" }} />
+      <Stack.Screen
+        name="Catalog"
+        component={CatalogScreen}
+        options={({ route }) => ({ title: route.params?.businessName || "Catálogo" })}
+      />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ title: "Detalle del producto" }}
+      />
       <Stack.Screen name="Cart" component={CartScreen} options={{ title: "Carrito" }} />
-      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: "Detalle del pedido" }} />
+      <Stack.Screen
+        name="OrderDetail"
+        component={OrderDetailScreen}
+        options={{ title: "Detalle del pedido" }}
+      />
     </Stack.Navigator>
   );
+}
+
+export function RootNavigator() {
+  const { user } = useAuth();
+  const flow = getRootFlow(user);
+
+  if (flow === ROOT_FLOWS.AUTH) return <AuthNavigator />;
+  if (flow === ROOT_FLOWS.CUSTOMER) return <CustomerNavigator />;
+
+  // ENTREPRENEUR, ADMIN y cualquier rol desconocido quedan fuera del flujo CUSTOMER.
+  return <RolePendingScreen />;
 }

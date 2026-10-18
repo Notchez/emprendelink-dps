@@ -10,5 +10,6 @@ export const REGISTRATION_ROLES = Object.freeze([
 ]);
 
 export function getRoleLabel(role) {
+  if (role === ROLES.ADMIN) return "Administrador";
   return REGISTRATION_ROLES.find((option) => option.value === role)?.label ?? "Usuario";
 }

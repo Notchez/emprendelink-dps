@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
+import { ROLES } from "../constants/roles";
 import { orderService } from "../services/orderService";
 import { useAuth } from "./AuthContext";
 
@@ -12,7 +13,7 @@ export function OrdersProvider({ children }) {
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
-    if (!user) {
+    if (!user || user.role !== ROLES.CUSTOMER) {
       setOrders([]);
       setError("");
       return;
@@ -35,6 +36,9 @@ export function OrdersProvider({ children }) {
   }, [refresh]);
 
   const placeOrder = useCallback(async ({ business, items, subtotal }) => {
+    if (user?.role && user.role !== ROLES.CUSTOMER) {
+      throw new Error("Solo una cuenta de cliente puede confirmar pedidos.");
+    }
     if (!user) throw new Error("Debes iniciar sesión para confirmar un pedido.");
     const result = await orderService.createMockOrder({ user, business, items, subtotal });
     if (!result.success) throw new Error(result.error?.message || "No se pudo crear el pedido.");

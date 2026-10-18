@@ -1,5 +1,5 @@
-import { ORDER_STATUS } from "../constants/orderStatus";
-import { ROLES } from "../constants/roles";
+import { ORDER_STATUS } from "../constants/orderStatus.js";
+import { ROLES } from "../constants/roles.js";
 
 export const demoCredentials = Object.freeze({
   email: "cliente@emprendelink.demo",
