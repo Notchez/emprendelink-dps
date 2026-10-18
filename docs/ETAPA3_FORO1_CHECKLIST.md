@@ -50,7 +50,7 @@ Fecha de validación técnica: 17 de octubre de 2026.
 
 - [x] Rama `feature/etapa3-react-native-foro1` creada desde `develop` actualizado.
 - [x] Commits separados y revisables creados.
-- [ ] Rama subida a GitHub.
+- [x] Rama subida a GitHub.
 - [ ] Pull Request abierto hacia `develop`.
 - [ ] CI `validate` en verde.
 - [ ] Repositorio GitHub incluido en la entrega del aula.
