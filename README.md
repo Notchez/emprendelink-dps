@@ -232,6 +232,50 @@ http://localhost:3000/api/health
 
 ---
 
+# Aplicación móvil — Etapa 3 Foro 1
+
+El repositorio incluye una aplicación independiente en:
+
+```text
+mobile/
+```
+
+Está construida con React Native, Expo SDK 57 y React Navigation. Mantiene la separación:
+
+```text
+Pantallas y componentes
+        ↓
+Context / hooks / validaciones
+        ↓
+Services
+        ↓
+Datos temporales compatibles con los contratos actuales
+```
+
+La aplicación móvil implementa login, registro, navegación por tabs, negocios, catálogo,
+detalle de producto, carrito, creación temporal de pedidos, listado y detalle de pedidos,
+perfil y cierre de sesión. Firebase móvil se integrará en Foro 2 sustituyendo los services,
+sin trasladar acceso a datos dentro de las pantallas.
+
+Instalación y ejecución:
+
+```bash
+cd mobile
+npm ci
+npm start
+```
+
+En Expo CLI presiona `a` para Android o escanea el QR con Expo Go compatible con SDK 57.
+Consulta la guía completa en `mobile/README.md`.
+
+Validación móvil:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
+
 # Scripts
 
 Desarrollo:

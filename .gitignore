@@ -39,3 +39,5 @@ Thumbs.db
 # misc
 *.pem
 coverage/
+# Etapa 3 - entregables generados
+docs/ETAPA3_FORO1.pdf
