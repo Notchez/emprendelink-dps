@@ -140,7 +140,15 @@ npm test
 npm run check
 ```
 
-Los dos deben pasar.
+Si el cambio afecta la aplicación móvil o contratos compartidos:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
+
+Las validaciones aplicables deben pasar.
 
 Después:
 
@@ -198,9 +206,8 @@ main
 GitHub Actions ejecuta automáticamente:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: npm ci, npm test y npm run check
+Móvil: npm ci, npm test y npm run export:android
 ```
 
 El check requerido se identifica como:

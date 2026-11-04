@@ -69,6 +69,16 @@ tsx
 
 `npm ci` instala todo lo definido por el proyecto.
 
+La aplicación móvil usa un proyecto npm independiente:
+
+```bash
+cd mobile
+npm ci
+cd ..
+```
+
+No agregues Firebase móvil todavía; su integración se realizará sustituyendo los services actuales.
+
 ---
 
 # 4. Crea tu propio Firebase
@@ -146,6 +156,16 @@ Abre:
 ```text
 http://localhost:3000
 ```
+
+Comprueba también la aplicación móvil:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
+
+El bundle se genera en `mobile/dist/`, que está ignorado por Git.
 
 ---
 
@@ -225,9 +245,8 @@ GitHub ejecutará automáticamente el CI.
 El CI realiza:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: npm ci, npm test y npm run check
+Móvil: npm ci, npm test y npm run export:android
 ```
 
 No hagas merge si los checks están rojos.
@@ -275,11 +294,13 @@ CONTRIBUTING.md
 docs/FIREBASE_SETUP.md
 docs/LLM_CONTEXT.md
 docs/ARCHITECTURE.md
+docs/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/RESPONSIBILITIES.md
 docs/GIT_WORKFLOW.md
 docs/CI_CD.md
+docs/LICENSING.md
 docs/PRUEBAS_CUENTAS.md
 ```
 

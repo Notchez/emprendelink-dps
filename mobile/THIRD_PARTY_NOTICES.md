@@ -1,3 +1,11 @@
+# Avisos de terceros
+
+La aplicación móvil se inició con herramientas y plantillas de Expo. Se conserva el aviso MIT que
+acompañaba ese material. Este aviso corresponde a Expo y no define por sí solo la licencia del código
+original de EmprendeLink.
+
+## Expo
+
 The MIT License (MIT)
 
 Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)

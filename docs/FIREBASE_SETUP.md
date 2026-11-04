@@ -152,6 +152,48 @@ NO copies ese código dentro del proyecto.
 
 Los valores deben ir en `.env.local`.
 
+## 4.1 Estado y preparación de la aplicación móvil
+
+La aplicación de `mobile/` todavía utiliza services mock. Esta guía prepara la integración de Foro 2,
+pero no afirma que Firebase móvil ya esté implementado.
+
+Cuando se realice esa integración, se registrará una aplicación Firebase para la plataforma que se
+vaya a compilar y se conservará la separación actual:
+
+```text
+Pantallas
+  ↓
+Context / hooks
+  ↓
+services de mobile
+  ↓
+Firebase Authentication, consultas permitidas de Firestore o API web
+```
+
+No se debe importar Firebase directamente desde las pantallas ni mover Firebase Admin al teléfono.
+Los services móviles actuales son la frontera que se reemplazará en la tarea de integración.
+
+## 4.2 `NEXT_PUBLIC_*` y `EXPO_PUBLIC_*`
+
+Las variables pertenecen a procesos de compilación distintos:
+
+| Prefijo | Consumidor | Ubicación prevista |
+| --- | --- | --- |
+| `NEXT_PUBLIC_*` | navegador de la aplicación Next.js | `.env.local` en la raíz |
+| `EXPO_PUBLIC_*` | bundle de React Native generado por Expo | archivo local ignorado dentro de `mobile/` |
+| sin prefijo público | servidor de Next.js | `.env.local` en la raíz |
+
+Las variables públicas de Firebase identifican el proyecto y permiten usar el SDK cliente; no
+conceden por sí solas acceso administrativo. La seguridad depende de Firebase Authentication, las
+reglas de Firestore y la validación server-side.
+
+No copies `FIREBASE_SERVICE_ACCOUNT_JSON` a una variable `EXPO_PUBLIC_*`. Una variable con ese
+prefijo queda incluida en el bundle móvil y puede ser inspeccionada por cualquier usuario.
+
+Las variables `EXPO_PUBLIC_*` concretas se añadirán cuando se implemente Firebase en React Native,
+junto con el código que las consume. Hasta entonces no hace falta crear una configuración móvil
+ficticia ni añadir Firebase al `package.json` de `mobile/`.
+
 ---
 
 # 5. Crear `.env.local`
@@ -412,6 +454,15 @@ package-lock.json
 
 No instales versiones nuevas de dependencias por tu cuenta.
 
+La aplicación móvil tiene su propio lockfile. Para instalar exactamente sus dependencias:
+
+```bash
+cd mobile
+npm ci
+```
+
+Esto instala el estado móvil actual; todavía no agrega Firebase a React Native.
+
 ---
 
 # 12. Comprobar el proyecto
@@ -459,6 +510,15 @@ También puedes probar:
 ```text
 http://localhost:3000/api/health
 ```
+
+Para validar el proyecto móvil actual desde `mobile/`:
+
+```bash
+npm test
+npm run export:android
+```
+
+Estas pruebas siguen usando datos en memoria y no requieren credenciales Firebase.
 
 ---
 
@@ -681,6 +741,23 @@ se genera una comisión en:
 ```text
 commissions
 ```
+
+## 17.1 Pruebas integradas entre web y móvil
+
+Durante el desarrollo cotidiano cada integrante puede mantener su Firebase independiente. Para una
+prueba integrada, la web y el móvil deben usar temporalmente la configuración pública del mismo
+proyecto Firebase y el mismo contrato de colecciones.
+
+El resultado esperado de la integración futura es:
+
+- una cuenta autenticada representa el mismo UID en ambas aplicaciones;
+- el perfil vive en `users/{uid}` y conserva uno de los roles oficiales;
+- negocios, categorías y productos se comparten mediante Firestore y sus reglas;
+- el móvil envía el ID token a la API web para pedidos y operaciones privilegiadas;
+- Firebase Admin permanece únicamente en los Route Handlers del servidor.
+
+Compartir un proyecto para esta prueba no implica compartir Service Accounts. Solo la instancia de
+servidor autorizada necesita esa credencial privada.
 
 ---
 

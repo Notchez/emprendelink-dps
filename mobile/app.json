@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/emprendelink-icon.png",
     "userInterfaceStyle": "light",
-    "description": "Avance móvil de EmprendeLink para DPS941",
+    "description": "Aplicación móvil de EmprendeLink para DPS941",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "sv.edu.udb.emprendelink"

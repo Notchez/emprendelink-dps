@@ -52,21 +52,28 @@ Checkout
 ↓
 Node.js
 ↓
-npm ci
+Web: npm ci
 ↓
-npm test
+Web: npm test
 ↓
-npm run check
+Web: npm run check
+↓
+Móvil: npm ci
+↓
+Móvil: npm test
+↓
+Móvil: npm run export:android
 ```
 
 ---
 
 # npm ci
 
-Instala exactamente las dependencias definidas en:
+Instala exactamente las dependencias definidas en los dos lockfiles:
 
 ```text
 package-lock.json
+mobile/package-lock.json
 ```
 
 Es la instalación utilizada por CI porque debe ser reproducible.
@@ -80,7 +87,8 @@ Ejecuta las pruebas automatizadas.
 Actualmente:
 
 ```text
-12 tests
+Web: 12 tests
+Móvil: 18 tests
 ```
 
 Los tests no escriben en Firebase real.
@@ -103,6 +111,10 @@ calidad estática
 +
 compilación de producción
 ```
+
+La aplicación móvil se valida con `npm run export:android`. Expo genera un bundle Android en el
+runner para detectar imports rotos y errores de Metro sin publicar una aplicación ni requerir un
+emulador.
 
 ---
 
@@ -184,7 +196,7 @@ main
 
 # Firebase en CI
 
-Los tests actuales no necesitan el Firebase real.
+Los tests actuales de ninguna plataforma necesitan el Firebase real.
 
 No colocar Service Accounts personales dentro de GitHub Actions solo para ejecutar:
 
@@ -193,6 +205,10 @@ npm test
 ```
 
 Los tests utilizan persistencia controlada en memoria.
+
+El export Android actual tampoco necesita variables `EXPO_PUBLIC_*` porque Firebase móvil aún no
+está implementado. Cuando se integre, el CI deberá recibir únicamente la configuración pública
+necesaria para compilar; Firebase Admin seguirá siendo exclusivo del servidor.
 
 ---
 

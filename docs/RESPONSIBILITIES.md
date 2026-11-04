@@ -1,4 +1,7 @@
-# Responsabilidades por integrante — Etapa 2
+# Responsabilidades por integrante — módulo web
+
+Estas responsabilidades siguen siendo la referencia de propiedad funcional para la aplicación web.
+La aplicación móvil reutiliza los mismos contratos y no cambia la propiedad de los dominios.
 
 ## Integrante 1 — Autenticación, roles y usuarios
 
