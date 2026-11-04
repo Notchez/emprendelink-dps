@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
 
-import { getFirebaseDb } from "@/lib/firebase/client";
 import { ROLES } from "@/lib/constants/roles";
-import { apiRequest } from "@/services/apiClient";
+import { adminService } from "@/services/adminService";
 
 import styles from "./AdminUsers.module.css";
 
 const ROLE_LABELS = {
-  ADMIN: "Administrador",
-  ENTREPRENEUR: "Emprendedor",
-  CUSTOMER: "Cliente",
+  [ROLES.ADMIN]: "Administrador",
+  [ROLES.ENTREPRENEUR]: "Emprendedor",
+  [ROLES.CUSTOMER]: "Cliente",
 };
 
 function formatDate(value) {
@@ -31,17 +29,6 @@ function formatDate(value) {
   }).format(date);
 }
 
-async function getRegisteredUsers() {
-  const snapshot = await getDocs(collection(getFirebaseDb(), "users"));
-
-  return snapshot.docs
-    .map((document) => ({
-      ...document.data(),
-      id: document.id,
-    }))
-    .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "es"));
-}
-
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
 
@@ -56,7 +43,8 @@ export default function AdminUsersPage() {
   useEffect(() => {
     let active = true;
 
-    getRegisteredUsers()
+    adminService
+      .getRegisteredUsers()
       .then((registeredUsers) => {
         if (active) {
           setUsers(registeredUsers);
@@ -89,7 +77,7 @@ export default function AdminUsersPage() {
     setFeedback("");
 
     try {
-      setUsers(await getRegisteredUsers());
+      setUsers(await adminService.getRegisteredUsers());
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -121,15 +109,7 @@ export default function AdminUsersPage() {
     setFeedback("");
 
     try {
-      const updatedCustomer = await apiRequest(
-        `/api/admin/users/${encodeURIComponent(customer.id)}/status`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            active: nextActive,
-          }),
-        }
-      );
+      const updatedCustomer = await adminService.setCustomerActive(customer.id, nextActive);
 
       setUsers((previous) =>
         previous.map((user) =>

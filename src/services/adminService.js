@@ -13,6 +13,21 @@ function mapDocument(snapshot) {
 }
 
 export const adminService = {
+  async getRegisteredUsers() {
+    const snapshot = await getDocs(collection(getFirebaseDb(), "users"));
+
+    return snapshot.docs
+      .map(mapDocument)
+      .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "es"));
+  },
+
+  async setCustomerActive(customerId, active) {
+    return apiRequest(`/api/admin/users/${encodeURIComponent(customerId)}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ active }),
+    });
+  },
+
   async getOverview() {
     const database = getFirebaseDb();
 
