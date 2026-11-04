@@ -83,6 +83,14 @@ npm test
 npm run check
 ```
 
+Si el cambio afecta `mobile/` o contratos compartidos, ejecutar además:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
+
 Luego:
 
 ```bash
@@ -162,9 +170,8 @@ El PR debe explicar:
 GitHub ejecutará automáticamente:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: instalación, tests, lint y build
+Móvil: instalación, tests y export Android
 ```
 
 No hacer merge si:

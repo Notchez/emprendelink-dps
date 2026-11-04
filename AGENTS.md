@@ -23,6 +23,9 @@ AdminLTE
 Bootstrap
 CSS Modules
 Context API
+React Native
+Expo
+React Navigation
 ```
 
 ---
@@ -69,6 +72,9 @@ No colocar acceso directo complejo a Firestore dentro de componentes visuales.
 
 No colocar reglas críticas de negocio dentro de JSX.
 
+La aplicación móvil vive en `mobile/` y mantiene el mismo flujo por capas. Sus services siguen
+usando datos mock hasta la tarea de integración Firebase; no afirmar que ya persiste en Firebase.
+
 ---
 
 # Firebase
@@ -76,6 +82,9 @@ No colocar reglas críticas de negocio dentro de JSX.
 Cada desarrollador utiliza su propio proyecto Firebase.
 
 Nunca asumir que todos comparten el mismo Firebase.
+
+Para pruebas integradas, web y móvil pueden apuntar al mismo proyecto Firebase. Firebase Admin y su
+Service Account permanecen exclusivamente en el servidor; nunca deben incluirse en Expo.
 
 Configuración:
 
@@ -357,6 +366,14 @@ npm test
 npm run check
 ```
 
+Si el cambio afecta `mobile/` o contratos compartidos:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
+
 `npm test` no debe utilizar el Firebase real para las pruebas automatizadas actuales.
 
 Los tests de acceso utilizan persistencia mockeada en memoria.
@@ -368,9 +385,8 @@ Los tests de acceso utilizan persistencia mockeada en memoria.
 GitHub Actions ejecuta:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: npm ci, npm test y npm run check
+Móvil: npm ci, npm test y npm run export:android
 ```
 
 sobre PR hacia:

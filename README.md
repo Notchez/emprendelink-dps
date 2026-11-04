@@ -43,6 +43,9 @@ docs/FIREBASE_SETUP.md
 | React                | 19.2.7                                    |
 | Firebase JS SDK      | 12.18.0                                   |
 | Firebase Admin       | 14.x                                      |
+| React Native         | 0.86.3                                    |
+| Expo                 | SDK 57                                    |
+| React Navigation     | 7.x                                       |
 | Lenguaje             | JavaScript                                |
 | Router               | App Router                                |
 | Estilos              | CSS + CSS Modules                         |
@@ -145,7 +148,9 @@ Mismo código
 Firebase diferente por desarrollador
 ```
 
-No necesitas acceso al Firebase de otro integrante.
+No necesitas acceso al Firebase de otro integrante. Durante las pruebas integradas, la web y el
+móvil pueden apuntar al mismo proyecto Firebase para compartir autenticación y datos; esto no
+requiere compartir Service Accounts personales.
 
 Configuración completa:
 
@@ -232,7 +237,7 @@ http://localhost:3000/api/health
 
 ---
 
-# Aplicación móvil — Etapa 3 Foro 1
+# Aplicación móvil — preparación de Etapa 3 Foro 2
 
 El repositorio incluye una aplicación independiente en:
 
@@ -254,8 +259,13 @@ Datos temporales compatibles con los contratos actuales
 
 La aplicación móvil implementa login, registro, navegación por tabs, negocios, catálogo,
 detalle de producto, carrito, creación temporal de pedidos, listado y detalle de pedidos,
-perfil y cierre de sesión. Firebase móvil se integrará en Foro 2 sustituyendo los services,
+perfil y cierre de sesión. Aún usa datos mock en memoria. Firebase móvil se integrará en una tarea
+posterior sustituyendo los services,
 sin trasladar acceso a datos dentro de las pantallas.
+
+La integración prevista compartirá Firebase Authentication y Firestore con la web durante pruebas
+integradas. Las operaciones privilegiadas de pedidos seguirán usando la API de Next.js y Firebase
+Admin en el servidor; ninguna credencial administrativa debe incluirse en la aplicación móvil.
 
 Instalación y ejecución:
 
@@ -337,9 +347,8 @@ main
 El pipeline ejecuta:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: npm ci → npm test → npm run check
+Móvil: npm ci → npm test → npm run export:android
 ```
 
 Si el check:
@@ -494,12 +503,14 @@ AGENTS.md
 CONTRIBUTING.md
 
 docs/ARCHITECTURE.md
+docs/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/FIREBASE_SETUP.md
 docs/GIT_WORKFLOW.md
 docs/CI_CD.md
 docs/LLM_CONTEXT.md
+docs/LICENSING.md
 docs/PRUEBAS_CUENTAS.md
 docs/RESPONSIBILITIES.md
 ```
@@ -530,6 +541,10 @@ Antes del PR:
 ```bash
 npm test
 npm run check
+
+cd mobile
+npm test
+npm run export:android
 ```
 
 ---

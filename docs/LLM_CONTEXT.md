@@ -54,6 +54,11 @@ Bootstrap Icons
 npm
 GitHub Actions
 Vercel planificado para CD
+
+Aplicación móvil:
+React Native 0.86.3
+Expo SDK 57
+React Navigation 7
 ```
 
 No cambiar versiones ni instalar dependencias sin aprobación.
@@ -77,6 +82,21 @@ Firebase
 ```
 
 No acceder directamente a Firestore desde componentes visuales si ya existe un service correspondiente.
+
+La aplicación móvil vive en `mobile/` y conserva el mismo flujo:
+
+```text
+Pantallas / componentes
+↓
+Context / hooks / lógica
+↓
+Services
+↓
+mock temporal hoy; Firebase y API web en la integración futura
+```
+
+Firebase móvil todavía no está implementado. No mover datos mock a las pantallas ni afirmar que la
+app móvil ya persiste en Firebase.
 
 ---
 
@@ -129,6 +149,10 @@ Los valores reales viven únicamente en:
 ```text
 .env.local
 ```
+
+La futura configuración pública de Expo utilizará variables `EXPO_PUBLIC_*` locales dentro de
+`mobile/`. Nunca colocar `FIREBASE_SERVICE_ACCOUNT_JSON` ni otra credencial privada en una variable
+de Expo: todo valor `EXPO_PUBLIC_*` queda incluido en el bundle móvil.
 
 ---
 
@@ -277,9 +301,18 @@ npm test
 npm run check
 ```
 
-Actualmente `npm test` contiene 12 pruebas de acceso, identidad, validaciones y permisos.
+Actualmente la web contiene 12 pruebas de acceso, identidad, validaciones y permisos. La aplicación
+móvil contiene 18 pruebas unitarias de validación, carrito, pedidos temporales y flujo por rol.
 
 Los tests no deben escribir datos en Firebase real.
+
+Validación móvil:
+
+```bash
+cd mobile
+npm test
+npm run export:android
+```
 
 ---
 
@@ -288,9 +321,8 @@ Los tests no deben escribir datos en Firebase real.
 GitHub Actions ejecuta automáticamente:
 
 ```text
-npm ci
-npm test
-npm run check
+Web: npm ci, npm test y npm run check
+Móvil: npm ci, npm test y npm run export:android
 ```
 
 en PR hacia:
@@ -364,10 +396,13 @@ No afirmar que algo funciona si no se ejecutó.
 README.md
 AGENTS.md
 docs/ARCHITECTURE.md
+docs/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/FIREBASE_SETUP.md
 docs/GIT_WORKFLOW.md
+docs/CI_CD.md
+docs/LICENSING.md
 docs/RESPONSIBILITIES.md
 docs/PRUEBAS_CUENTAS.md
 ```

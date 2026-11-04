@@ -1,8 +1,9 @@
-# EmprendeLink Mobile — Etapa 3 Foro 1
+# EmprendeLink Mobile — preparación de Etapa 3 Foro 2
 
 Aplicación móvil académica de EmprendeLink construida con React Native y Expo. Esta entrega
-demuestra autenticación temporal, navegación y el módulo principal de cliente sin conectarse
-todavía a Firebase.
+demuestra autenticación temporal, navegación y el módulo principal de cliente. La auditoría de Foro
+2 mantiene todavía los services en memoria; la integración Firebase se realizará en una tarea
+posterior.
 
 ## Requisitos
 
@@ -107,13 +108,13 @@ por la API web: `success`, `data` y `error`.
 
 ## Contratos y Firebase futuro
 
-Los mocks respetan `docs/DATA_CONTRACTS.md`: `User`, `Business`, `Category`, `Product`,
+Los mocks respetan `../docs/DATA_CONTRACTS.md`: `User`, `Business`, `Category`, `Product`,
 `Order` y `Order Item`. Los roles se limitan a `ADMIN`, `ENTREPRENEUR` y `CUSTOMER`; los
 pedidos usan únicamente estados oficiales. `orderService` inicializa una colección runtime a
 partir del seed sin mutar `mockOrders`, guarda allí cada pedido nuevo y usa esa misma colección al
 refrescar.
 
-Para Foro 2 se reemplazarán principalmente:
+En la tarea de integración Firebase de Foro 2 se reemplazarán principalmente:
 
 - `src/services/authService.js` por Firebase Authentication y perfil Firestore;
 - `src/services/catalogService.js` por consultas permitidas a negocios/categorías/productos;
@@ -121,6 +122,11 @@ Para Foro 2 se reemplazarán principalmente:
 
 No se debe confiar en precios, identidad, rol o propiedad enviados por el teléfono. La creación
 real de pedidos debe seguir validándose server-side mediante Firebase Admin, igual que en web.
+
+Durante pruebas integradas, web y móvil apuntarán al mismo proyecto Firebase para compartir UIDs,
+perfiles y datos. La configuración del SDK móvil usará variables públicas `EXPO_PUBLIC_*`; nunca se
+incluirá una Service Account ni `FIREBASE_SERVICE_ACCOUNT_JSON` en Expo. Consulta
+`../docs/FIREBASE_SETUP.md` para la preparación y los límites de seguridad.
 
 ## Diseño y accesibilidad
 
@@ -146,7 +152,7 @@ errores de Metro. `dist/` y `.expo/` están ignorados por Git. Las 18 pruebas ac
 validaciones, invariantes del carrito, almacenamiento runtime de pedidos y selección de flujo por
 rol.
 
-## Limitaciones de Foro 1
+## Limitaciones heredadas del avance de Foro 1
 
 - No hay persistencia después de reiniciar la app; los pedidos solo sobreviven refresh durante la
   ejecución actual.

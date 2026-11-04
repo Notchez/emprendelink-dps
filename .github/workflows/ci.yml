@@ -14,7 +14,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -25,12 +25,27 @@ jobs:
         with:
           node-version: 24.21.0
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            mobile/package-lock.json
 
-      - name: Install dependencies
+      - name: Install web dependencies
         run: npm ci
 
-      - name: Run automated tests
+      - name: Run web tests
         run: npm test
 
-      - name: Lint and build
+      - name: Lint and build web app
         run: npm run check
+
+      - name: Install mobile dependencies
+        working-directory: mobile
+        run: npm ci
+
+      - name: Run mobile tests
+        working-directory: mobile
+        run: npm test
+
+      - name: Export Android bundle
+        working-directory: mobile
+        run: npm run export:android

@@ -2,7 +2,7 @@
   "name": "emprendelink-dps",
   "version": "0.1.0",
   "private": true,
-  "description": "EmprendeLink - Proyecto de Cátedra DPS941, Etapa 2",
+  "description": "EmprendeLink - Proyecto multiplataforma de Cátedra DPS941",
   "engines": {
     "node": "24.x"
   },
