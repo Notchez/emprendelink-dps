@@ -90,7 +90,7 @@ export function RegisterScreen({ navigation }) {
         <PasswordInput label="Contraseña" value={values.password} onChangeText={(value) => change("password", value)} error={errors.password} autoComplete="new-password" placeholder="8+ caracteres, letra y número" />
         <PasswordInput label="Confirmar contraseña" value={values.confirmPassword} onChangeText={(value) => change("confirmPassword", value)} error={errors.confirmPassword} autoComplete="new-password" returnKeyType="done" onSubmitEditing={() => void submit()} placeholder="Repite tu contraseña" />
         <AppButton title="Crear mi cuenta" onPress={() => void submit()} loading={loading} />
-        <Text style={styles.disclaimer}>Esta entrega utiliza autenticación temporal en memoria. Firebase Authentication se conectará en Foro 2 sin cambiar estas pantallas.</Text>
+        <Text style={styles.disclaimer}>La cuenta se creará en Firebase Authentication y tu perfil se guardará en Firestore.</Text>
       </View>
 
       <View style={styles.footer}>

@@ -154,11 +154,8 @@ Los valores deben ir en `.env.local`.
 
 ## 4.1 Estado y preparación de la aplicación móvil
 
-La aplicación de `mobile/` todavía utiliza services mock. Esta guía prepara la integración de Foro 2,
-pero no afirma que Firebase móvil ya esté implementado.
-
-Cuando se realice esa integración, se registrará una aplicación Firebase para la plataforma que se
-vaya a compilar y se conservará la separación actual:
+La aplicación de `mobile/` usa Firebase Authentication y Firestore mediante Firebase JS SDK. Para
+Google Sign-In también registra la aplicación nativa que se vaya a compilar. Se conserva esta separación:
 
 ```text
 Pantallas
@@ -171,7 +168,7 @@ Firebase Authentication, consultas permitidas de Firestore o API web
 ```
 
 No se debe importar Firebase directamente desde las pantallas ni mover Firebase Admin al teléfono.
-Los services móviles actuales son la frontera que se reemplazará en la tarea de integración.
+Los services móviles son la frontera implementada para esas dependencias.
 
 ## 4.2 `NEXT_PUBLIC_*` y `EXPO_PUBLIC_*`
 
@@ -190,9 +187,20 @@ reglas de Firestore y la validación server-side.
 No copies `FIREBASE_SERVICE_ACCOUNT_JSON` a una variable `EXPO_PUBLIC_*`. Una variable con ese
 prefijo queda incluida en el bundle móvil y puede ser inspeccionada por cualquier usuario.
 
-Las variables `EXPO_PUBLIC_*` concretas se añadirán cuando se implemente Firebase en React Native,
-junto con el código que las consume. Hasta entonces no hace falta crear una configuración móvil
-ficticia ni añadir Firebase al `package.json` de `mobile/`.
+Las variables concretas están documentadas en `mobile/.env.example`. Copia ese archivo a
+`mobile/.env` y completa tus valores públicos. `EXPO_PUBLIC_API_BASE_URL` debe ser accesible desde el
+dispositivo; `localhost` dentro de Android no representa la computadora anfitriona.
+
+## 4.3 Google Sign-In móvil
+
+Habilita Google en Authentication y registra Android con el paquete `sv.edu.udb.emprendelink`.
+Agrega las huellas SHA-1/SHA-256 del certificado que firma el development build. Coloca
+`google-services.json` en `mobile/`; el archivo está ignorado por Git. Para iOS usa el bundle ID
+equivalente y `GoogleService-Info.plist`.
+
+Configura también `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` con el OAuth Client ID de tipo Web. Google
+Sign-In contiene código nativo: requiere un development build con los plugins de `mobile/app.json`
+y no funciona dentro de Expo Go.
 
 ---
 
@@ -461,7 +469,8 @@ cd mobile
 npm ci
 ```
 
-Esto instala el estado móvil actual; todavía no agrega Firebase a React Native.
+Esto instala también Firebase JS SDK, AsyncStorage, expo-dev-client y Google Sign-In en las versiones
+fijadas por `mobile/package-lock.json`.
 
 ---
 
@@ -476,7 +485,7 @@ npm test
 Actualmente deben pasar:
 
 ```text
-12 tests
+la suite web completa
 ```
 
 Luego:
@@ -518,7 +527,8 @@ npm test
 npm run export:android
 ```
 
-Estas pruebas siguen usando datos en memoria y no requieren credenciales Firebase.
+Las pruebas usan dependencias simuladas y no requieren credenciales ni un Firebase real. El export
+comprueba el bundle, pero Google Sign-In debe verificarse manualmente en un development build.
 
 ---
 
@@ -748,7 +758,7 @@ Durante el desarrollo cotidiano cada integrante puede mantener su Firebase indep
 prueba integrada, la web y el móvil deben usar temporalmente la configuración pública del mismo
 proyecto Firebase y el mismo contrato de colecciones.
 
-El resultado esperado de la integración futura es:
+El resultado esperado de la integración implementada es:
 
 - una cuenta autenticada representa el mismo UID en ambas aplicaciones;
 - el perfil vive en `users/{uid}` y conserva uno de los roles oficiales;

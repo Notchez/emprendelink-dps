@@ -21,7 +21,7 @@ export function OrdersProvider({ children }) {
     setLoading(true);
     setError("");
     try {
-      const result = await orderService.getCustomerOrders(user.id);
+      const result = await orderService.getCustomerOrders();
       if (!result.success) throw new Error(result.error?.message);
       setOrders(result.data);
     } catch (failure) {
@@ -35,12 +35,12 @@ export function OrdersProvider({ children }) {
     void refresh();
   }, [refresh]);
 
-  const placeOrder = useCallback(async ({ business, items, subtotal }) => {
+  const placeOrder = useCallback(async ({ business, items }) => {
     if (user?.role && user.role !== ROLES.CUSTOMER) {
       throw new Error("Solo una cuenta de cliente puede confirmar pedidos.");
     }
     if (!user) throw new Error("Debes iniciar sesión para confirmar un pedido.");
-    const result = await orderService.createMockOrder({ user, business, items, subtotal });
+    const result = await orderService.createOrder({ user, business, items });
     if (!result.success) throw new Error(result.error?.message || "No se pudo crear el pedido.");
     setOrders((current) => [result.data, ...current]);
     return result.data;

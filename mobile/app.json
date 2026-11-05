@@ -3,6 +3,7 @@
     "name": "EmprendeLink",
     "slug": "emprendelink-mobile",
     "version": "1.0.0",
+    "scheme": "emprendelink",
     "orientation": "portrait",
     "icon": "./assets/emprendelink-icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +23,9 @@
       "favicon": "./assets/emprendelink-icon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-dev-client",
+      "@react-native-google-signin/google-signin"
     ]
   }
 }

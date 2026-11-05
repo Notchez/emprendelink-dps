@@ -254,16 +254,14 @@ Context / hooks / validaciones
         ↓
 Services
         ↓
-Datos temporales compatibles con los contratos actuales
+Firebase cliente / API Next.js protegida
 ```
 
-La aplicación móvil implementa login, registro, navegación por tabs, negocios, catálogo,
-detalle de producto, carrito, creación temporal de pedidos, listado y detalle de pedidos,
-perfil y cierre de sesión. Aún usa datos mock en memoria. Firebase móvil se integrará en una tarea
-posterior sustituyendo los services,
-sin trasladar acceso a datos dentro de las pantallas.
+La aplicación móvil implementa login, registro, Google Sign-In, sesión persistente, navegación por
+tabs, catálogo Firestore, carrito y pedidos reales mediante los Route Handlers. El historial y el
+detalle también se consultan en la API, sin trasladar acceso a datos dentro de las pantallas.
 
-La integración prevista compartirá Firebase Authentication y Firestore con la web durante pruebas
+La integración comparte Firebase Authentication y Firestore con la web durante pruebas
 integradas. Las operaciones privilegiadas de pedidos seguirán usando la API de Next.js y Firebase
 Admin en el servidor; ninguna credencial administrativa debe incluirse en la aplicación móvil.
 
@@ -275,7 +273,8 @@ npm ci
 npm start
 ```
 
-En Expo CLI presiona `a` para Android o escanea el QR con Expo Go compatible con SDK 57.
+Correo/contraseña puede ejecutarse con el SDK cliente; Google Sign-In requiere un development build
+porque incorpora código nativo y no funciona en Expo Go.
 Consulta la guía completa en `mobile/README.md`.
 
 Validación móvil:
