@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { authService } from "../services/authService";
 
@@ -10,42 +10,76 @@ function unwrap(result) {
 }
 
 export function AuthProvider({ children }) {
+  const [identity, setIdentity] = useState(null);
   const [user, setUser] = useState(null);
+  const [profileRequired, setProfileRequired] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [sessionError, setSessionError] = useState("");
 
-  const login = useCallback(async (values) => {
+  const applySession = useCallback((session) => {
+    setIdentity(session.identity);
+    setUser(session.user);
+    setProfileRequired(session.profileRequired);
+    setSessionError("");
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let unsubscribe;
+    authService.subscribe((result) => {
+      if (!active) return;
+      if (result.success) applySession(result.data);
+      else {
+        setIdentity(null);
+        setUser(null);
+        setProfileRequired(false);
+        setSessionError(result.error?.message || "No se pudo restaurar la sesión.");
+      }
+      setInitializing(false);
+    }).then((stop) => { unsubscribe = stop; }).catch((error) => {
+      if (!active) return;
+      setSessionError(error?.message || "No se pudo iniciar Firebase.");
+      setInitializing(false);
+    });
+    return () => {
+      active = false;
+      if (unsubscribe) unsubscribe();
+    };
+  }, [applySession]);
+
+  const runAuthAction = useCallback(async (action) => {
     setLoading(true);
+    setSessionError("");
     try {
-      const account = unwrap(await authService.login(values));
-      setUser(account);
-      return account;
+      const session = unwrap(await action());
+      applySession(session);
+      return session;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applySession]);
 
-  const register = useCallback(async (values) => {
-    setLoading(true);
-    try {
-      const account = unwrap(await authService.register(values));
-      setUser(account);
-      return account;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const login = useCallback((values) => runAuthAction(() => authService.login(values)), [runAuthAction]);
+  const register = useCallback((values) => runAuthAction(() => authService.register(values)), [runAuthAction]);
+  const loginWithGoogle = useCallback(() => runAuthAction(() => authService.loginWithGoogle()), [runAuthAction]);
+  const completeProfile = useCallback((values) => runAuthAction(() => authService.completeProfile(values)), [runAuthAction]);
 
   const logout = useCallback(async () => {
     setLoading(true);
     try {
       unwrap(await authService.logout());
-      setUser(null);
+      applySession({ identity: null, user: null, profileRequired: false });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applySession]);
 
-  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading, login, register, logout]);
+  const value = useMemo(() => ({
+    identity, user, profileRequired, initializing, loading, sessionError,
+    login, register, loginWithGoogle, completeProfile, logout,
+  }), [identity, user, profileRequired, initializing, loading, sessionError, login, register, loginWithGoogle, completeProfile, logout]);
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

@@ -1,8 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StyleSheet, View } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
+import { LoadingState } from "../components/StateView";
+import { CompleteProfileScreen } from "../screens/auth/CompleteProfileScreen";
 import { BusinessesScreen } from "../screens/app/BusinessesScreen";
 import { CartScreen } from "../screens/app/CartScreen";
 import { CatalogScreen } from "../screens/app/CatalogScreen";
@@ -104,7 +107,10 @@ function CustomerNavigator() {
 }
 
 export function RootNavigator() {
-  const { user } = useAuth();
+  const { user, profileRequired, initializing } = useAuth();
+
+  if (initializing) return <View style={styles.loading}><LoadingState message="Restaurando sesión..." /></View>;
+  if (profileRequired) return <CompleteProfileScreen />;
   const flow = getRootFlow(user);
 
   if (flow === ROOT_FLOWS.AUTH) return <AuthNavigator />;
@@ -113,3 +119,7 @@ export function RootNavigator() {
   // ENTREPRENEUR, ADMIN y cualquier rol desconocido quedan fuera del flujo CUSTOMER.
   return <RolePendingScreen />;
 }
+
+const styles = StyleSheet.create({
+  loading: { flex: 1, justifyContent: "center", backgroundColor: colors.background },
+});

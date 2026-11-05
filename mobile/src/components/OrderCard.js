@@ -12,7 +12,7 @@ export function OrderCard({ order, onPress }) {
       <View style={styles.header}>
         <View style={styles.icon}><Ionicons name="receipt-outline" size={23} color={colors.primary} /></View>
         <View style={styles.heading}>
-          <Text numberOfLines={1} style={styles.business}>{order.businessName}</Text>
+          <Text numberOfLines={1} style={styles.business}>{order.businessName || "Emprendimiento"}</Text>
           <Text style={styles.id}>#{order.id.replace("order_", "")}</Text>
         </View>
         <StatusBadge status={order.status} />

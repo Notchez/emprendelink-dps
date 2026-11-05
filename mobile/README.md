@@ -1,165 +1,118 @@
-# EmprendeLink Mobile — preparación de Etapa 3 Foro 2
+# EmprendeLink Mobile — Etapa 3 Foro 2
 
-Aplicación móvil académica de EmprendeLink construida con React Native y Expo. Esta entrega
-demuestra autenticación temporal, navegación y el módulo principal de cliente. La auditoría de Foro
-2 mantiene todavía los services en memoria; la integración Firebase se realizará en una tarea
-posterior.
+Aplicación React Native con Expo SDK 57 integrada con el mismo Firebase y la misma API de Next.js
+que la aplicación web.
 
-## Requisitos
+## Funcionalidad
 
-- Node.js 24.x, igual que el proyecto web.
-- npm.
-- Android Studio con un emulador, o un teléfono Android con Expo Go compatible con SDK 57.
-- Windows, macOS o Linux para ejecutar Expo. El simulador de iOS requiere macOS.
+- Firebase Authentication con correo/contraseña y sesión persistente en AsyncStorage.
+- Google Sign-In nativo enlazado a Firebase Authentication.
+- creación y consulta de perfiles `users/{uid}`; el registro público nunca ofrece ADMIN.
+- rechazo y cierre de sesión de perfiles con `active !== true`.
+- negocios, categorías y productos activos leídos desde Firestore.
+- carrito local; creación, listado, detalle e historial de pedidos mediante `/api/orders`.
+- ID token de Firebase enviado como `Authorization: Bearer <token>` a la API.
 
-## Instalación
+Los precios, el cliente y la comisión nunca se aceptan como autoridad desde el teléfono: los Route
+Handlers vuelven a consultar y validar esos datos antes de escribir con Firebase Admin.
 
-Desde la raíz del repositorio:
+El contrato de pedidos del backend no incluye `businessName`. `orderService` conserva ese contrato y
+resuelve el nombre actual mediante `catalogService`; `businessName` se agrega únicamente al modelo de
+presentación móvil. La lista consulta los negocios activos una sola vez y solo resuelve por ID los
+negocios históricos que ya no estén activos.
+
+## Preparación local
 
 ```bash
 cd mobile
 npm ci
+Copy-Item .env.example .env
 ```
 
-No ejecutes `npm audit fix --force`: podría cambiar las versiones compatibles con Expo.
+Completa `.env` con la configuración pública de la aplicación Web registrada en Firebase y con una
+URL de la API accesible desde el dispositivo. No agregues una Service Account, claves privadas,
+contraseñas ni tokens. En Android Emulator, el Next.js local normalmente se alcanza con
+`http://10.0.2.2:3000`; un teléfono físico necesita la IP LAN de la computadora.
 
-## Ejecutar la aplicación
+En Firebase Console habilita Email/Password y Google como proveedores. Publica también las reglas
+del repositorio. Web y móvil deben usar el mismo `projectId` durante una prueba integrada.
+
+## Google Sign-In y development build
+
+Google Sign-In contiene código nativo y no funciona en Expo Go. La configuración de plugins ya está
+en `app.json` y el perfil de development client en `eas.json`. Para Android:
+
+1. registra la app `sv.edu.udb.emprendelink` en Firebase;
+2. agrega las huellas SHA-1/SHA-256 del certificado de desarrollo;
+3. descarga `google-services.json` dentro de `mobile/` (está ignorado por Git);
+4. configura `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` con el OAuth Client ID de tipo Web;
+5. genera e instala un development build y luego ejecuta `npm start`.
+
+Para iOS registra `sv.edu.udb.emprendelink`, usa `GoogleService-Info.plist` y configura el URL scheme
+que corresponda antes del build. Los archivos nativos están ignorados para evitar compartir por
+accidente la configuración de un proyecto personal.
+
+### Compatibilidad verificada con Expo SDK 57
+
+| Paquete | Versión fijada | Comprobación |
+| --- | --- | --- |
+| `expo` | `57.0.30` | SDK 57 usa React Native 0.86 y React 19.2 |
+| `firebase` | `12.18.0` | Expo requiere Firebase 12 o posterior para evitar errores ESM |
+| `@react-native-async-storage/async-storage` | `2.2.0` | versión incluida por Expo SDK 57 y usada por `getReactNativePersistence` |
+| `expo-dev-client` | `57.0.20` | versión incluida por Expo SDK 57 |
+| `@react-native-google-signin/google-signin` | `17.0.0` | declara soporte para Expo `>=52.0.40` |
+
+Al ejecutar `expo install --check`, Expo recomienda `expo@~57.0.31` en lugar de la versión bloqueada
+`57.0.30`. No se actualizó porque esta tarea no autoriza cambios adicionales de dependencias. Ambas
+pertenecen a SDK 57 y el bundle Android compila; el ajuste de parche debe tratarse en una tarea de
+mantenimiento aprobada junto con su lockfile.
+
+Requisitos manuales de Firebase Console y del build:
+
+1. habilitar **Email/Password** y **Google** en Authentication;
+2. registrar la app Web para obtener las variables públicas `EXPO_PUBLIC_FIREBASE_*`;
+3. registrar Android/iOS con los identificadores definidos en `app.json`;
+4. agregar a Android las huellas SHA-1/SHA-256 del certificado de desarrollo y, al publicar, las
+   huellas de Play App Signing;
+5. descargar `google-services.json` o `GoogleService-Info.plist`; `app.config.js` los incorpora solo
+   cuando existen localmente y Git los ignora;
+6. usar el OAuth Client ID de tipo Web en `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`;
+7. reconstruir el development build cuando cambien plugins, identificadores o archivos nativos.
+
+Firebase JS SDK permite correo/contraseña y Firestore con Expo. El development build es obligatorio
+para Google Sign-In porque `@react-native-google-signin/google-signin` agrega un módulo nativo.
+
+## Ejecución y verificación
 
 ```bash
 npm start
+npm test
+npm run export:android
 ```
 
-Expo mostrará un código QR y opciones interactivas:
-
-- presiona `a` para abrir un emulador Android;
-- escanea el QR con Expo Go en un dispositivo de la misma red;
-- si la red local bloquea la conexión, prueba `npx expo start --tunnel`;
-- `npm run android` inicia Expo e intenta abrir Android directamente.
-
-Cuenta de demostración:
-
-```text
-Correo: cliente@emprendelink.demo
-Contraseña: Demo1234
-```
-
-También puedes crear una cuenta desde Registro. Las cuentas creadas y los pedidos nuevos viven
-solo durante la ejecución actual porque Foro 1 usa servicios mock en memoria. Un pedido creado sí
-permanece al hacer pull-to-refresh o al salir y volver a Pedidos durante esa ejecución; se pierde al
-reiniciar la aplicación.
-
-## Flujo funcional
-
-```text
-Login / Registro
-        ├── CUSTOMER → Tabs: Negocios · Pedidos · Perfil
-        │                    ↓
-        │       Negocio → Catálogo → Producto → Carrito → Pedido
-        │                                             ↓
-        │                                     Mis pedidos → Detalle
-        └── ENTREPRENEUR / ADMIN → aviso de módulo futuro → Cerrar sesión
-```
-
-No hay botones decorativos: las acciones principales navegan, validan, modifican el carrito,
-crean un pedido temporal o cierran sesión.
-
-## Pantallas
-
-- `LoginScreen`: validación, error de credenciales, loading, mostrar/ocultar contraseña y acceso demo.
-- `RegisterScreen`: rol CUSTOMER/ENTREPRENEUR, validaciones y registro temporal.
-- `RolePendingScreen`: salida segura y profesional para ENTREPRENEUR/ADMIN sin suplantar el flujo
-  CUSTOMER; informa el alcance y permite cerrar sesión.
-- `BusinessesScreen`: búsqueda, loading, error, vacío y acceso a catálogo.
-- `CatalogScreen`: búsqueda, categorías, productos y acceso al carrito.
-- `ProductDetailScreen`: imagen, cantidad, total y agregado al carrito.
-- `CartScreen`: cantidades, eliminación, subtotal y confirmación de pedido temporal.
-- `OrdersScreen`: listado, pull-to-refresh, estados y acceso al detalle; conserva pedidos creados
-  durante la ejecución actual.
-- `OrderDetailScreen`: productos, subtotal y entrega.
-- `ProfileScreen`: datos de la cuenta y logout.
+`npm test` usa adaptadores en memoria: no consulta Firebase real ni la API. `export:android` valida
+que Metro pueda producir el bundle. Para probar Google se necesita el development build descrito
+arriba; correo/contraseña y Firestore usan Firebase JS SDK.
 
 ## Arquitectura
 
 ```text
-mobile/
-├── App.js
-├── src/
-│   ├── components/   UI reutilizable
-│   ├── constants/    roles y estados oficiales
-│   ├── context/      sesión, carrito y pedidos
-│   ├── data/         datos temporales centralizados
-│   ├── hooks/        carga de negocios y catálogo
-│   ├── navigation/   selección por rol, auth stack, app stack y bottom tabs
-│   ├── screens/      pantallas auth, módulo cliente y estado de roles futuros
-│   ├── services/     frontera reemplazable de datos
-│   ├── theme/        colores, spacing, tipografía, radios y sombras
-│   └── utils/        validaciones y formatos puros
-└── tests/            pruebas unitarias sin Firebase
+UI
+↓
+Context / hooks / validación
+↓
+Services
+├── Firebase Authentication + Firestore (operaciones cliente permitidas)
+└── Next.js Route Handlers (pedidos privilegiados)
+    ↓
+    Firebase Admin
 ```
 
-El flujo obligatorio del proyecto también se aplica al móvil:
+`src/lib/firebase/client.js` es la única inicialización del SDK. Los services aceptan dependencias
+inyectables para probar autenticación, consultas y HTTP sin tocar servicios reales.
 
-```text
-UI → Context/hooks/lógica → Services → mockData
-```
+## Alcance pendiente
 
-Las pantallas no importan `mockData`. Los services devuelven el mismo envelope documentado
-por la API web: `success`, `data` y `error`.
-
-## Contratos y Firebase futuro
-
-Los mocks respetan `../docs/DATA_CONTRACTS.md`: `User`, `Business`, `Category`, `Product`,
-`Order` y `Order Item`. Los roles se limitan a `ADMIN`, `ENTREPRENEUR` y `CUSTOMER`; los
-pedidos usan únicamente estados oficiales. `orderService` inicializa una colección runtime a
-partir del seed sin mutar `mockOrders`, guarda allí cada pedido nuevo y usa esa misma colección al
-refrescar.
-
-En la tarea de integración Firebase de Foro 2 se reemplazarán principalmente:
-
-- `src/services/authService.js` por Firebase Authentication y perfil Firestore;
-- `src/services/catalogService.js` por consultas permitidas a negocios/categorías/productos;
-- `src/services/orderService.js` por los Route Handlers seguros de pedidos.
-
-No se debe confiar en precios, identidad, rol o propiedad enviados por el teléfono. La creación
-real de pedidos debe seguir validándose server-side mediante Firebase Admin, igual que en web.
-
-Durante pruebas integradas, web y móvil apuntarán al mismo proyecto Firebase para compartir UIDs,
-perfiles y datos. La configuración del SDK móvil usará variables públicas `EXPO_PUBLIC_*`; nunca se
-incluirá una Service Account ni `FIREBASE_SERVICE_ACCOUNT_JSON` en Expo. Consulta
-`../docs/FIREBASE_SETUP.md` para la preparación y los límites de seguridad.
-
-## Diseño y accesibilidad
-
-La identidad visual deriva de la experiencia cliente web actual: azul `#2563EB`, fondos claros,
-tarjetas, radios amplios y navegación inferior. No se encontró un enlace de Figma accesible en
-el repositorio, por lo que no se afirma una comparación visual directa con el archivo original.
-El icono móvil combina un emprendimiento local con eslabones para representar la conexión entre
-negocios y clientes; no contiene texto para conservar legibilidad en tamaños pequeños.
-
-Se incluyeron áreas seguras, scroll, adaptación al teclado, `FlatList`, targets táctiles de al
-menos 40–50 px, labels de accesibilidad, feedback de loading, errores, estados vacíos y contraste.
-
-## Validación técnica
-
-```bash
-npm test
-npm run export:android
-npx expo-doctor
-```
-
-`export:android` genera un bundle de producción en `mobile/dist/` para detectar imports o
-errores de Metro. `dist/` y `.expo/` están ignorados por Git. Las 18 pruebas actuales cubren
-validaciones, invariantes del carrito, almacenamiento runtime de pedidos y selección de flujo por
-rol.
-
-## Limitaciones heredadas del avance de Foro 1
-
-- No hay persistencia después de reiniciar la app; los pedidos solo sobreviven refresh durante la
-  ejecución actual.
-- No hay Firebase Authentication ni Google Sign-In móvil.
-- No se realizan lecturas o escrituras Firestore desde el móvil.
-- El módulo móvil implementado se concentra en la experiencia de cliente. El rol emprendedor puede
-  registrarse, pero recibe una pantalla informativa con logout y no puede acceder a negocios,
-  carrito ni pedidos como CUSTOMER. El panel móvil de emprendedor corresponde a trabajo futuro.
-- Una eventual sesión ADMIN recibe la misma salida segura; el registro público no ofrece ese rol.
-- Las imágenes de demostración requieren conexión a internet; existe fallback visual si fallan.
+El flujo funcional móvil de esta etapa es CUSTOMER. ENTREPRENEUR y ADMIN se enrutan a una salida
+segura con logout; su administración completa continúa en la web. Debe probarse manualmente Google
+Sign-In en un development build firmado y con las huellas del proyecto Firebase de cada integrante.

@@ -27,7 +27,7 @@ export function CartScreen({ navigation }) {
     if (!business || items.length === 0) return;
     setSaving(true);
     try {
-      const order = await placeOrder({ business, items, subtotal });
+      const order = await placeOrder({ business, items });
       clearCart();
       Alert.alert("Pedido creado", `Tu pedido ${order.id.replace("order_", "#")} quedó pendiente.`, [
         { text: "Ver pedidos", onPress: () => navigation.navigate("MainTabs", { screen: "Orders" }) },
@@ -88,7 +88,7 @@ export function CartScreen({ navigation }) {
       />
       <View style={styles.summary}>
         <View style={styles.summaryRow}><Text style={styles.summaryLabel}>Subtotal</Text><Text style={styles.summaryValue}>{formatMoney(subtotal)}</Text></View>
-        <Text style={styles.notice}>Demostración académica: el pedido se guarda temporalmente en memoria.</Text>
+        <Text style={styles.notice}>El servidor verificará productos, precios y disponibilidad antes de crear el pedido.</Text>
         <AppButton title="Confirmar pedido" onPress={() => void confirmOrder()} loading={saving} />
       </View>
     </SafeAreaView>

@@ -7,3 +7,5 @@ npm-debug.log*
 *.p12
 *.key
 *.mobileprovision
+google-services.json
+GoogleService-Info.plist

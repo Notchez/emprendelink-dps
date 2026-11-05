@@ -31,10 +31,6 @@ export function ProfileScreen() {
         <InfoRow icon="location-outline" label="Dirección" value={user?.address || "No registrada"} />
         <InfoRow icon="chatbox-outline" label="Indicaciones" value={user?.deliveryInstructions || "Sin indicaciones"} />
       </View>
-      <View style={styles.note}>
-        <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
-        <Text style={styles.noteText}>En Foro 1 los datos viven en memoria. El servicio está preparado para sustituirse por Firebase en Foro 2.</Text>
-      </View>
       <AppButton title="Cerrar sesión" onPress={requestLogout} loading={loading} variant="ghost" />
     </ScreenContainer>
   );

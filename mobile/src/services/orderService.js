@@ -1,60 +1,81 @@
-import { ORDER_STATUS } from "../constants/orderStatus.js";
-import { mockBusinesses, mockOrders } from "../data/mockData.js";
-import { success, wait } from "./serviceResponse.js";
+import { createApiClient } from "./apiClient.js";
+import { authService } from "./authService.js";
+import { catalogService } from "./catalogService.js";
+import { failure, success } from "./serviceResponse.js";
 
-function cloneOrder(order) {
+const UNKNOWN_BUSINESS = "Negocio no disponible";
+
+function withBusinessName(order, names) {
   return {
     ...order,
-    customer: order.customer ? { ...order.customer } : null,
-    items: order.items.map((item) => ({ ...item })),
+    businessName: names.get(order.businessId) || UNKNOWN_BUSINESS,
   };
 }
 
-export function createOrderService({ initialOrders = mockOrders, waitForDelay = wait } = {}) {
-  let runtimeOrders = initialOrders.map(cloneOrder);
+export function createOrderService({
+  client = createApiClient({ getToken: () => authService.getIdToken() }),
+  catalog = catalogService,
+} = {}) {
+  async function getBusinessNames(orders) {
+    const ids = [...new Set(orders.map((order) => order.businessId).filter(Boolean))];
+    const names = new Map();
+    if (ids.length === 0) return success(names);
+
+    const publicResult = await catalog.getBusinesses();
+    if (!publicResult.success) {
+      return failure("ORDER_BUSINESS_READ_ERROR", publicResult.error?.message || "No se pudieron cargar los negocios.");
+    }
+    for (const business of publicResult.data) names.set(business.id, business.name);
+
+    const missingIds = ids.filter((id) => !names.has(id));
+    const missingResults = await Promise.all(missingIds.map((id) => catalog.getBusinessById(id)));
+    const failedResult = missingResults.find((result) => !result.success);
+    if (failedResult) {
+      return failure("ORDER_BUSINESS_READ_ERROR", failedResult.error?.message || "No se pudieron cargar los negocios.");
+    }
+    missingResults.forEach((result) => {
+      if (result.data) names.set(result.data.id, result.data.name);
+    });
+    return success(names);
+  }
 
   return {
-    async getCustomerOrders(customerId) {
-      await waitForDelay();
-      const orders = runtimeOrders
-        .filter((order) => order.customerId === customerId)
-        .map((order) => ({
-          ...cloneOrder(order),
-          businessName:
-            order.businessName ??
-            mockBusinesses.find((business) => business.id === order.businessId)?.name ??
-            "Negocio",
-        }));
-      return success(orders);
+    async getCustomerOrders() {
+      const result = await client.request("/api/orders");
+      if (!result.success || result.data.length === 0) return result;
+      const namesResult = await getBusinessNames(result.data);
+      if (!namesResult.success) return namesResult;
+      return success(result.data.map((order) => withBusinessName(order, namesResult.data)));
     },
 
-    async createMockOrder({ user, business, items, subtotal }) {
-      await waitForDelay(700);
-      const order = {
-        id: `order_mock_${Date.now()}`,
-        businessId: business.id,
-        businessName: business.name,
-        customerId: user.id,
-        customer: { name: user.name, phone: user.phone, email: user.email },
-        items: items.map((item) => ({
-          productId: item.id,
-          productName: item.name,
-          quantity: item.quantity,
-          unitPrice: item.price,
-          lineTotal: Number((item.price * item.quantity).toFixed(2)),
-        })),
-        subtotal: Number(subtotal.toFixed(2)),
-        deliveryAddress: user.address || "Dirección pendiente",
-        notes: user.deliveryInstructions || null,
-        status: ORDER_STATUS.PENDING,
-        createdAt: new Date().toISOString(),
-        commissionPlanId: business.planId,
-        commissionPlanName: "Plan de demostración",
-        commissionRate: 0.05,
-      };
+    async getOrderById(orderId) {
+      const result = await client.request(`/api/orders/${encodeURIComponent(orderId)}`);
+      if (!result.success) return result;
+      const businessResult = await catalog.getBusinessById(result.data.businessId);
+      if (!businessResult.success) {
+        return failure("ORDER_BUSINESS_READ_ERROR", businessResult.error?.message || "No se pudo cargar el negocio.");
+      }
+      const names = new Map();
+      if (businessResult.data) names.set(businessResult.data.id, businessResult.data.name);
+      return success(withBusinessName(result.data, names));
+    },
 
-      runtimeOrders = [cloneOrder(order), ...runtimeOrders];
-      return success(cloneOrder(order));
+    getOrderHistory(orderId) {
+      return client.request(`/api/orders/${encodeURIComponent(orderId)}/history`);
+    },
+
+    async createOrder({ user, business, items }) {
+      const result = await client.request("/api/orders", {
+        method: "POST",
+        body: JSON.stringify({
+          businessId: business.id,
+          items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
+          deliveryAddress: user.address,
+          notes: user.deliveryInstructions || null,
+        }),
+      });
+      if (!result.success) return result;
+      return success({ ...result.data, businessName: business.name });
     },
   };
 }

@@ -4,7 +4,7 @@ EmprendeLink contiene dos aplicaciones que comparten contratos de datos y reglas
 
 ```text
 Web: Next.js + React + Firebase
-Móvil: React Native + Expo (Firebase pendiente de integración)
+Móvil: React Native + Expo + Firebase JS SDK
 ```
 
 ## Aplicación web
@@ -60,8 +60,8 @@ Ubicación principal:
 
 - `mobile/src/screens` y `mobile/src/components`: presentación;
 - `mobile/src/context`, `mobile/src/hooks` y `mobile/src/utils`: estado y lógica;
-- `mobile/src/services`: frontera de acceso a datos;
-- `mobile/src/data/mockData.js`: persistencia temporal de Foro 1.
+- `mobile/src/services`: frontera de acceso a Firebase cliente y API web;
+- `mobile/src/lib/firebase/client.js`: inicialización única del SDK y persistencia de Auth.
 
 ```text
 Pantalla móvil
@@ -70,11 +70,11 @@ Context / hook / validación
   ↓
 Service
   ↓
-Mock temporal hoy / Firebase y API web en la integración futura
+Firebase Authentication / Firestore permitido / API web protegida
 ```
 
-Las pantallas móviles no deben importar el mock ni Firebase directamente. La integración pendiente
-reemplazará la implementación interna de los services sin cambiar el flujo de UI.
+Las pantallas móviles no importan Firebase directamente. Authentication y lecturas públicas usan el
+SDK cliente detrás de services; pedidos e historial pasan por la API web con un Firebase ID token.
 
 ## Integración web y móvil
 
