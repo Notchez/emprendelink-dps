@@ -22,6 +22,16 @@ export function createCatalogService({ loadDependencies = loadFirestoreDependenc
       }
     },
 
+    async getBusinessById(businessId) {
+      try {
+        const { db, doc, getDoc } = await loadDependencies();
+        const snapshot = await getDoc(doc(db, "businesses", businessId));
+        return success(snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null);
+      } catch (error) {
+        return failure("BUSINESS_READ_ERROR", error?.message || "No se pudo cargar el negocio.");
+      }
+    },
+
     async getCatalogByBusinessId(businessId) {
       try {
         const { db, collection, doc, getDoc, getDocs, query, where } = await loadDependencies();

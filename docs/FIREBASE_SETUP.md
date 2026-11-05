@@ -202,6 +202,16 @@ Configura también `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` con el OAuth Client ID de 
 Sign-In contiene código nativo: requiere un development build con los plugins de `mobile/app.json`
 y no funciona dentro de Expo Go.
 
+La combinación fijada se verificó para Expo SDK 57: `firebase@12.18.0` satisface el requisito de
+Firebase 12 o posterior; AsyncStorage 2.2.0 y expo-dev-client 57.0.20 coinciden con las versiones
+incluidas por el SDK; Google Sign-In 17.0.0 declara compatibilidad con Expo `>=52.0.40`. Cuando se
+cambie un plugin, archivo de servicios, package/bundle ID o certificado, hay que reconstruir el
+development build. Consulta `mobile/README.md` para la lista completa de pasos manuales.
+
+`expo install --check` recomienda actualmente el parche `expo@~57.0.31`; el repositorio conserva
+`57.0.30` hasta que el equipo autorice actualizar dependencia y lockfile. Esta diferencia no cambia
+el SDK mayor y el export Android actual se valida como parte de CI/local.
+
 ---
 
 # 5. Crear `.env.local`

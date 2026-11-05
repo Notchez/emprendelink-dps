@@ -22,3 +22,13 @@ test("errores de Firestore se devuelven en un envelope predecible", async () => 
   const service = createCatalogService({ loadDependencies: async () => { throw new Error("offline"); } });
   assert.equal((await service.getBusinesses()).error.code, "BUSINESS_READ_ERROR");
 });
+
+test("getBusinessById permite resolver el nombre de un negocio inactivo", async () => {
+  const service = createCatalogService({ loadDependencies: async () => ({
+    ...dependencies(),
+    getDoc: async () => document("business_1", { name: "Café", active: false }),
+  }) });
+  const result = await service.getBusinessById("business_1");
+  assert.equal(result.success, true);
+  assert.equal(result.data.name, "Café");
+});
