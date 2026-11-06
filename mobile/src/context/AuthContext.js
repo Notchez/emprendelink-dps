@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { authService } from "../services/authService";
+import { getAuthSessionState } from "../utils/sessionState";
 
 const AuthContext = createContext(null);
 
@@ -16,37 +17,54 @@ export function AuthProvider({ children }) {
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const [sessionError, setSessionError] = useState("");
+  const [sessionRecoverable, setSessionRecoverable] = useState(false);
+  const sessionRevision = useRef(0);
 
   const applySession = useCallback((session) => {
     setIdentity(session.identity);
     setUser(session.user);
     setProfileRequired(session.profileRequired);
-    setSessionError("");
+    setSessionError(session.sessionError || "");
+    setSessionRecoverable(session.sessionRecoverable === true);
   }, []);
+
+  const applySessionResult = useCallback((result, authenticatedIdentity = null) => {
+    applySession(getAuthSessionState(result, authenticatedIdentity));
+    setInitializing(false);
+  }, [applySession]);
 
   useEffect(() => {
     let active = true;
     let unsubscribe;
-    authService.subscribe((result) => {
+    authService.subscribe((result, authenticatedIdentity) => {
       if (!active) return;
-      if (result.success) applySession(result.data);
-      else {
-        setIdentity(null);
-        setUser(null);
-        setProfileRequired(false);
-        setSessionError(result.error?.message || "No se pudo restaurar la sesión.");
-      }
-      setInitializing(false);
-    }).then((stop) => { unsubscribe = stop; }).catch((error) => {
+      sessionRevision.current += 1;
+      applySessionResult(result, authenticatedIdentity);
+    }).then((stop) => {
+      if (active) unsubscribe = stop;
+      else stop();
+    }).catch((error) => {
       if (!active) return;
+      sessionRevision.current += 1;
       setSessionError(error?.message || "No se pudo iniciar Firebase.");
+      setSessionRecoverable(false);
       setInitializing(false);
     });
     return () => {
       active = false;
       if (unsubscribe) unsubscribe();
     };
-  }, [applySession]);
+  }, [applySessionResult]);
+
+  const retrySession = useCallback(async () => {
+    const revision = ++sessionRevision.current;
+    setInitializing(true);
+    setSessionError("");
+    const result = await authService.restoreSession();
+    if (revision !== sessionRevision.current) return;
+    const recoverableIdentity = result.error?.code === "USER_READ_ERROR" ? identity : null;
+    applySessionResult(result, recoverableIdentity);
+  }, [applySessionResult, identity]);
 
   const runAuthAction = useCallback(async (action) => {
     setLoading(true);
@@ -76,9 +94,9 @@ export function AuthProvider({ children }) {
   }, [applySession]);
 
   const value = useMemo(() => ({
-    identity, user, profileRequired, initializing, loading, sessionError,
-    login, register, loginWithGoogle, completeProfile, logout,
-  }), [identity, user, profileRequired, initializing, loading, sessionError, login, register, loginWithGoogle, completeProfile, logout]);
+    identity, user, profileRequired, initializing, loading, sessionError, sessionRecoverable,
+    login, register, loginWithGoogle, completeProfile, logout, retrySession,
+  }), [identity, user, profileRequired, initializing, loading, sessionError, sessionRecoverable, login, register, loginWithGoogle, completeProfile, logout, retrySession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

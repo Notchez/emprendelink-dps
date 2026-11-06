@@ -70,3 +70,82 @@ test("logout elimina la sesión mediante Firebase Auth", async () => {
   assert.equal(result.success, true);
   assert.equal(data.wasSignedOut(), true);
 });
+
+test("subscribe restaura una sesión persistida y su perfil", async () => {
+  const { dependencies } = fixture();
+  let onAuthStateChanged;
+  dependencies.onAuthStateChanged = (_auth, listener) => {
+    onAuthStateChanged = listener;
+    return () => {};
+  };
+  const events = [];
+  await createAuthService({ loadDependencies: async () => dependencies }).subscribe((result) => events.push(result));
+
+  await onAuthStateChanged(dependencies.auth.currentUser);
+
+  assert.equal(events.length, 1);
+  assert.equal(events[0].success, true);
+  assert.equal(events[0].data.identity.uid, "uid_1");
+  assert.equal(events[0].data.user.id, "uid_1");
+});
+
+test("un fallo temporal de Firestore conserva la identidad autenticada y permite recuperar el perfil", async () => {
+  const { dependencies, wasSignedOut } = fixture();
+  let onAuthStateChanged;
+  let profileAvailable = false;
+  dependencies.onAuthStateChanged = (_auth, listener) => {
+    onAuthStateChanged = listener;
+    return () => {};
+  };
+  dependencies.userService.getById = async () => profileAvailable
+    ? success({ id: "uid_1", role: "CUSTOMER", active: true })
+    : failure("USER_READ_ERROR", "Firestore no disponible.");
+  const events = [];
+  const service = createAuthService({ loadDependencies: async () => dependencies });
+  await service.subscribe((result, authenticatedIdentity) => events.push({ result, authenticatedIdentity }));
+
+  await onAuthStateChanged(dependencies.auth.currentUser);
+  assert.equal(events[0].result.success, false);
+  assert.equal(events[0].authenticatedIdentity.uid, "uid_1");
+  assert.equal(wasSignedOut(), false);
+
+  profileAvailable = true;
+  const recovered = await service.restoreSession();
+  assert.equal(recovered.success, true);
+  assert.equal(recovered.data.user.id, "uid_1");
+});
+
+test("subscribe publica una sesión vacía ante un cierre de sesión real", async () => {
+  const { dependencies } = fixture();
+  let onAuthStateChanged;
+  dependencies.onAuthStateChanged = (_auth, listener) => {
+    onAuthStateChanged = listener;
+    return () => {};
+  };
+  const events = [];
+  await createAuthService({ loadDependencies: async () => dependencies }).subscribe((result) => events.push(result));
+
+  await onAuthStateChanged(null);
+
+  assert.deepEqual(events, [success({ identity: null, user: null, profileRequired: false })]);
+});
+
+test("una consulta de perfil antigua no sobrescribe un logout reciente", async () => {
+  const { dependencies } = fixture();
+  let onAuthStateChanged;
+  let finishProfileRead;
+  dependencies.onAuthStateChanged = (_auth, listener) => {
+    onAuthStateChanged = listener;
+    return () => {};
+  };
+  dependencies.userService.getById = () => new Promise((resolve) => { finishProfileRead = resolve; });
+  const events = [];
+  await createAuthService({ loadDependencies: async () => dependencies }).subscribe((result) => events.push(result));
+
+  const oldRestoration = onAuthStateChanged(dependencies.auth.currentUser);
+  await onAuthStateChanged(null);
+  finishProfileRead(success({ id: "uid_1", role: "CUSTOMER", active: true }));
+  await oldRestoration;
+
+  assert.deepEqual(events, [success({ identity: null, user: null, profileRequired: false })]);
+});

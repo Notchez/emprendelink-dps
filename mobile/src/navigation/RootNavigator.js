@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet, View } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
-import { LoadingState } from "../components/StateView";
+import { ErrorState, LoadingState } from "../components/StateView";
 import { CompleteProfileScreen } from "../screens/auth/CompleteProfileScreen";
 import { BusinessesScreen } from "../screens/app/BusinessesScreen";
 import { CartScreen } from "../screens/app/CartScreen";
@@ -107,9 +107,12 @@ function CustomerNavigator() {
 }
 
 export function RootNavigator() {
-  const { user, profileRequired, initializing } = useAuth();
+  const { user, profileRequired, initializing, sessionError, sessionRecoverable, retrySession } = useAuth();
 
   if (initializing) return <View style={styles.loading}><LoadingState message="Restaurando sesión..." /></View>;
+  if (sessionRecoverable) {
+    return <View style={styles.loading}><ErrorState message={sessionError} onRetry={() => void retrySession()} /></View>;
+  }
   if (profileRequired) return <CompleteProfileScreen />;
   const flow = getRootFlow(user);
 

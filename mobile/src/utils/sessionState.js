@@ -6,6 +6,25 @@ export function getIdentityScopeKey(identity) {
   return identity?.uid || "anonymous";
 }
 
+export function getAuthSessionState(result, authenticatedIdentity = null) {
+  if (result.success) {
+    return {
+      ...result.data,
+      sessionError: "",
+      sessionRecoverable: false,
+    };
+  }
+
+  const sessionRecoverable = Boolean(authenticatedIdentity);
+  return {
+    identity: sessionRecoverable ? authenticatedIdentity : null,
+    user: null,
+    profileRequired: false,
+    sessionError: result.error?.message || "No se pudo restaurar la sesión.",
+    sessionRecoverable,
+  };
+}
+
 export function createSessionRequestGuard(initialIdentityId = null) {
   let identityId = initialIdentityId;
   let version = 0;

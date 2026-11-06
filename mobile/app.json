@@ -7,13 +7,13 @@
     "orientation": "portrait",
     "icon": "./assets/emprendelink-icon.png",
     "userInterfaceStyle": "light",
-    "description": "Aplicación móvil de EmprendeLink para DPS941",
+    "description": "Aplicación móvil de EmprendeLink",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "sv.edu.udb.emprendelink"
+      "bundleIdentifier": "com.emprendelink.app"
     },
     "android": {
-      "package": "sv.edu.udb.emprendelink",
+      "package": "com.emprendelink.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/emprendelink-icon.png"
@@ -26,6 +26,12 @@
       "expo-font",
       "expo-dev-client",
       "@react-native-google-signin/google-signin"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cce8507a-6bf1-494b-8eac-04b4363c7801"
+      }
+    },
+    "owner": "oneman-teams"
   }
 }

@@ -13,12 +13,10 @@ function authFailure(error, fallback) {
   return failure(error?.code || "AUTH_ERROR", AUTH_MESSAGES[error?.code] || error?.message || fallback);
 }
 
-async function loadFirebaseDependencies() {
-  const [firebaseAuth, firebaseClient, users] = await Promise.all([
-    import("firebase/auth"),
-    import("../lib/firebase/client.js"),
-    import("./userService.js"),
-  ]);
+function loadFirebaseDependencies() {
+  const firebaseAuth = require("firebase/auth");
+  const firebaseClient = require("../lib/firebase/client.js");
+  const users = require("./userService.js");
   return {
     auth: firebaseClient.getFirebaseAuth(),
     userService: users.userService,
@@ -31,8 +29,8 @@ async function loadFirebaseDependencies() {
   };
 }
 
-async function loadGoogleSignIn() {
-  const { GoogleSignin } = await import("@react-native-google-signin/google-signin");
+function loadGoogleSignIn() {
+  const { GoogleSignin } = require("@react-native-google-signin/google-signin");
   GoogleSignin.configure({ webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID });
   return { GoogleSignin };
 }
@@ -137,12 +135,32 @@ export function createAuthService({ loadDependencies = loadFirebaseDependencies,
       }
     },
 
+    async restoreSession() {
+      try {
+        const dependencies = await loadDependencies();
+        const identity = dependencies.auth.currentUser;
+        if (!identity) return success({ identity: null, user: null, profileRequired: false });
+        return resolveSession(identity, dependencies);
+      } catch (error) {
+        return authFailure(error, "No se pudo restaurar la sesión.");
+      }
+    },
+
     async subscribe(listener) {
       const dependencies = await loadDependencies();
-      return dependencies.onAuthStateChanged(dependencies.auth, async (identity) => {
+      let revision = 0;
+      const unsubscribe = dependencies.onAuthStateChanged(dependencies.auth, async (identity) => {
+        const currentRevision = ++revision;
         if (!identity) return listener(success({ identity: null, user: null, profileRequired: false }));
-        listener(await resolveSession(identity, dependencies));
+        const result = await resolveSession(identity, dependencies);
+        if (currentRevision !== revision) return;
+        const recoverableIdentity = result.error?.code === "USER_READ_ERROR" ? identity : null;
+        listener(result, recoverableIdentity);
       });
+      return () => {
+        revision += 1;
+        unsubscribe();
+      };
     },
   };
 }
