@@ -1,8 +1,8 @@
 import { failure, success } from "./serviceResponse.js";
 
-async function loadFirestoreDependencies() {
-  const firestore = await import("firebase/firestore");
-  const { getFirebaseDb } = await import("../lib/firebase/client.js");
+function loadFirestoreDependencies() {
+  const firestore = require("firebase/firestore");
+  const { getFirebaseDb } = require("../lib/firebase/client.js");
   return { ...firestore, db: getFirebaseDb() };
 }
 

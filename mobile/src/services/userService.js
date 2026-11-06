@@ -19,11 +19,9 @@ function normalizeProfile(uid, values) {
   };
 }
 
-async function loadFirestoreDependencies() {
-  const [{ doc, getDoc, setDoc }, { getFirebaseDb }] = await Promise.all([
-    import("firebase/firestore"),
-    import("../lib/firebase/client.js"),
-  ]);
+function loadFirestoreDependencies() {
+  const { doc, getDoc, setDoc } = require("firebase/firestore");
+  const { getFirebaseDb } = require("../lib/firebase/client.js");
   return { db: getFirebaseDb(), doc, getDoc, setDoc };
 }
 

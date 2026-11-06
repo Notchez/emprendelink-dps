@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createSessionRequestGuard, getIdentityScopeKey, identityChanged } from "../src/utils/sessionState.js";
+import { createSessionRequestGuard, getAuthSessionState, getIdentityScopeKey, identityChanged } from "../src/utils/sessionState.js";
+import { failure, success } from "../src/services/serviceResponse.js";
 
 test("una respuesta iniciada por otra identidad queda invalidada al cerrar sesión", () => {
   const guard = createSessionRequestGuard("customer_a");
@@ -24,4 +25,27 @@ test("el carrito privado se limpia al cerrar sesión o cambiar de usuario", () =
   assert.equal(identityChanged("customer_a", "customer_a"), false);
   assert.notEqual(getIdentityScopeKey({ uid: "customer_a" }), getIdentityScopeKey(null));
   assert.notEqual(getIdentityScopeKey({ uid: "customer_a" }), getIdentityScopeKey({ uid: "customer_b" }));
+});
+
+test("un error recuperable conserva identity pero no reutiliza un perfil incierto", () => {
+  const identity = { uid: "customer_a" };
+  assert.deepEqual(
+    getAuthSessionState(failure("USER_READ_ERROR", "Firestore no disponible."), identity),
+    {
+      identity,
+      user: null,
+      profileRequired: false,
+      sessionError: "Firestore no disponible.",
+      sessionRecoverable: true,
+    }
+  );
+});
+
+test("una restauración correcta elimina el error recuperable", () => {
+  const identity = { uid: "customer_a" };
+  const user = { id: "customer_a", role: "CUSTOMER" };
+  assert.deepEqual(
+    getAuthSessionState(success({ identity, user, profileRequired: false })),
+    { identity, user, profileRequired: false, sessionError: "", sessionRecoverable: false }
+  );
 });
