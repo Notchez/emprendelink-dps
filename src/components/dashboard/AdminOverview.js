@@ -18,7 +18,7 @@ function formatPercentage(value) {
   }).format(value * 100)} %`;
 }
 
-export default function AdminOverview() {
+export default function AdminOverview({ view = "dashboard" }) {
   const [data, setData] = useState(null);
   const [selectedPlans, setSelectedPlans] = useState({});
 
@@ -159,9 +159,11 @@ export default function AdminOverview() {
         <div>
           <p className="eyebrow">Panel del administrador</p>
 
-          <h1>Panel administrativo</h1>
+          <h1>{view === "businesses" ? "Emprendimientos registrados" : "Panel administrativo"}</h1>
 
-          <p>Supervisa usuarios, emprendimientos, planes y pedidos desde un solo lugar.</p>
+          <p>{view === "businesses"
+            ? "Gestiona la publicación y los planes de cada negocio desde un solo lugar."
+            : "Supervisa las comisiones del mes y el estado general de EmprendeLink."}</p>
         </div>
 
         <button
@@ -188,9 +190,11 @@ export default function AdminOverview() {
 
       {loading && !data && <p role="status">Cargando indicadores...</p>}
 
-      {data && <AdminDashboard kpis={data.kpis} />}
+      {data && view === "dashboard" && (
+        <AdminDashboard kpis={data.kpis} commissionInsights={data.commissionInsights} />
+      )}
 
-      <section className={styles.actions} aria-labelledby="admin-actions-title">
+      {view === "dashboard" && <section className={styles.actions} aria-labelledby="admin-actions-title">
         <h2 id="admin-actions-title">Gestión rápida</h2>
 
         <div className={styles.actionGrid}>
@@ -200,10 +204,16 @@ export default function AdminOverview() {
             <span>Crear, editar y activar planes.</span>
           </Link>
 
-          <Link className={styles.actionCard} href="/admin/usuarios">
-            <strong>Consultar usuarios</strong>
+          <Link className={styles.actionCard} href="/admin/compradores">
+            <strong>Gestionar compradores</strong>
 
-            <span>Revisar clientes y emprendedores registrados.</span>
+            <span>Consultar clientes y administrar su acceso.</span>
+          </Link>
+
+          <Link className={styles.actionCard} href="/admin/emprendimientos">
+            <strong>Gestionar emprendimientos</strong>
+
+            <span>Consultar negocios, cambiar sus planes y publicación.</span>
           </Link>
 
           <Link className={styles.actionCard} href="/orders">
@@ -212,9 +222,9 @@ export default function AdminOverview() {
             <span>Consultar pedidos y sus estados.</span>
           </Link>
         </div>
-      </section>
+      </section>}
 
-      <section className={styles.businesses} aria-labelledby="businesses-title">
+      {view === "businesses" && <section className={styles.businesses} aria-labelledby="businesses-title">
         <div className={styles.sectionHeading}>
           <div>
             <h2 id="businesses-title">Emprendimientos registrados</h2>
@@ -239,7 +249,7 @@ export default function AdminOverview() {
             return (
               <article className={styles.businessCard} key={business.id}>
                 <div className={styles.businessInfo}>
-                  <h3>{business.name}</h3>
+                  <h3><Link href={`/admin/emprendimientos/${encodeURIComponent(business.id)}`}>{business.name}</Link></h3>
 
                   <p>
                     <strong>Propietario:</strong> {business.ownerName}
@@ -279,6 +289,9 @@ export default function AdminOverview() {
                 </div>
 
                 <div className={styles.businessControls}>
+                  <Link className={styles.detailLink} href={`/admin/emprendimientos/${encodeURIComponent(business.id)}`}>
+                    <i className="bi bi-graph-up-arrow" aria-hidden="true" /> Ver desempeño
+                  </Link>
                   <label htmlFor={`plan-${business.id}`}>Cambiar plan</label>
 
                   <select
@@ -328,7 +341,7 @@ export default function AdminOverview() {
             );
           })}
         </div>
-      </section>
+      </section>}
     </div>
   );
 }

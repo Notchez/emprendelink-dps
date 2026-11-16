@@ -4,6 +4,8 @@ import { getFirebaseDb } from "@/lib/firebase/client";
 import { apiRequest } from "@/services/apiClient";
 import { orderService } from "@/services/orderService";
 import { ORDER_STATUS } from "@/lib/constants/orderStatus";
+import { ROLES } from "@/lib/constants/roles";
+import { buildAdminCommissionInsights } from "@/utils/adminCommissionInsights";
 
 function mapDocument(snapshot) {
   return {
@@ -92,6 +94,8 @@ export const adminService = {
       0
     );
 
+    const commissionInsights = buildAdminCommissionInsights({ businesses, orders, commissions });
+
     return {
       kpis: {
         totalBusinesses: businessesSnapshot.size,
@@ -99,6 +103,8 @@ export const adminService = {
         activeBusinesses: businesses.filter((business) => business.active === true).length,
 
         totalUsers: usersSnapshot.size,
+
+        totalCustomers: users.filter((user) => user.role === ROLES.CUSTOMER).length,
 
         activePlans: plans.filter((plan) => plan.active === true).length,
 
@@ -110,6 +116,8 @@ export const adminService = {
       },
 
       businesses,
+
+      commissionInsights,
 
       plans: plans.sort((a, b) => a.maxActiveProducts - b.maxActiveProducts),
     };

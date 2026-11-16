@@ -1,0 +1,39 @@
+.dashboard { display: grid; gap: 1.5rem; }
+.featured {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: clamp(1.3rem, 3vw, 2rem);
+  color: white;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #0ea5e9 100%);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgb(37 99 235 / 16%);
+}
+.featured h2 { margin: 0.25rem 0 0.7rem; font-size: 1.25rem; }
+.featured p { margin: 0.6rem 0 0; color: rgb(255 255 255 / 86%); }
+.featured > i { font-size: clamp(2.6rem, 6vw, 5rem); opacity: 0.22; }
+.eyebrow { margin: 0; text-transform: uppercase; font-weight: 800; font-size: 0.75rem; letter-spacing: 0.08em; }
+.amount { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+.kpiGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; }
+.chartCard { display: grid; gap: 1rem; padding: clamp(1rem, 2vw, 1.5rem); border: 1px solid var(--el-border); border-radius: 14px; background: var(--el-surface); }
+.chartHeading { display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap; }
+.chartHeading h2 { margin: 0 0 0.35rem; font-size: 1.3rem; }
+.chartHeading p { margin: 0; color: var(--el-muted); }
+.allLink { display: inline-flex; padding: 0.45rem 0.75rem; border-radius: 8px; color: var(--el-link); font-weight: 700; text-decoration: none; }
+.allLink:hover { background: var(--el-subtle-bg); }
+.chart { display: grid; gap: 0.55rem; max-height: 480px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.chartRow { display: grid; grid-template-columns: minmax(130px, 1.1fr) minmax(70px, 2fr) minmax(100px, auto) 20px; gap: 0.9rem; align-items: center; padding: 0.8rem; border: 1px solid transparent; border-radius: 10px; text-decoration: none; color: var(--el-text); }
+.chartRow:hover, .chartRow:focus-visible { border-color: var(--el-border); background: var(--el-subtle-bg); }
+.businessName { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+.track { display: block; width: 100%; height: 14px; overflow: hidden; border-radius: 999px; background: var(--el-subtle-bg); }
+.bar { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2563eb, #38bdf8); }
+.chartRow strong { text-align: right; white-space: nowrap; }
+.chartRow > i { color: var(--el-muted); }
+.empty { margin: 0; padding: 0.4rem 0; color: var(--el-muted); font-size: 0.92rem; }
+@media (max-width: 640px) {
+  .chartRow { grid-template-columns: minmax(0, 1fr) minmax(90px, auto) 16px; gap: 0.55rem; }
+  .track { grid-column: 1 / -1; grid-row: 2; }
+  .chartRow strong { grid-column: 2; grid-row: 1; }
+  .chartRow > i { grid-column: 3; grid-row: 1; }
+}

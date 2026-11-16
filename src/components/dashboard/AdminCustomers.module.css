@@ -1,3 +1,4 @@
+/* Pantalla de compradores, compatible con temas claro y oscuro. */
 .page {
     display: grid;
     gap: 1.5rem;
@@ -25,17 +26,17 @@
 .activateButton,
 .dangerButton {
     padding: 0.65rem 0.9rem;
-    border: 1px solid #506077;
+    border: 1px solid var(--el-border);
     border-radius: 9px;
-    background: #34445a;
-    color: #eef2f8;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
 }
 
 .secondaryButton:hover:not(:disabled) {
-    background: #405572;
+    border-color: var(--el-link);
 }
 
 .activateButton {
@@ -73,15 +74,15 @@
 }
 
 .error {
-    border: 1px solid #a64848;
-    background: #41272b;
-    color: #ffb4b4;
+    border: 1px solid var(--el-border);
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
 }
 
 .success {
-    border: 1px solid #087443;
-    background: #173b2c;
-    color: #b6f4d1;
+    border: 1px solid var(--el-border);
+    background: var(--el-success-bg);
+    color: var(--el-success);
 }
 
 .summary {
@@ -95,9 +96,9 @@
 .tableCard,
 .detailsCard {
     min-width: 0;
-    border: 1px solid #506077;
+    border: 1px solid var(--el-border);
     border-radius: 14px;
-    background: #222c3b;
+    background: var(--el-surface);
 }
 
 .summaryCard {
@@ -107,11 +108,11 @@
 }
 
 .summaryCard span {
-    color: #c4cfdf;
+    color: var(--el-muted);
 }
 
 .summaryCard strong {
-    color: #eef2f8;
+    color: var(--el-text);
     font-size: 1.8rem;
 }
 
@@ -129,18 +130,18 @@
 .table th,
 .table td {
     padding: 1rem;
-    border-bottom: 1px solid #506077;
+    border-bottom: 1px solid var(--el-border);
     vertical-align: middle;
 }
 
 .table th {
-    background: #2b384b;
-    color: #eef2f8;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
     font-weight: 700;
 }
 
 .table td {
-    color: #eef2f8;
+    color: var(--el-text);
 }
 
 .table tbody tr:last-child td {
@@ -158,17 +159,17 @@
 }
 
 .active {
-    background: #173b2c;
-    color: #b6f4d1;
+    background: var(--el-success-bg);
+    color: var(--el-success);
 }
 
 .inactive {
-    background: #374357;
-    color: #d2d9e5;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
 }
 
 .notApplicable {
-    color: #a7b5ca;
+    color: var(--el-muted);
 }
 
 .detailsCard {
@@ -191,7 +192,7 @@
 
 .sectionLabel {
     margin: 0;
-    color: #b7cae3;
+    color: var(--el-muted);
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -210,26 +211,26 @@
     gap: 0.5rem;
     min-width: 0;
     padding: 1rem;
-    border: 1px solid #506077;
+    border: 1px solid var(--el-border);
     border-radius: 10px;
-    background: #263345;
+    background: var(--el-subtle-bg);
 }
 
 .detail span {
-    color: #c4cfdf;
+    color: var(--el-muted);
     font-size: 0.9rem;
 }
 
 .detail strong,
 .detail a {
-    color: #eef2f8;
+    color: var(--el-text);
     font-weight: 600;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
 }
 
 .detail a {
-    color: #9bc9ff;
+    color: var(--el-link);
 }
 
 .fullWidth {
@@ -243,7 +244,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     padding-top: 1.25rem;
-    border-top: 1px solid #506077;
+    border-top: 1px solid var(--el-border);
 }
 
 .accountActions h3 {
@@ -253,7 +254,7 @@
 .accountActions p {
     max-width: 620px;
     margin: 0;
-    color: #c4cfdf;
+    color: var(--el-muted);
 }
 
 @media (max-width: 640px) {

@@ -62,7 +62,6 @@ No necesitas instalar manualmente:
 Next.js
 React
 Firebase
-AdminLTE
 Bootstrap
 tsx
 ```

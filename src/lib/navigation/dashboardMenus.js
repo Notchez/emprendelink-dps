@@ -11,9 +11,15 @@ export const adminMenuItems = [
   },
   {
     type: "item",
-    text: "Usuarios",
-    href: "/admin/usuarios",
+    text: "Compradores",
+    href: "/admin/compradores",
     icon: "bi bi-people",
+  },
+  {
+    type: "item",
+    text: "Emprendimientos",
+    href: "/admin/emprendimientos",
+    icon: "bi bi-shop",
   },
   {
     type: "item",
