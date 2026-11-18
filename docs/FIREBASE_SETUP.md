@@ -193,7 +193,7 @@ dispositivo; `localhost` dentro de Android no representa la computadora anfitrio
 
 ## 4.3 Google Sign-In móvil
 
-Habilita Google en Authentication y registra Android con el paquete `sv.edu.udb.emprendelink`.
+Habilita Google en Authentication y registra Android con el paquete `com.emprendelink.app`.
 Agrega las huellas SHA-1/SHA-256 del certificado que firma el development build. Coloca
 `google-services.json` en `mobile/`; el archivo está ignorado por Git. Para iOS usa el bundle ID
 equivalente y `GoogleService-Info.plist`.
@@ -203,14 +203,14 @@ Sign-In contiene código nativo: requiere un development build con los plugins d
 y no funciona dentro de Expo Go.
 
 La combinación fijada se verificó para Expo SDK 57: `firebase@12.18.0` satisface el requisito de
-Firebase 12 o posterior; AsyncStorage 2.2.0 y expo-dev-client 57.0.20 coinciden con las versiones
-incluidas por el SDK; Google Sign-In 17.0.0 declara compatibilidad con Expo `>=52.0.40`. Cuando se
+Firebase 12 o posterior; AsyncStorage 2.2.0 y expo-dev-client ~57.0.21 coinciden con las versiones
+recomendadas por el SDK; Google Sign-In 17.0.0 declara compatibilidad con Expo `>=52.0.40`. Cuando se
 cambie un plugin, archivo de servicios, package/bundle ID o certificado, hay que reconstruir el
 development build. Consulta `mobile/README.md` para la lista completa de pasos manuales.
 
-`expo install --check` recomienda actualmente el parche `expo@~57.0.31`; el repositorio conserva
-`57.0.30` hasta que el equipo autorice actualizar dependencia y lockfile. Esta diferencia no cambia
-el SDK mayor y el export Android actual se valida como parte de CI/local.
+El repositorio usa `expo@~57.0.33` y `expo-dev-client@~57.0.21` dentro del SDK 57.
+La auditoría de dependencias y el export Android no sustituyen una prueba en el dispositivo
+ni la reconstrucción del development build después de actualizar el cliente nativo.
 
 ---
 

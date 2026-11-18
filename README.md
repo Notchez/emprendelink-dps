@@ -39,7 +39,7 @@ docs/FIREBASE_SETUP.md
 | Herramienta          | Versión / decisión                        |
 | -------------------- | ----------------------------------------- |
 | Node.js              | 24.x                                      |
-| Next.js              | 16.3.3                                    |
+| Next.js              | 16.4.6                                    |
 | React                | 19.2.7                                    |
 | Firebase JS SDK      | 12.18.0                                   |
 | Firebase Admin       | 14.x                                      |
