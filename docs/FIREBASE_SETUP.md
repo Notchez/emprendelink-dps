@@ -278,9 +278,16 @@ Habilitar:
 
 ```text
 Correo electrónico/Contraseña
+Google
 ```
 
 No necesitas habilitar el enlace de correo electrónico.
+
+En la web (`/login` y `/registro`), Google utiliza el proveedor del SDK de Firebase
+con una ventana emergente. No necesita una segunda API key ni un client secret en Next.js.
+La primera vez, si `users/{uid}` no existe, redirige a `/completar-perfil` para elegir
+CUSTOMER o ENTREPRENEUR y proporcionar los campos obligatorios. Nunca asigna ADMIN
+automáticamente. Si ya tiene perfil, conserva su UID, rol y estado.
 
 Después revisa:
 
@@ -295,6 +302,14 @@ Para desarrollo local debe estar permitido:
 ```text
 localhost
 ```
+
+Antes de desplegar en Vercel, agrega también el dominio real de la aplicación a esa lista.
+Para el acceso web con Google, no basta con haber configurado el SHA de Android.
+No compartas credenciales OAuth ni copies variables de la configuración móvil a la web.
+
+Pruebas manuales recomendadas: acceso Google con perfil existente, primer acceso
+sin perfil, cuenta desactivada, cierre de popup, acceso con correo/contraseña y
+restricción de ADMIN desde el registro público.
 
 ---
 

@@ -41,7 +41,7 @@ export default function AdminBusinessDetail({ businessId }) {
   }, []);
 
   const business = data?.commissionInsights.businesses.find((item) => item.id === businessId);
-  const maxTrend = Math.max(1, ...(business?.trend.map((month) => month.amount) || []));
+  const maxTrend = Math.max(0, ...(business?.trend.map((month) => month.amount) || []));
 
   return (
     <div className={styles.page}>
@@ -78,16 +78,32 @@ export default function AdminBusinessDetail({ businessId }) {
 
           <section className={styles.card} aria-labelledby="trend-title">
             <h2 id="trend-title">Evolución de comisiones</h2>
-            <p>Importes generados al entregar pedidos durante los últimos seis meses (UTC).</p>
-            <div className={styles.trend} role="list" aria-label="Historial mensual de comisiones">
-              {business.trend.map((month) => (
-                <div key={month.key} className={styles.trendColumn} role="listitem" aria-label={`${month.key}: ${formatMoney(month.amount)}`}>
-                  <strong>{formatMoney(month.amount)}</strong>
-                  <div className={styles.trendTrack}><span style={{ height: `${(month.amount / maxTrend) * 100}%` }} /></div>
-                  <span>{month.label}</span>
-                </div>
-              ))}
-            </div>
+            <p>Comisiones de pedidos entregados durante los últimos seis meses (UTC), no ventas totales.</p>
+            <figure className={styles.trendFigure}>
+              <div className={styles.trend} role="list" aria-label="Comisiones por mes en dólares">
+                {business.trend.map((month) => (
+                  <div key={month.key} className={styles.trendColumn} role="listitem" aria-label={`${month.key}: ${formatMoney(month.amount)}`}>
+                    <strong>{formatMoney(month.amount)}</strong>
+                    <div className={styles.trendTrack}>
+                      {month.amount > 0 && (
+                        <span
+                          className={styles.trendBar}
+                          style={{ height: `${(month.amount / maxTrend) * 100}%` }}
+                        />
+                      )}
+                    </div>
+                    <span>{month.label}</span>
+                  </div>
+                ))}
+              </div>
+              <figcaption className={styles.trendCaption}>
+                <span className={styles.legendSwatch} aria-hidden="true" />
+                Cada barra azul representa las comisiones de un mes. Sin barra significa $0.00.
+              </figcaption>
+            </figure>
+            {maxTrend === 0 && (
+              <p className={styles.noCommissions}>Este emprendimiento aún no registra comisiones en el período mostrado.</p>
+            )}
           </section>
 
           <section className={styles.card} aria-labelledby="business-data-title">

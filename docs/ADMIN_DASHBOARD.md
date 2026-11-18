@@ -15,6 +15,7 @@
 - El total mensual incluye comisiones históricas válidas aunque un negocio ya no figure en la colección actual.
 - El gráfico de la portada presenta los emprendimientos ordenados de mayor a menor comisión mensual; un negocio sin comisión muestra $0.00.
 - La ficha del emprendimiento muestra la tendencia de los últimos seis meses de comisiones, ventas de pedidos `DELIVERED` y estadísticas históricas.
+- En la tendencia solo se dibujan barras azules para meses con comisiones positivas; los meses en $0.00 se identifican por su etiqueta y línea base, sin rectángulos grises de altura completa.
 - La suma de **ventas entregadas** (`order.subtotal`) no equivale a las **comisiones ganadas** (`commission.amount`). No mezclarlas.
 - Las comisiones se crean en el backend al llegar el pedido a `DELIVERED`; la interfaz solo consulta datos existentes.
 
@@ -29,6 +30,7 @@ El layout propio `DashboardShell` reemplaza únicamente `@adminlte/react`, reuti
 
 1. Probar los enlaces y el sombreado del menú en todas las rutas de ADMIN y EMPRENDEDOR.
 2. Verificar visualmente escritorio y móvil con temas claro/oscuro.
+   Comprobar especialmente una tendencia con un solo mes positivo y el resto en $0.00.
 3. Confirmar importes de comisiones del mes con Firestore y el listado `/admin/comisiones`.
 4. Cambiar plan y publicar/ocultar un negocio; verificar comportamiento sin recargar.
 5. Desactivar/reactivar comprador y confirmar restricción de acceso del usuario.
