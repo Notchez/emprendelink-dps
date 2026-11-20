@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { adminService } from "@/services/adminService";
+import { filterBusinessesBySearch } from "@/utils/businessSearch";
 import AdminDashboard from "./AdminDashboard";
 
 import styles from "./AdminOverview.module.css";
@@ -27,6 +28,9 @@ export default function AdminOverview({ view = "dashboard" }) {
 
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [businessSearch, setBusinessSearch] = useState("");
+
+  const visibleBusinesses = filterBusinessesBySearch(data?.businesses ?? [], businessSearch);
 
   async function loadOverview() {
     setLoading(true);
@@ -236,12 +240,36 @@ export default function AdminOverview({ view = "dashboard" }) {
           </div>
         </div>
 
+        <div className={styles.businessSearch}>
+          <label htmlFor="admin-business-search">Buscar emprendimiento</label>
+          <div className={styles.businessSearchField}>
+            <i className="bi bi-search" aria-hidden="true" />
+            <input
+              id="admin-business-search"
+              type="search"
+              autoComplete="off"
+              placeholder="Nombre del negocio, propietario, correo o catálogo"
+              value={businessSearch}
+              onChange={(event) => setBusinessSearch(event.target.value)}
+            />
+          </div>
+          <p role="status" className={styles.businessSearchCount}>
+            {loading && !data
+              ? "Buscando emprendimientos..."
+              : `Mostrando ${visibleBusinesses.length} de ${data?.businesses.length ?? 0} emprendimientos`}
+          </p>
+        </div>
+
         {!loading && data?.businesses.length === 0 && (
           <p>Aún no hay emprendimientos registrados.</p>
         )}
 
+        {!loading && Boolean(data?.businesses.length) && visibleBusinesses.length === 0 && (
+          <p role="status">No encontramos emprendimientos que coincidan con la búsqueda.</p>
+        )}
+
         <div className={styles.businessGrid}>
-          {data?.businesses.map((business) => {
+          {visibleBusinesses.map((business) => {
             const selectedPlanId = selectedPlans[business.id] || "";
 
             const hasPlanChange = selectedPlanId !== business.planId;
