@@ -6,6 +6,13 @@
 - `/admin/compradores`: compradores registrados, ficha de contacto y activación o suspensión de su acceso.
 - `/admin/emprendimientos`: emprendimientos, planes y publicación de sus catálogos.
 - `/admin/emprendimientos/[id]`: desempeño individual, métricas y evolución de comisiones.
+- `/orders` con rol ADMIN: abre con negocios activos y permite combinar negocio, estado,
+  rango de fecha de creación y rango de fecha de entrega. La vista de pedidos del EMPRENDEDOR
+  se conserva y su búsqueda también acepta nombre, correo y teléfono del comprador.
+- `/admin/ventas`: total histórico de pedidos entregados, desglose por negocio y enlaces
+  a los detalles de cada pedido.
+- `/admin/comisiones`: total del mes seleccionado, acumulado histórico (lifetime),
+  comisiones agrupadas por negocio y enlaces a detalles mensuales y pedidos.
 - `/admin/usuarios`: ruta anterior, redirige a compradores para no romper enlaces.
 
 ## Cálculos de comisiones
@@ -18,6 +25,14 @@
 - En la tendencia solo se dibujan barras azules para meses con comisiones positivas; los meses en $0.00 se identifican por su etiqueta y línea base, sin rectángulos grises de altura completa.
 - La suma de **ventas entregadas** (`order.subtotal`) no equivale a las **comisiones ganadas** (`commission.amount`). No mezclarlas.
 - Las comisiones se crean en el backend al llegar el pedido a `DELIVERED`; la interfaz solo consulta datos existentes.
+- Para filtrar pedidos por **fecha de entrega**, la interfaz administrativa utiliza
+  `commission.createdAt` del pedido. El contrato actual de `orders` no almacena `deliveredAt`;
+  para pedidos entregados antiguos sin comisión registrada no existe una fecha fiable.
+- Las fechas de creación y entrega en los filtros de pedidos se interpretan en horario
+  de El Salvador, mientras que los meses de comisión mantienen el criterio UTC del dashboard.
+- Las listas de pedidos y transacciones muestran bloques incrementales, evitando miles de
+  filas en el DOM. La consulta completa de Firestore se conserva por compatibilidad con el
+  backend actual; la paginación del lado del servidor será necesaria al crecer el volumen.
 
 ## Arquitectura y seguridad
 
@@ -35,3 +50,7 @@ El layout propio `DashboardShell` reemplaza únicamente `@adminlte/react`, reuti
 4. Cambiar plan y publicar/ocultar un negocio; verificar comportamiento sin recargar.
 5. Desactivar/reactivar comprador y confirmar restricción de acceso del usuario.
 6. Confirmar que el rol CLIENTE nunca accede al layout administrativo ni a datos de otros usuarios.
+7. Probar un negocio activo y uno inactivo en pedidos; combinar filtros de ambas fechas
+   y comprobar que una cancelación no se considera entregada.
+8. En ventas y comisiones, contrastar los totales y abrir un pedido desde el detalle de negocio.
+   Probar meses con $0.00, históricos y operaciones de negocios ya eliminados.

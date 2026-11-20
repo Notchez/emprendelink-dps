@@ -2,6 +2,7 @@ import "server-only";
 
 import { getAdminDb } from "@/lib/firebase/admin";
 import { ORDER_STATUS, canTransitionOrderStatus } from "@/lib/constants/orderStatus";
+import { matchesOrderSearch } from "@/utils/orderSearch";
 
 // Los pedidos creados con la implementación anterior no
 // guardaban su tasa. Para ellos se conserva el 3 % que
@@ -53,13 +54,7 @@ export const orderFirestoreService = {
     }
 
     if (search) {
-      const value = search.toLowerCase();
-
-      orders = orders.filter(
-        (order) =>
-          String(order.id).toLowerCase().includes(value) ||
-          String(order.customerId).toLowerCase().includes(value)
-      );
+      orders = orders.filter((order) => matchesOrderSearch(order, search));
     }
 
     return orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

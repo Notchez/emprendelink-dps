@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run lint && npm run build",
-    "test": "tsx --conditions=react-server --tsconfig jsconfig.json --test tests/account-access.test.mjs tests/admin-insights.test.mjs tests/web-google-signin.test.mjs"
+    "test": "tsx --conditions=react-server --tsconfig jsconfig.json --test tests/account-access.test.mjs tests/admin-insights.test.mjs tests/admin-financial-reports.test.mjs tests/order-search.test.mjs tests/web-google-signin.test.mjs"
   },
   "dependencies": {
     "bootstrap": "5.3.8",

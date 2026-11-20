@@ -1,0 +1,41 @@
+.page { display: grid; gap: 1.5rem; }
+.heading h1 { margin: 0.4rem 0 0.5rem; }
+.heading p:last-child { margin: 0; color: var(--el-muted); }
+.metrics { display: grid; grid-template-columns: 1.5fr repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.primaryMetric, .metric, .panel { min-width: 0; border: 1px solid var(--el-border); border-radius: 14px; background: var(--el-surface); }
+.primaryMetric, .metric { display: grid; align-content: start; gap: 0.6rem; padding: 1.25rem; }
+.primaryMetric { color: #fff; background: linear-gradient(135deg, #1d4ed8, #0284c7); border: none; }
+.primaryMetric > strong { font-size: clamp(1.75rem, 3.5vw, 2.5rem); overflow-wrap: anywhere; }
+.primaryMetric > small { color: rgb(255 255 255 / 88%); }
+.metric > span { color: var(--el-muted); }
+.metric > strong { font-size: clamp(1.35rem, 3vw, 1.9rem); overflow-wrap: anywhere; }
+.metric > small { color: var(--el-muted); }
+.panel { padding: clamp(1rem, 2vw, 1.5rem); }
+.panelHeading { margin-bottom: 1.25rem; }
+.panelHeading h2 { margin: 0; font-size: 1.28rem; }
+.panelHeading p { margin: 0.4rem 0 0; color: var(--el-muted); }
+.monthSelect { display: grid; gap: 0.45rem; width: min(100%, 330px); font-weight: 700; }
+.monthSelect select { width: 100%; padding: 0.75rem; color: var(--el-text); background: var(--el-surface); border: 1px solid var(--el-border); border-radius: 9px; }
+.businessList { display: grid; gap: 1rem; }
+.businessRow { border: 1px solid var(--el-border); border-radius: 12px; overflow: hidden; }
+.businessTop { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1.1rem; }
+.businessTop > div:first-child { flex: 1 1 210px; }
+.businessTop h3 { margin: 0; font-size: 1.1rem; }
+.businessTop p { margin: 0.3rem 0 0; font-size: 0.88rem; color: var(--el-muted); }
+.businessAmount { font-size: 1.25rem; white-space: nowrap; }
+.expandButton { display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; padding: 0.65rem 0.8rem; border: 1px solid var(--el-border); background: var(--el-surface); color: var(--el-link); border-radius: 9px; cursor: pointer; font-weight: 700; }
+.expandButton:hover { border-color: var(--el-link); }
+.expanded { display: grid; gap: 1rem; padding: 1.1rem; border-top: 1px solid var(--el-border); background: var(--el-subtle-bg); }
+.expanded > p { margin: 0; }
+.detailLink { color: var(--el-link); font-weight: 700; text-decoration: none; }
+.detailLink:hover { text-decoration: underline; }
+.tableWrap { max-width: 100%; overflow-x: auto; background: var(--el-surface); border-radius: 9px; }
+.table { width: 100%; border-collapse: collapse; min-width: 560px; }
+.table th, .table td { padding: 0.82rem; text-align: left; border-bottom: 1px solid var(--el-border); }
+.table th { font-size: 0.85rem; }
+.table tr:last-child td { border-bottom: 0; }
+.table a { color: var(--el-link); font-weight: 700; }
+.message, .error { padding: 1rem; border-radius: 10px; background: var(--el-surface); border: 1px solid var(--el-border); }
+.error { color: var(--el-danger); background: var(--el-danger-bg); border-color: var(--el-danger); }
+@media (max-width: 820px) { .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .primaryMetric { grid-column: span 2; } }
+@media (max-width: 560px) { .metrics { grid-template-columns: 1fr; } .primaryMetric { grid-column: span 1; } .businessTop { align-items: start; } .businessAmount { width: 100%; } }

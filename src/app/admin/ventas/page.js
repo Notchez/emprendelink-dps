@@ -1,116 +1,139 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-import { ORDER_STATUS } from "@/lib/constants/orderStatus";
+import { businessService } from "@/services/businessService";
 import { orderService } from "@/services/orderService";
+import { buildDeliveredSales } from "@/utils/adminFinancialReports";
+import { formatOrderDate, formatOrderMoney } from "@/utils/orderUtils";
 
-function formatMoney(amount) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Number(amount || 0));
-}
+import styles from "@/components/dashboard/AdminFinancialDashboard.module.css";
 
-function formatDate(value) {
-  return new Intl.DateTimeFormat("es-SV", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "America/El_Salvador",
-  }).format(new Date(value));
+function formatOrderId(id) {
+  return `PED-${String(id).slice(0, 8).toUpperCase()}`;
 }
 
 export default function AdminSalesPage() {
   const [result, setResult] = useState(null);
+  const [expandedBusiness, setExpandedBusiness] = useState("");
+  const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
     let active = true;
+    Promise.all([orderService.getOrders(), businessService.getAll()])
+      .then(([orders, businesses]) => {
+        if (active) setResult({ orders, businesses, error: "" });
+      })
+      .catch((error) => {
+        if (active) setResult({ orders: [], businesses: [], error: error.message });
+      });
 
-    async function loadSales() {
-      try {
-        const orders = await orderService.getOrders();
-
-        const deliveredOrders = orders.filter((order) => order.status === ORDER_STATUS.DELIVERED);
-
-        if (active) {
-          setResult({
-            orders: deliveredOrders,
-            error: "",
-          });
-        }
-      } catch (error) {
-        if (active) {
-          setResult({
-            orders: [],
-            error: error.message,
-          });
-        }
-      }
-    }
-
-    void loadSales();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
-  const orders = result?.orders || [];
-
-  const total = orders.reduce((sum, order) => sum + Number(order.subtotal || 0), 0);
+  const report = useMemo(
+    () => buildDeliveredSales(result?.orders || [], result?.businesses || []),
+    [result]
+  );
 
   return (
-    <div className="container">
-      <p className="eyebrow">Panel del administrador</p>
+    <div className={styles.page}>
+      <header className={styles.heading}>
+        <p className="eyebrow">Panel del administrador</p>
+        <h1>Ventas entregadas</h1>
+        <p>Ventas efectivas de todos los emprendimientos. Los pedidos cancelados no se contabilizan.</p>
+      </header>
 
-      <h1>Ventas entregadas</h1>
-
-      {!result && <p>Cargando ventas...</p>}
-
-      {result?.error && <p role="alert">{result.error}</p>}
+      {!result && <p role="status" className={styles.message}>Cargando ventas...</p>}
+      {result?.error && <p role="alert" className={styles.error}>{result.error}</p>}
 
       {result && !result.error && (
         <>
-          <p>Pedidos entregados: {orders.length}</p>
-
-          <h2>Total: {formatMoney(total)}</h2>
-
-          {orders.length === 0 ? (
-            <p>Todavía no hay ventas entregadas.</p>
-          ) : (
-            <div className="table-responsive">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Pedido</th>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Total</th>
-                    <th>Detalle</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id}>
-                      <td title={order.id}>PED-{order.id.slice(0, 8).toUpperCase()}</td>
-
-                      <td>{formatDate(order.createdAt)}</td>
-
-                      <td>{order.customer?.name || "Cliente"}</td>
-
-                      <td>{formatMoney(order.subtotal)}</td>
-
-                      <td>
-                        <Link href={`/orders/${encodeURIComponent(order.id)}`}>Ver pedido</Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <section className={styles.metrics} aria-label="Resumen de ventas">
+            <div className={styles.primaryMetric}>
+              <span>Ventas totales entregadas</span>
+              <strong>{formatOrderMoney(report.total)}</strong>
+              <small>Acumulado histórico</small>
             </div>
-          )}
+            <div className={styles.metric}><span>Pedidos entregados</span><strong>{report.count}</strong></div>
+            <div className={styles.metric}><span>Emprendimientos registrados</span><strong>{result.businesses.length}</strong></div>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="business-sales-title">
+            <div className={styles.panelHeading}>
+              <h2 id="business-sales-title">Ventas por emprendimiento</h2>
+              <p>Abre cada negocio para consultar sus pedidos entregados y sus detalles.</p>
+            </div>
+            {report.businesses.length === 0 ? (
+              <p className={styles.message}>Todavía no hay emprendimientos registrados.</p>
+            ) : (
+              <div className={styles.businessList}>
+                {report.businesses.map((business) => {
+                  const expanded = expandedBusiness === business.id;
+                  const visibleOrders = business.records.slice(0, visibleCount);
+
+                  return (
+                    <article className={styles.businessRow} key={business.id}>
+                      <div className={styles.businessTop}>
+                        <div>
+                          <h3>{business.name}</h3>
+                          <p>{business.count} pedidos entregados{business.active ? "" : " · Negocio inactivo o eliminado"}</p>
+                        </div>
+                        <strong className={styles.businessAmount}>{formatOrderMoney(business.amount)}</strong>
+                        <button
+                          type="button"
+                          className={styles.expandButton}
+                          onClick={() => { setExpandedBusiness(expanded ? "" : business.id); setVisibleCount(12); }}
+                          aria-expanded={expanded}
+                        >
+                          {expanded ? "Ocultar pedidos" : "Ver pedidos"}
+                          <i className={`bi bi-chevron-${expanded ? "up" : "down"}`} aria-hidden="true" />
+                        </button>
+                      </div>
+
+                      {expanded && (
+                        <div className={styles.expanded}>
+                          {business.id !== "sin-negocio" && business.name !== "Negocio no disponible" && (
+                            <Link className={styles.detailLink} href={`/admin/emprendimientos/${encodeURIComponent(business.id)}`}>
+                              Ver desempeño del negocio <i className="bi bi-arrow-right" aria-hidden="true" />
+                            </Link>
+                          )}
+                          {business.records.length === 0 ? (
+                            <p>Este negocio aún no tiene ventas entregadas.</p>
+                          ) : (
+                            <>
+                              <div className={styles.tableWrap}>
+                                <table className={styles.table}>
+                                  <thead><tr><th>Pedido</th><th>Fecha del pedido</th><th>Comprador</th><th>Venta</th><th>Detalle</th></tr></thead>
+                                  <tbody>
+                                    {visibleOrders.map((order) => (
+                                      <tr key={order.id}>
+                                        <td title={order.id}>{formatOrderId(order.id)}</td>
+                                        <td>{formatOrderDate(order.createdAt)}</td>
+                                        <td>{order.customer?.name || "Cliente"}</td>
+                                        <td>{formatOrderMoney(order.subtotal)}</td>
+                                        <td><Link href={`/orders/${encodeURIComponent(order.id)}`}>Ver detalle</Link></td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                              {business.records.length > visibleOrders.length && (
+                                <button type="button" className={styles.expandButton} onClick={() => setVisibleCount((count) => count + 12)}>
+                                  Mostrar más pedidos ({business.records.length - visibleOrders.length} restantes)
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         </>
       )}
     </div>

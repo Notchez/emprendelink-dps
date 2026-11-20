@@ -27,6 +27,15 @@
 .trendCaption { display: flex; align-items: center; gap: 0.55rem; color: var(--el-muted); font-size: 0.82rem; line-height: 1.5; }
 .legendSwatch { display: inline-block; flex: 0 0 auto; width: 13px; height: 13px; border-radius: 3px; background: #2563eb; }
 .noCommissions { padding: 0.7rem 0.85rem; border-radius: 9px; background: var(--el-subtle-bg); }
+.monthFilter { display: grid; gap: 0.4rem; width: min(100%, 350px); font-weight: 700; }
+.monthFilter select { width: 100%; padding: 0.7rem; color: var(--el-text); background: var(--el-surface); border: 1px solid var(--el-border); border-radius: 9px; }
+.monthSummary { display: grid; gap: 0.35rem; justify-items: start; padding: 1rem; border: 1px solid var(--el-border); border-radius: 9px; background: var(--el-subtle-bg); }
+.monthSummary span, .monthSummary small { color: var(--el-muted); }
+.monthSummary strong { font-size: 1.55rem; }
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; min-width: 540px; border-collapse: collapse; }
+.table th, .table td { text-align: left; padding: 0.8rem; border-bottom: 1px solid var(--el-border); }
+.table a { color: var(--el-link); font-weight: 700; }
 .details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .info { display: grid; gap: 0.3rem; padding: 1rem; border: 1px solid var(--el-border); border-radius: 9px; }
 .info strong { overflow-wrap: anywhere; }

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { OrdersView } from "@/components/orders/OrdersView";
+import AdminOrdersExplorer from "@/components/orders/AdminOrdersExplorer";
 import { useAuth } from "@/context/AuthContext";
 import { businessService } from "@/services/businessService";
 import { ROLES } from "@/lib/constants/roles";
@@ -23,7 +24,7 @@ export default function OrdersPage() {
       active = false;
     };
   }, [user]);
-  if (user?.role === ROLES.ADMIN) return <OrdersView />;
+  if (user?.role === ROLES.ADMIN) return <AdminOrdersExplorer />;
   if (result?.uid !== user?.id) return <p>Cargando tu negocio...</p>;
   if (result.error) return <p role="alert">{result.error}</p>;
   if (!result.business)

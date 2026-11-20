@@ -4,6 +4,14 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { adminService } from "@/services/adminService";
+import { apiRequest } from "@/services/apiClient";
+import {
+  buildMonthlyCommissions,
+  formatMonthLabel,
+  getCommissionMonthOptions,
+  getUtcMonthKey,
+} from "@/utils/adminFinancialReports";
+import { formatOrderDate } from "@/utils/orderUtils";
 
 import styles from "./AdminBusinessDetail.module.css";
 
@@ -11,8 +19,11 @@ function formatMoney(value) {
   return new Intl.NumberFormat("es-SV", { style: "currency", currency: "USD" }).format(value || 0);
 }
 
-export default function AdminBusinessDetail({ businessId }) {
+export default function AdminBusinessDetail({ businessId, initialMonth = "" }) {
   const [data, setData] = useState(null);
+  const [commissions, setCommissions] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth || getUtcMonthKey(new Date()));
+  const [visibleMonthly, setVisibleMonthly] = useState(20);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -20,28 +31,43 @@ export default function AdminBusinessDetail({ businessId }) {
     setLoading(true);
     setError("");
     try {
-      const result = await adminService.getOverview();
-      setData(result);
+      const [overview, records] = await Promise.all([
+        adminService.getOverview(),
+        apiRequest(`/api/commissions?businessId=${encodeURIComponent(businessId)}`),
+      ]);
+      setData(overview);
+      setCommissions(records);
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "No se pudo consultar el emprendimiento.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [businessId]);
 
   useEffect(() => {
     let active = true;
-    adminService.getOverview()
-      .then((result) => { if (active) setData(result); })
+    Promise.all([
+      adminService.getOverview(),
+      apiRequest(`/api/commissions?businessId=${encodeURIComponent(businessId)}`),
+    ])
+      .then(([overview, records]) => {
+        if (active) {
+          setData(overview);
+          setCommissions(records);
+        }
+      })
       .catch((caughtError) => {
         if (active) setError(caughtError instanceof Error ? caughtError.message : "No se pudo consultar el emprendimiento.");
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [businessId]);
 
   const business = data?.commissionInsights.businesses.find((item) => item.id === businessId);
   const maxTrend = Math.max(0, ...(business?.trend.map((month) => month.amount) || []));
+  const monthOptions = getCommissionMonthOptions(commissions);
+  const monthlyReport = buildMonthlyCommissions(commissions, business ? [business] : [], selectedMonth);
+  const monthDetail = monthlyReport.businesses.find((item) => item.id === businessId);
 
   return (
     <div className={styles.page}>
@@ -103,6 +129,48 @@ export default function AdminBusinessDetail({ businessId }) {
             </figure>
             {maxTrend === 0 && (
               <p className={styles.noCommissions}>Este emprendimiento aún no registra comisiones en el período mostrado.</p>
+            )}
+          </section>
+
+          <section className={styles.card} aria-labelledby="business-commission-month-title">
+            <h2 id="business-commission-month-title">Comisiones detalladas por mes</h2>
+            <p>Selecciona un mes para consultar los pedidos que generaron comisiones en este emprendimiento.</p>
+            <label className={styles.monthFilter}>
+              Mes de comisión (UTC)
+              <select value={selectedMonth} onChange={(event) => { setSelectedMonth(event.target.value); setVisibleMonthly(20); }}>
+                {monthOptions.map((month) => (
+                  <option key={month.value} value={month.value}>{month.label}</option>
+                ))}
+              </select>
+            </label>
+            <div className={styles.monthSummary}>
+              <span>Total de {formatMonthLabel(selectedMonth)}</span>
+              <strong>{formatMoney(monthDetail?.amount || 0)}</strong>
+              <small>{monthDetail?.count || 0} pedidos con comisión</small>
+            </div>
+            {!monthDetail?.records.length ? (
+              <p className={styles.noCommissions}>No se generaron comisiones en el mes seleccionado.</p>
+            ) : (
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead><tr><th>Pedido</th><th>Fecha de entrega</th><th>Comisión</th><th>Detalle</th></tr></thead>
+                  <tbody>
+                    {monthDetail.records.slice(0, visibleMonthly).map((commission) => (
+                      <tr key={commission.id}>
+                        <td title={commission.orderId}>PED-{String(commission.orderId).slice(0, 8).toUpperCase()}</td>
+                        <td>{formatOrderDate(commission.createdAt)}</td>
+                        <td>{formatMoney(commission.amount)}</td>
+                        <td><Link href={`/orders/${encodeURIComponent(commission.orderId)}`}>Ver pedido</Link></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {monthDetail?.records.length > visibleMonthly && (
+              <button type="button" className={styles.refresh} onClick={() => setVisibleMonthly((count) => count + 20)}>
+                Mostrar más comisiones ({monthDetail.records.length - visibleMonthly} restantes)
+              </button>
             )}
           </section>
 
