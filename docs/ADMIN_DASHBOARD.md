@@ -9,8 +9,8 @@
 - `/orders` con rol ADMIN: abre con negocios activos y permite combinar negocio, estado,
   rango de fecha de creación y rango de fecha de entrega. La vista de pedidos del EMPRENDEDOR
   se conserva y su búsqueda también acepta nombre, correo y teléfono del comprador.
-- `/admin/ventas`: total histórico de pedidos entregados, desglose por negocio y enlaces
-  a los detalles de cada pedido.
+- `/admin/ventas`: total histórico de pedidos entregados y selector mensual (igual que
+  Comisiones), desglose por negocio del período y enlaces a los detalles de cada pedido.
 - `/admin/comisiones`: total del mes seleccionado, acumulado histórico (lifetime),
   comisiones agrupadas por negocio y enlaces a detalles mensuales y pedidos.
 - `/admin/usuarios`: ruta anterior, redirige a compradores para no romper enlaces.
@@ -30,6 +30,9 @@
   para pedidos entregados antiguos sin comisión registrada no existe una fecha fiable.
 - Las fechas de creación y entrega en los filtros de pedidos se interpretan en horario
   de El Salvador, mientras que los meses de comisión mantienen el criterio UTC del dashboard.
+- El selector de Ventas utiliza el mes UTC de entrega del pedido (fecha de comisión
+  cuando `deliveredAt` no existe). El total histórico sigue incluyendo todos los
+  pedidos entregados, aunque algunos antiguos carezcan de fecha de entrega fiable.
 - Las listas de pedidos y transacciones muestran bloques incrementales, evitando miles de
   filas en el DOM. La consulta completa de Firestore se conserva por compatibilidad con el
   backend actual; la paginación del lado del servidor será necesaria al crecer el volumen.

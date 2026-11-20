@@ -122,13 +122,22 @@ function sortGroups(groups) {
     .sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name, "es"));
 }
 
-export function buildDeliveredSales(orders, businesses) {
+export function getSalesMonthOptions(orders, deliveredDates = {}, now = new Date()) {
+  const completedOrders = orders
+    .filter((order) => order.status === ORDER_STATUS.DELIVERED)
+    .map((order) => ({ createdAt: order.deliveredAt || deliveredDates[order.id] }));
+
+  return getCommissionMonthOptions(completedOrders, now);
+}
+
+export function buildDeliveredSales(orders, businesses, { month = "", deliveredDates = {} } = {}) {
   const groups = makeGroups(businesses);
   let total = 0;
   let count = 0;
 
   for (const order of orders) {
     if (order.status !== ORDER_STATUS.DELIVERED) continue;
+    if (month && getUtcMonthKey(order.deliveredAt || deliveredDates[order.id]) !== month) continue;
     const amount = Number(order.subtotal);
     if (!Number.isFinite(amount) || amount < 0) continue;
     const group = ensureGroup(groups, order.businessId);

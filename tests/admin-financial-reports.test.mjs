@@ -9,6 +9,7 @@ import {
   filterAdminOrders,
   getCommissionMonthOptions,
   getLocalDateKey,
+  getSalesMonthOptions,
 } from "../src/utils/adminFinancialReports.js";
 
 const businesses = [
@@ -63,6 +64,25 @@ test("ventas totales incluyen negocios inactivos o eliminados y excluyen cancela
   assert.equal(result.businesses.find((business) => business.id === "a").amount, 100);
   assert.equal(result.businesses.find((business) => business.id === "b").amount, 50);
   assert.equal(result.businesses.find((business) => business.id === "removed").name, "Negocio no disponible");
+});
+
+test("ventas del mes usan la entrega y preservan el acumulado histórico", () => {
+  const deliveredDates = buildDeliveredDates(commissions);
+  const november = buildDeliveredSales(orders, businesses, { month: "2026-11", deliveredDates });
+  assert.equal(november.total, 120);
+  assert.equal(november.count, 2);
+  assert.equal(november.businesses.find((business) => business.id === "b").amount, 0);
+
+  const october = buildDeliveredSales(orders, businesses, { month: "2026-10", deliveredDates });
+  assert.equal(october.total, 50);
+  assert.equal(buildDeliveredSales(orders, businesses).total, 170);
+});
+
+test("el selector de ventas incluye meses históricos de entregas", () => {
+  const deliveredDates = buildDeliveredDates(commissions);
+  const options = getSalesMonthOptions(orders, deliveredDates, new Date("2026-11-20T12:00:00Z"));
+  assert.equal(options[0].value, "2026-11");
+  assert.ok(options.some((option) => option.value === "2026-10"));
 });
 
 test("comisiones mensuales y lifetime mantienen los valores históricos", () => {
