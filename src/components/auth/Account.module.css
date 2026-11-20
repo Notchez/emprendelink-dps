@@ -250,6 +250,74 @@
   cursor: not-allowed;
 }
 
+.socialLogin {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.socialDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #c4cfdf;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.socialDivider::before,
+.socialDivider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #506077;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 48px;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #1f2937;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.googleButton:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #94a3b8;
+}
+
+.googleButton:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.googleButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.googleMark {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #4285f4;
+}
+
+.googleNote {
+  margin: 0;
+  color: #c4cfdf;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .info,
 .error,
 .success {

@@ -1,248 +1,183 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { AccountActions } from "@/components/auth/AccountActions";
-
-import { AppContent, DashboardLayout } from "@adminlte/react";
-
 import { adminMenuItems, entrepreneurMenuItems } from "@/lib/navigation/dashboardMenus";
 
-import "@adminlte/react/css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./DashboardShell.css";
 
-function DashboardLink({ href, children, ...props }) {
-  return (
-    <Link href={href} {...props}>
-      {children}
-    </Link>
-  );
-}
-
 const subscribe = () => () => {};
-
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
-const emptyUser = {
-  name: "",
-  image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E",
-};
-
-function readSavedMode() {
+function readSavedValue(key, fallback) {
   try {
-    const saved = window.localStorage.getItem("lte-theme");
-
-    return ["light", "dark", "auto"].includes(saved) ? saved : "light";
+    return window.localStorage.getItem(key) ?? fallback;
   } catch {
-    return "light";
+    return fallback;
   }
 }
 
-export function DashboardShell(props) {
-  const mounted = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+function isActivePath(pathname, href) {
+  if (href === "/admin" || href === "/emprendedor") return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
-  if (!mounted) {
+function SidebarItem({ item, pathname, onNavigate, collapsed, depth = 0 }) {
+  const hasActiveChild = item.type === "group" && item.children.some(
+    (child) => child.href && isActivePath(pathname, child.href)
+  );
+  const [expanded, setExpanded] = useState(Boolean(hasActiveChild));
+
+  if (item.type === "header") {
+    return <li className="el-nav-header">{item.text}</li>;
+  }
+
+  if (item.type === "group") {
     return (
-      <div className="container" role="status">
-        Cargando panel...
-      </div>
+      <li className="el-nav-group">
+        <button
+          type="button"
+          className={`el-nav-link ${hasActiveChild ? "el-nav-parent-active" : ""}`}
+          onClick={() => setExpanded((previous) => !previous)}
+          aria-expanded={expanded}
+          title={collapsed ? item.text : undefined}
+        >
+          <i className={item.icon} aria-hidden="true" />
+          <span className="el-nav-text">{item.text}</span>
+          <i className={`bi bi-chevron-${expanded ? "up" : "down"} el-chevron`} aria-hidden="true" />
+        </button>
+        {expanded && (
+          <ul className="el-nav-children">
+            {item.children.map((child) => (
+              <SidebarItem key={child.href || child.text} item={child} pathname={pathname} onNavigate={onNavigate} collapsed={collapsed} depth={depth + 1} />
+            ))}
+          </ul>
+        )}
+      </li>
     );
   }
 
-  return <DashboardShellReady {...props} />;
+  const active = isActivePath(pathname, item.href);
+  return (
+    <li className={`el-nav-item ${depth ? "el-nav-subitem" : ""}`}>
+      <Link
+        href={item.href}
+        className={`el-nav-link ${active ? "el-nav-active" : ""}`}
+        aria-current={active ? "page" : undefined}
+        title={collapsed ? item.text : undefined}
+        onClick={onNavigate}
+      >
+        <i className={item.icon} aria-hidden="true" />
+        <span className="el-nav-text">{item.text}</span>
+      </Link>
+    </li>
+  );
+}
+
+export function DashboardShell({ section, children }) {
+  const mounted = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+
+  if (!mounted) return <div className="container" role="status">Cargando panel...</div>;
+
+  return <DashboardShellReady section={section}>{children}</DashboardShellReady>;
 }
 
 function DashboardShellReady({ section, children }) {
-  const [initialMode] = useState(readSavedMode);
+  const pathname = usePathname();
+  const isAdmin = section === "admin";
+  const logoHref = isAdmin ? "/admin" : "/emprendedor";
+  const menuItems = isAdmin ? adminMenuItems : entrepreneurMenuItems;
+  const [themeMode, setThemeMode] = useState(() => {
+    const stored = readSavedValue("lte-theme", "light");
+    return ["light", "dark", "auto"].includes(stored) ? stored : "light";
+  });
+  const [collapsed, setCollapsed] = useState(() => readSavedValue("el-sidebar-collapsed", "false") === "true");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    void import("bootstrap/dist/js/bootstrap.bundle.min.js");
-  }, []);
+    const preference = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyMode = () => {
+      document.documentElement.setAttribute(
+        "data-bs-theme",
+        themeMode === "auto" ? (preference.matches ? "dark" : "light") : themeMode
+      );
+    };
+    applyMode();
+    preference.addEventListener("change", applyMode);
+    try { window.localStorage.setItem("lte-theme", themeMode); } catch { /* Almacenamiento no disponible. */ }
+    return () => preference.removeEventListener("change", applyMode);
+  }, [themeMode]);
 
-  const isAdmin = section === "admin";
+  useEffect(() => {
+    try { window.localStorage.setItem("el-sidebar-collapsed", String(collapsed)); } catch { /* Modo privado. */ }
+  }, [collapsed]);
 
-  const menuItems = isAdmin ? adminMenuItems : entrepreneurMenuItems;
-
-  const logoHref = isAdmin ? "/admin" : "/emprendedor";
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setMobileOpen(false);
+    }
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileOpen]);
 
   return (
-    <>
-      <style jsx global>{`
-        .app-header button[title="Fullscreen"],
-        .app-header button[title="Exit fullscreen"] {
-          display: none !important;
-        }
+    <div className={`emprendelink-dashboard el-shell ${collapsed ? "el-collapsed" : ""} ${mobileOpen ? "el-mobile-open" : ""}`}>
+      <button
+        className="el-sidebar-overlay"
+        type="button"
+        aria-label="Cerrar menú lateral"
+        onClick={() => setMobileOpen(false)}
+      />
+      <aside className="el-sidebar app-sidebar" aria-label="Navegación del panel">
+        <Link className="el-brand" href={logoHref} onClick={() => setMobileOpen(false)} title="EmprendeLink">
+          <span className="el-brand-icon" aria-hidden="true"><i className="bi bi-shop-window" /></span>
+          <span className="el-brand-text"><strong>Emprende</strong>Link</span>
+        </Link>
+        <nav className="el-nav" aria-label={isAdmin ? "Administración" : "Mi emprendimiento"}>
+          <ul>
+            {menuItems.map((item, index) => (
+              <SidebarItem key={item.href || `${item.text}-${index}`} item={item} pathname={pathname} onNavigate={() => setMobileOpen(false)} collapsed={collapsed} />
+            ))}
+          </ul>
+        </nav>
+        <div className="el-sidebar-foot">DPS941 · EmprendeLink</div>
+      </aside>
 
-        .app-header kbd {
-          display: none !important;
-        }
-
-        .accountActions {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          flex-wrap: nowrap;
-        }
-
-        .accountNameLink {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.7rem;
-          padding: 0.35rem 0.45rem;
-          border-radius: 999px;
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .accountNameLink:hover {
-          background: rgb(127 127 127 / 12%);
-          color: inherit;
-        }
-
-        .accountNameBadge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 2.15rem;
-          height: 2.15rem;
-          flex-shrink: 0;
-          border-radius: 999px;
-          background: #2563eb;
-          color: #ffffff;
-          font-size: 0.9rem;
-          font-weight: 700;
-        }
-
-        .accountNameText {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.05;
-        }
-
-        .accountNameText small {
-          color: var(--bs-secondary-color);
-          font-size: 0.7rem;
-          font-weight: 600;
-        }
-
-        .accountNameText strong {
-          max-width: 150px;
-          overflow: hidden;
-          font-size: 0.95rem;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .logoutActionButton {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          padding: 0.6rem 0.95rem;
-          border: 0;
-          border-radius: 0.8rem;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
-          color: #ffffff;
-          font-size: 0.9rem;
-          font-weight: 700;
-          box-shadow: 0 8px 18px rgb(37 99 235 / 22%);
-        }
-
-        .logoutActionButton:disabled {
-          opacity: 0.6;
-        }
-
-        .accountActionError {
-          color: #dc3545;
-          font-size: 0.8rem;
-        }
-
-        @media (max-width: 767.98px) {
-          .app-header .container-fluid {
-            flex-wrap: nowrap;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-          }
-
-          .app-header .navbar-nav.ms-auto {
-            align-items: center;
-            gap: 0.25rem;
-            flex-shrink: 1;
-          }
-
-          .app-header .navbar-nav.ms-auto > li:first-child button {
-            width: 42px;
-            height: 42px;
-            padding: 0 !important;
-            justify-content: center;
-            border-radius: 50% !important;
-          }
-
-          .accountNameText,
-          .logoutText {
-            display: none !important;
-          }
-
-          .accountNameLink {
-            padding: 0.2rem;
-          }
-
-          .accountNameBadge,
-          .logoutActionButton {
-            width: 40px;
-            height: 40px;
-          }
-
-          .logoutActionButton {
-            justify-content: center;
-            padding: 0;
-            border-radius: 50%;
-          }
-
-          .emprendelink-dashboard .app-wrapper,
-          .emprendelink-dashboard .app-main,
-          .emprendelink-dashboard .app-content {
-            min-width: 0;
-            max-width: 100%;
-          }
-        }
-      `}</style>
-
-      <DashboardLayout
-        menuItems={menuItems}
-        topbarEnd={
-          <li className="nav-item d-flex align-items-center">
+      <div className="el-main-column">
+        <header className="el-header app-header">
+          <button className="el-menu-toggle el-desktop-toggle" type="button" onClick={() => setCollapsed((previous) => !previous)} aria-label={collapsed ? "Expandir menú" : "Contraer menú"} aria-expanded={!collapsed}>
+            <i className="bi bi-list" aria-hidden="true" />
+          </button>
+          <button className="el-menu-toggle el-mobile-toggle" type="button" onClick={() => setMobileOpen((previous) => !previous)} aria-label="Abrir menú" aria-expanded={mobileOpen}>
+            <i className="bi bi-list" aria-hidden="true" />
+          </button>
+          <span className="el-header-title">{isAdmin ? "Administración" : "Panel emprendedor"}</span>
+          <div className="el-header-actions">
+            <label className="el-theme-control">
+              <i className="bi bi-circle-half" aria-hidden="true" />
+              <span className="visually-hidden">Tema visual</span>
+              <select aria-label="Tema visual" value={themeMode} onChange={(event) => setThemeMode(event.target.value)}>
+                <option value="light">Claro</option>
+                <option value="dark">Oscuro</option>
+                <option value="auto">Sistema</option>
+              </select>
+            </label>
             <AccountActions />
-          </li>
-        }
-        logo={
-          <span>
-            <strong>Emprende</strong>Link
-          </span>
-        }
-        logoHref={logoHref}
-        sidebarTheme="dark"
-        sidebarClass="bg-dark shadow"
-        sidebarMini
-        fixedHeader
-        fixedSidebar
-        colorModeToggle
-        initialColorMode={initialMode}
-        user={emptyUser}
-        enableSidebarPersistence
-        navbarClass="bg-body border-bottom"
-        bodyClass="emprendelink-dashboard"
-        linkComponent={DashboardLink}
-        footer={
-          <span>
-            <strong>Muchas gracias por utilizar nuestros servicios</strong>
-          </span>
-        }
-      >
-        <AppContent>{children}</AppContent>
-      </DashboardLayout>
-    </>
+          </div>
+        </header>
+
+        <main className="app-main el-main" id="contenido-principal">
+          <div className="app-content el-content">{children}</div>
+        </main>
+
+        <footer className="app-footer el-footer">Muchas gracias por utilizar nuestros servicios.</footer>
+      </div>
+    </div>
   );
 }

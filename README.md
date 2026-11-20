@@ -50,7 +50,7 @@ docs/FIREBASE_SETUP.md
 | Router               | App Router                                |
 | Estilos              | CSS + CSS Modules                         |
 | Estado               | Context API + hooks                       |
-| Panel interno        | AdminLTE React                            |
+| Panel interno        | Layout propio React + CSS Modules         |
 | UI base panel        | Bootstrap + Bootstrap Icons               |
 | Testing              | Node Test Runner + tsx                    |
 | CI                   | GitHub Actions                            |
@@ -68,15 +68,18 @@ No cambiar dependencias, versiones o arquitectura compartida sin aprobación del
 Puede administrar:
 
 ```text
-usuarios
+compradores (consulta y control de acceso)
+emprendimientos (planes, publicación y desempeño)
 planes
-negocios
 ventas
 comisiones
-visión global
+dashboard de comisiones mensuales por negocio
 ```
 
 ADMIN no se crea desde el registro público.
+
+Las rutas, los cálculos del dashboard y los escenarios de prueba están documentados en
+`docs/ADMIN_DASHBOARD.md`.
 
 ---
 

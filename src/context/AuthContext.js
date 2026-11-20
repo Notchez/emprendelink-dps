@@ -44,6 +44,12 @@ export function AuthProvider({ children }) {
     return user;
   }
 
+  async function loginWithGoogle() {
+    const user = await authService.loginWithGoogle();
+    setSession({ user, identity: authService.getCurrentIdentity(), loading: false, error: "" });
+    return user;
+  }
+
   async function register(data) {
     const user = await authService.register(data);
     if (user) {
@@ -61,7 +67,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ ...session, login, register, completeProfile, logout }}>
+    <AuthContext.Provider value={{ ...session, login, loginWithGoogle, register, completeProfile, logout }}>
       {children}
     </AuthContext.Provider>
   );

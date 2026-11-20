@@ -48,7 +48,6 @@ Firebase Admin
 Firestore
 Context API
 CSS Modules
-AdminLTE React
 Bootstrap
 Bootstrap Icons
 npm
@@ -230,7 +229,7 @@ La tasa histórica del pedido debe conservarse.
 
 # Cliente
 
-La experiencia Cliente es independiente de AdminLTE.
+La experiencia Cliente es independiente del layout administrativo.
 
 Navegación principal:
 
@@ -259,9 +258,9 @@ Rutas importantes:
 
 # Admin y Emprendedor
 
-Los paneles internos utilizan AdminLTE/Bootstrap.
+Los paneles internos utilizan un layout propio en React y CSS, con utilidades e iconos de Bootstrap.
 
-No reemplazar esa base visual sin aprobación.
+No modificar la base visual compartida sin aprobación del equipo.
 
 ---
 

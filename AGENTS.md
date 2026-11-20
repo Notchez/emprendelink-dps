@@ -19,7 +19,6 @@ React
 Firebase
 Firestore
 Firebase Admin
-AdminLTE
 Bootstrap
 CSS Modules
 Context API
@@ -295,11 +294,11 @@ Si una solicitud afecta un módulo ajeno:
 
 # UI
 
-Admin y Emprendedor utilizan AdminLTE/Bootstrap.
+Admin y Emprendedor utilizan un layout propio en React y CSS, con Bootstrap Icons y utilidades de Bootstrap.
 
 Cliente utiliza su interfaz propia.
 
-No forzar AdminLTE en la experiencia Cliente.
+Mantener la experiencia Cliente independiente del layout administrativo.
 
 Mantener responsive.
 

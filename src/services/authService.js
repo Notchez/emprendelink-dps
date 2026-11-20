@@ -4,6 +4,8 @@ import {
   setPersistence,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -27,8 +29,14 @@ export function authErrorMessage(error) {
     "auth/wrong-password": "Correo o contraseña incorrectos.",
     "auth/email-already-in-use":
       "Ese correo ya tiene cuenta. Inicia sesión o recupera la contraseña.",
+    "auth/account-exists-with-different-credential":
+      "Ya existe una cuenta con ese correo y otro método de acceso. Inicia sesión con el método original.",
     "auth/weak-password": "Usa una contraseña más segura, de al menos 8 caracteres.",
-    "auth/operation-not-allowed": "Activa Correo/Contraseña en Firebase Authentication.",
+    "auth/operation-not-allowed": "El método de acceso no está habilitado en Firebase Authentication.",
+    "auth/popup-blocked": "El navegador bloqueó la ventana de Google. Permite ventanas emergentes para este sitio.",
+    "auth/popup-closed-by-user": "Se cerró la ventana de Google antes de iniciar sesión.",
+    "auth/cancelled-popup-request": "Se canceló el inicio de sesión con Google. Inténtalo nuevamente.",
+    "auth/unauthorized-domain": "Este dominio no está autorizado en Firebase Authentication.",
     "auth/too-many-requests": "Demasiados intentos. Espera un momento y vuelve a intentar.",
     "auth/network-request-failed": "No se pudo conectar. Revisa tu conexión.",
     "permission-denied": "No se pudo acceder al perfil. Revisa las reglas de Firestore.",
@@ -72,6 +80,22 @@ export const authService = {
       await signOut(auth());
       throw new Error("La cuenta está desactivada.");
     }
+    return user;
+  },
+  async loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    // Abrir el popup directamente desde el clic evita que el navegador lo bloquee
+    // por perder la activación del usuario durante una operación asíncrona previa.
+    // En el navegador Firebase ya utiliza persistencia local por defecto.
+    const result = await signInWithPopup(auth(), provider);
+    const user = await userService.getProfile(result.user.uid);
+    if (user && !user.active) {
+      await signOut(auth());
+      throw new Error("La cuenta está desactivada.");
+    }
+    // No asignar roles ni crear perfiles automáticamente: la persona debe
+    // completar sus datos y elegir CUSTOMER o ENTREPRENEUR en la pantalla existente.
     return user;
   },
   async register(data) {

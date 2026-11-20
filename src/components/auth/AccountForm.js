@@ -18,13 +18,17 @@ export function AccountForm({ mode }) {
   const isLogin = mode === "login";
   const isComplete = mode === "complete";
 
-  const { identity, user, loading, login, register, completeProfile } = useAuth();
+  const { identity, user, loading, login, loginWithGoogle, register, completeProfile } = useAuth();
 
   const search = useSearchParams();
 
   const next = search.get("next") === "/checkout" ? "/checkout" : null;
 
   const suffix = next ? "?next=%2Fcheckout" : "";
+
+  const requestedRole = !next && search.get("role") === ROLES.ENTREPRENEUR
+    ? ROLES.ENTREPRENEUR
+    : ROLES.CUSTOMER;
 
   const router = useRouter();
 
@@ -33,7 +37,7 @@ export function AccountForm({ mode }) {
     email: "",
     password: "",
     confirmPassword: "",
-    role: ROLES.CUSTOMER,
+    role: requestedRole,
     phone: "",
     address: "",
     deliveryInstructions: "",
@@ -101,6 +105,29 @@ export function AccountForm({ mode }) {
 
       setMessage(
         "Si el correo tiene cuenta, recibirás instrucciones para restablecer tu contraseña."
+      );
+    } catch (failure) {
+      setError(authErrorMessage(failure));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function continueWithGoogle() {
+    setError("");
+    setMessage("");
+    setSaving(true);
+
+    try {
+      const account = await loginWithGoogle();
+      const profileQuery = new URLSearchParams();
+      if (next) profileQuery.set("next", next);
+      if (!isLogin && values.role === ROLES.ENTREPRENEUR && !next) {
+        profileQuery.set("role", ROLES.ENTREPRENEUR);
+      }
+      const profileUrl = `/completar-perfil${profileQuery.size ? `?${profileQuery}` : ""}`;
+      router.replace(
+        account ? getLoginDestination(account.role, next) : profileUrl
       );
     } catch (failure) {
       setError(authErrorMessage(failure));
@@ -367,6 +394,24 @@ export function AccountForm({ mode }) {
               </button>
             )}
           </form>
+
+          {!isComplete && (
+            <div className={styles.socialLogin}>
+              <div className={styles.socialDivider}><span>o continúa con</span></div>
+              <button
+                className={styles.googleButton}
+                type="button"
+                onClick={() => void continueWithGoogle()}
+                disabled={saving}
+              >
+                <span className={styles.googleMark} aria-hidden="true">G</span>
+                Continuar con Google
+              </button>
+              <p className={styles.googleNote}>
+                Si es tu primera vez, completarás tus datos antes de ingresar.
+              </p>
+            </div>
+          )}
 
           {!isComplete && (
             <p className={styles.switchAccount}>
