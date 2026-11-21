@@ -39,7 +39,7 @@ administración
 
 ```text
 Node.js 24.x
-Next.js 16.3.3
+Next.js 16.4.6
 React 19.2.7
 JavaScript
 Next.js App Router
