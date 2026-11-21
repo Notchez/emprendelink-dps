@@ -6,7 +6,8 @@
 
 .businessHeader,
 .emptyState,
-.actions {
+.actions,
+.ordersSection {
   padding: 1.5rem;
   border: 1px solid var(--el-border, #d1d5db);
   border-radius: 12px;
@@ -68,3 +69,21 @@
   border-radius: 8px;
   text-decoration: none;
 }
+
+.sectionHeading,
+.orderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sectionHeading h2,
+.sectionHeading p { margin: 0.25rem 0; }
+.ordersGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 265px), 1fr)); gap: 1rem; margin-top: 1.25rem; }
+.orderCard { display: grid; gap: 0.55rem; padding: 1.15rem; border-radius: 12px; border: 1px solid var(--el-border); background: var(--el-subtle-bg); }
+.orderCard p { margin: 0; }
+.orderCard a { color: var(--el-link); font-weight: 700; }
+.orderMuted { color: var(--el-muted); }
+.emptyOrders { border-radius: 10px; padding: 1.5rem; margin-bottom: 0; background: var(--el-subtle-bg); color: var(--el-muted); }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./CommissionsTable.module.css";
 
 const dateFormatter = new Intl.DateTimeFormat("es-SV", {
@@ -24,26 +25,26 @@ export default function CommissionsTable({ commissions }) {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Comisión</th>
             <th>Pedido</th>
-            <th>Fecha</th>
+            <th>Fecha de entrega</th>
             <th>Tasa</th>
-            <th>Monto</th>
+            <th>Comisión</th>
+            <th>Detalle</th>
           </tr>
         </thead>
 
         <tbody>
           {commissions.map((commission) => (
             <tr key={commission.id}>
-              <td title={commission.id}>{formatId(commission.id, "COM")}</td>
-
-              <td title={commission.orderId}>{formatId(commission.orderId, "PED")}</td>
+              <td title={commission.orderId}>{commission.orderId ? formatId(commission.orderId, "PED") : "No disponible"}</td>
 
               <td>{dateFormatter.format(new Date(commission.createdAt))}</td>
 
               <td>{(commission.rate * 100).toFixed(0)}%</td>
 
               <td>${Number(commission.amount).toFixed(2)}</td>
+
+              <td>{commission.orderId ? <Link href={`/orders/${encodeURIComponent(commission.orderId)}`}>Ver pedido</Link> : "—"}</td>
             </tr>
           ))}
         </tbody>

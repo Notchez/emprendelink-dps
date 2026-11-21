@@ -233,7 +233,8 @@
 
 .productImage {
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--el-subtle-bg, #f2f4f7);
 }
 
 .imagePlaceholder {

@@ -1,18 +1,18 @@
 import { orderService } from "@/services/orderService";
+import { statementService } from "@/services/statementService";
+import { buildEntrepreneurSales } from "@/utils/entrepreneurReports";
 
 export const reportService = {
-  async getOrdersReport(businessId) {
+  async getSalesReport(businessId) {
     if (!businessId) {
       throw new Error("No se encontró el negocio para generar el reporte.");
     }
 
-    const orders = await orderService.getOrders({ businessId });
+    const [orders, commissions] = await Promise.all([
+      orderService.getOrders({ businessId }),
+      statementService.getCommissions(businessId),
+    ]);
 
-    return orders.map((order) => ({
-      id: order.id,
-      date: order.createdAt.slice(0, 10),
-      total: order.subtotal,
-      status: order.status,
-    }));
+    return buildEntrepreneurSales(orders, commissions);
   },
 };

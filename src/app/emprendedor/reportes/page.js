@@ -29,7 +29,7 @@ export default function Page() {
           return;
         }
 
-        const orders = await reportService.getOrdersReport(business.id);
+        const orders = await reportService.getSalesReport(business.id);
 
         if (active) {
           setResult({ userId, business, orders });
@@ -67,11 +67,11 @@ export default function Page() {
     <div className="container">
       <p className="eyebrow">Panel del emprendedor</p>
 
-      <h1>Reportes</h1>
+      <h1>Ventas</h1>
 
-      <p>Consulta los pedidos registrados de tu emprendimiento.</p>
+      <p>Consulta tus ventas entregadas, filtra por fecha de entrega y prepara un reporte en PDF.</p>
 
-      <ReportFilters orders={result.orders} />
+      <ReportFilters orders={result.orders} businessName={result.business.name} />
     </div>
   );
 }

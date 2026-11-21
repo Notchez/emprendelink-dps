@@ -1,0 +1,30 @@
+.page { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+.metrics { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; }
+.primaryMetric, .metric, .panel { min-width: 0; border-radius: 14px; border: 1px solid var(--el-border); background: var(--el-surface); }
+.primaryMetric, .metric { display: grid; align-content: start; gap: 0.6rem; padding: 1.35rem; }
+.primaryMetric { border: 0; color: #fff; background: linear-gradient(135deg, #1d4ed8, #0284c7); }
+.primaryMetric strong { font-size: clamp(1.6rem, 3vw, 2.3rem); }
+.primaryMetric small { color: rgb(255 255 255 / 88%); }
+.metric > span { color: var(--el-muted); }
+.metric strong { font-size: clamp(1.5rem, 3vw, 2rem); }
+.metric small { color: var(--el-muted); }
+.panel { padding: clamp(1rem, 2vw, 1.5rem); }
+.panelHeading { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+.panelHeading h2 { margin: 0; font-size: 1.25rem; }
+.panelHeading p { margin: 0.4rem 0 0; color: var(--el-muted); }
+.filterRow { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; }
+.filterRow label { display: grid; gap: 0.4rem; font-weight: 700; }
+.filterRow input, .filterRow select { min-width: 180px; padding: 0.7rem; color: var(--el-text); background: var(--el-surface); border: 1px solid var(--el-border); border-radius: 8px; font: inherit; }
+.primaryButton, .secondaryButton { display: inline-flex; align-items: center; gap: 0.45rem; justify-content: center; padding: 0.72rem 1rem; border: 1px solid var(--el-link); border-radius: 9px; font-weight: 700; cursor: pointer; }
+.primaryButton { background: var(--el-link); color: #fff; }
+.secondaryButton { background: var(--el-surface); color: var(--el-link); }
+.primaryButton:disabled { cursor: not-allowed; opacity: 0.55; }
+.note { margin: 1rem 0 0; color: var(--el-muted); font-size: 0.9rem; }
+.error { color: var(--el-danger); padding: 0.85rem; border-radius: 9px; background: var(--el-danger-bg); }
+.tableWrap { width: 100%; overflow-x: auto; }
+.table { min-width: 620px; width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.85rem; text-align: left; border-bottom: 1px solid var(--el-border); }
+.table th { font-size: 0.87rem; background: var(--el-subtle-bg); }
+.table a { color: var(--el-link); font-weight: 700; }
+.table tr:last-child td { border-bottom: none; }
+@media (max-width: 700px) { .metrics { grid-template-columns: 1fr; } .filterRow { align-items: stretch; } .filterRow label { width: 100%; } }
