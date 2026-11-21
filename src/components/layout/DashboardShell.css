@@ -205,6 +205,21 @@
 .el-shell .accountActionError { color: var(--el-danger); font-size: 0.78rem; }
 .el-sidebar-overlay { display: none; }
 
+/* Vista compacta de escritorio: equivale al zoom del 80% en el navegador.
+   Compensamos el alto del viewport para mantener el sidebar a pantalla completa. */
+@media (min-width: 1200px) {
+  .emprendelink-dashboard {
+    zoom: 80%;
+    min-height: 125vh;
+    min-height: 125dvh;
+  }
+
+  .el-shell .el-sidebar {
+    height: 125vh;
+    height: 125dvh;
+  }
+}
+
 @media (max-width: 960px) {
   .el-shell, .el-shell.el-collapsed { grid-template-columns: minmax(0, 1fr); }
   .el-shell .el-sidebar {
