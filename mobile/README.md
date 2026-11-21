@@ -42,13 +42,13 @@ del repositorio. Web y móvil deben usar el mismo `projectId` durante una prueba
 Google Sign-In contiene código nativo y no funciona en Expo Go. La configuración de plugins ya está
 en `app.json` y el perfil de development client en `eas.json`. Para Android:
 
-1. registra la app `sv.edu.udb.emprendelink` en Firebase;
+1. registra la app `com.emprendelink.app` en Firebase;
 2. agrega las huellas SHA-1/SHA-256 del certificado de desarrollo;
 3. descarga `google-services.json` dentro de `mobile/` (está ignorado por Git);
 4. configura `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` con el OAuth Client ID de tipo Web;
 5. genera e instala un development build y luego ejecuta `npm start`.
 
-Para iOS registra `sv.edu.udb.emprendelink`, usa `GoogleService-Info.plist` y configura el URL scheme
+Para iOS registra `com.emprendelink.app`, usa `GoogleService-Info.plist` y configura el URL scheme
 que corresponda antes del build. Los archivos nativos están ignorados para evitar compartir por
 accidente la configuración de un proyecto personal.
 
@@ -56,16 +56,15 @@ accidente la configuración de un proyecto personal.
 
 | Paquete | Versión fijada | Comprobación |
 | --- | --- | --- |
-| `expo` | `57.0.30` | SDK 57 usa React Native 0.86 y React 19.2 |
+| `expo` | `57.0.33` | SDK 57 usa React Native 0.86 y React 19.2 |
 | `firebase` | `12.18.0` | Expo requiere Firebase 12 o posterior para evitar errores ESM |
 | `@react-native-async-storage/async-storage` | `2.2.0` | versión incluida por Expo SDK 57 y usada por `getReactNativePersistence` |
-| `expo-dev-client` | `57.0.20` | versión incluida por Expo SDK 57 |
+| `expo-dev-client` | `~57.0.21` | versión recomendada por Expo SDK 57 |
 | `@react-native-google-signin/google-signin` | `17.0.0` | declara soporte para Expo `>=52.0.40` |
 
-Al ejecutar `expo install --check`, Expo recomienda `expo@~57.0.31` en lugar de la versión bloqueada
-`57.0.30`. No se actualizó porque esta tarea no autoriza cambios adicionales de dependencias. Ambas
-pertenecen a SDK 57 y el bundle Android compila; el ajuste de parche debe tratarse en una tarea de
-mantenimiento aprobada junto con su lockfile.
+Las versiones de Expo y del development client se actualizaron dentro de SDK 57 durante la
+revisión de seguridad de dependencias. Tras actualizar `expo-dev-client`, hay que comprobar
+la aplicación en el teléfono y reconstruir el development build antes de darlo por validado.
 
 Requisitos manuales de Firebase Console y del build:
 
