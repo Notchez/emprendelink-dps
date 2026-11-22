@@ -17,10 +17,11 @@ que la aplicación web.
 
 Las pantallas CUSTOMER utilizan como referencia visual la versión responsive de la web:
 barra superior con acceso al carrito y perfil, navegación inferior por Negocios / Pedidos / Perfil,
-tarjetas compactas con imágenes completas (`contain`), colores claros y detalles de pedido con
+tarjetas compactas con imágenes completas (`contain`), paleta oscura y detalles de pedido con
 identificadores `PED-XXXXXXXX`. Los pedidos se separan en «En curso» e «Historial» y mantienen
 el enlace a su detalle. Las pantallas de catálogo, producto, carrito y perfil conservan la
-navegación y los controles nativos de React Native.
+navegación y los controles nativos de React Native. El contenedor reserva el área inferior de
+gestos/botones del sistema Android para que no se superponga a las pestañas.
 
 Para validar el diseño en un teléfono Android, inicia el development build previamente instalado,
 ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas, búsqueda de

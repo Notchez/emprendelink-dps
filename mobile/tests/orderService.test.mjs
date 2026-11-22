@@ -16,6 +16,19 @@ test("apiClient adjunta el Firebase ID token", async () => {
   assert.equal(request.options.headers.Authorization, "Bearer firebase-token");
 });
 
+test("apiClient explica fallos de conexión a la API sin mostrar errores internos de Android", async () => {
+  process.env.EXPO_PUBLIC_API_BASE_URL = "http://192.168.1.27:3000";
+  const client = createApiClient({
+    getToken: async () => success("firebase-token"),
+    fetchImpl: async () => { throw new Error("fetch failed: java.net.NoRouteToHostException: Host unreachable"); },
+  });
+  const result = await client.request("/api/orders");
+  assert.equal(result.success, false);
+  assert.equal(result.error.code, "NETWORK_ERROR");
+  assert.match(result.error.message, /EXPO_PUBLIC_API_BASE_URL/);
+  assert.doesNotMatch(result.error.message, /java\.net/);
+});
+
 test("createOrder envía solo identificadores, cantidades y entrega", async () => {
   let captured;
   const service = createOrderService({ client: { request: async (path, options) => { captured = { path, options }; return success({ id: "order_1" }); } } });
