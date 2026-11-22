@@ -8,9 +8,10 @@ import { SearchInput } from "../../components/SearchInput";
 import { EmptyState, ErrorState, LoadingState } from "../../components/StateView";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../hooks/useCatalog";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function CatalogScreen({ navigation, route }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { businessId } = route.params;
   const { catalog, loading, error, reload } = useCatalog(businessId);
   const { addItem, replaceWithItem, totalItems } = useCart();
@@ -101,7 +102,7 @@ export function CatalogScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },

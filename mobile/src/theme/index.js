@@ -1,23 +1,20 @@
-export const colors = Object.freeze({
-  primary: "#2563EB",
-  primaryDark: "#93C5FD",
-  primarySoft: "#293548",
-  ink: "#F3F4F6",
-  muted: "#AEB8C7",
-  background: "#111827",
-  surface: "#1F2937",
-  surfaceDark: "#192434",
-  subtle: "#293548",
-  border: "#475569",
-  success: "#86EFAC",
-  successSoft: "#143526",
-  warning: "#FDE68A",
-  warningSoft: "#422F13",
-  danger: "#FCA5A5",
-  dangerSoft: "#451A1A",
-  white: "#FFFFFF",
-  transparent: "transparent",
-});
+import { useMemo } from "react";
+import { useColorScheme } from "react-native";
+
+import { getColors } from "./palette.js";
+
+export { getColors, lightColors, darkColors } from "./palette.js";
+
+export function useAppTheme() {
+  const scheme = useColorScheme();
+  return { colors: getColors(scheme), dark: scheme === "dark" };
+}
+
+export function useAppStyles(makeStyles) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => makeStyles(colors), [makeStyles, colors]);
+  return { colors, styles };
+}
 
 export const spacing = Object.freeze({ xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 });
 export const radii = Object.freeze({ sm: 8, md: 12, lg: 16, pill: 999 });
@@ -33,20 +30,23 @@ export const shadows = Object.freeze({
   },
 });
 
-export const navigationTheme = {
-  dark: true,
-  colors: {
-    primary: colors.primary,
-    background: colors.background,
-    card: colors.surface,
-    text: colors.ink,
-    border: colors.border,
-    notification: colors.danger,
-  },
-  fonts: {
-    regular: { fontFamily: "System", fontWeight: "400" },
-    medium: { fontFamily: "System", fontWeight: "500" },
-    bold: { fontFamily: "System", fontWeight: "700" },
-    heavy: { fontFamily: "System", fontWeight: "800" },
-  },
-};
+export function getNavigationTheme(scheme) {
+  const colors = getColors(scheme);
+  return {
+    dark: scheme === "dark",
+    colors: {
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.ink,
+      border: colors.border,
+      notification: colors.danger,
+    },
+    fonts: {
+      regular: { fontFamily: "System", fontWeight: "400" },
+      medium: { fontFamily: "System", fontWeight: "500" },
+      bold: { fontFamily: "System", fontWeight: "700" },
+      heavy: { fontFamily: "System", fontWeight: "800" },
+    },
+  };
+}

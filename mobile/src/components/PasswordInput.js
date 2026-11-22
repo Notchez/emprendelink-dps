@@ -3,9 +3,10 @@ import { Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AppInput } from "./AppInput";
-import { colors, spacing } from "../theme";
+import { useAppStyles, spacing } from "../theme";
 
 export function PasswordInput(props) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const [visible, setVisible] = useState(false);
   return (
     <AppInput
@@ -28,4 +29,4 @@ export function PasswordInput(props) {
   );
 }
 
-const styles = StyleSheet.create({ toggle: { padding: spacing.md } });
+const makeStyles = () => StyleSheet.create({ toggle: { padding: spacing.md } });

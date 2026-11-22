@@ -3,9 +3,10 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { formatMoney } from "../utils/formatters";
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function ProductCard({ product, onOpen, onAdd }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const [imageFailed, setImageFailed] = useState(false);
   return (
     <View style={styles.card}>
@@ -36,7 +37,7 @@ export function ProductCard({ product, onOpen, onAdd }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   card: { position: "relative", borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   productButton: { minHeight: 124, flexDirection: "row", gap: spacing.md, padding: 14 },
   pressed: { opacity: 0.78 },

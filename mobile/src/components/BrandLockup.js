@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors, radii, spacing } from "../theme";
+import { useAppStyles, radii, spacing } from "../theme";
 
 export function BrandLockup({ compact = false }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.row} accessibilityLabel="EmprendeLink">
       <View style={[styles.icon, compact && styles.iconCompact]}>
@@ -14,7 +15,7 @@ export function BrandLockup({ compact = false }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   icon: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primary },
   iconCompact: { width: 34, height: 34, borderRadius: radii.sm },

@@ -5,9 +5,10 @@ import { EmptyState, ErrorState, LoadingState } from "../../components/StateView
 import { OrderCard } from "../../components/OrderCard";
 import { ORDER_STATUS } from "../../constants/orderStatus";
 import { useOrders } from "../../context/OrdersContext";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function OrdersScreen({ navigation }) {
+  const { styles } = useAppStyles(makeStyles);
   const { orders, loading, error, refresh } = useOrders();
   const sections = orders.length > 0 ? [
     {
@@ -55,7 +56,7 @@ export function OrdersScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },

@@ -4,9 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function CustomerTopBar({ title, onCart, onProfile }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { user } = useAuth();
   const { totalItems } = useCart();
   const initial = user?.name?.trim().charAt(0).toUpperCase() || "U";
@@ -43,7 +44,7 @@ export function CustomerTopBar({ title, onCart, onProfile }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   safe: { borderBottomWidth: 1, borderBottomColor: colors.border, backgroundColor: colors.surface },
   header: { minHeight: 60, paddingHorizontal: spacing.md, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.md },
   title: { flex: 1, color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },

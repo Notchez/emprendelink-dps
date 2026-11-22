@@ -17,7 +17,7 @@ import { ProfileScreen } from "../screens/app/ProfileScreen";
 import { RolePendingScreen } from "../screens/app/RolePendingScreen";
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { RegisterScreen } from "../screens/auth/RegisterScreen";
-import { colors, typography } from "../theme";
+import { typography, useAppStyles, useAppTheme } from "../theme";
 import { getRootFlow, ROOT_FLOWS } from "./roleFlow";
 
 const Stack = createNativeStackNavigator();
@@ -30,6 +30,7 @@ const tabIcons = {
 };
 
 function MainTabs() {
+  const { colors } = useAppTheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -82,6 +83,7 @@ function AuthNavigator() {
 }
 
 function CustomerNavigator() {
+  const { colors } = useAppTheme();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -115,6 +117,7 @@ function CustomerNavigator() {
 }
 
 export function RootNavigator() {
+  const { styles } = useAppStyles(makeStyles);
   const { user, profileRequired, initializing, sessionError, sessionRecoverable, retrySession } = useAuth();
 
   if (initializing) return <View style={styles.loading}><LoadingState message="Restaurando sesión..." /></View>;
@@ -131,6 +134,6 @@ export function RootNavigator() {
   return <RolePendingScreen />;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   loading: { flex: 1, justifyContent: "center", backgroundColor: colors.background },
 });

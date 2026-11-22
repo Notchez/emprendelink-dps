@@ -6,10 +6,11 @@ import { ErrorState, LoadingState } from "../../components/StateView";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { StatusBadge } from "../../components/StatusBadge";
 import { orderService } from "../../services/orderService";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 import { formatDate, formatMoney, formatOrderId } from "../../utils/formatters";
 
 export function OrderDetailScreen({ route }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const orderId = route.params?.order?.id || route.params?.orderId;
   const [order, setOrder] = useState(route.params?.order || null);
   const [history, setHistory] = useState([]);
@@ -83,10 +84,11 @@ export function OrderDetailScreen({ route }) {
 }
 
 function InfoRow({ icon, label, value }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return <View style={styles.infoRow}><View style={styles.infoIcon}><Ionicons name={icon} size={20} color={colors.primary} /></View><View style={styles.infoCopy}><Text style={styles.infoLabel}>{label}</Text><Text style={styles.infoValue}>{value}</Text></View></View>;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.lg },
   error: { padding: spacing.md, borderRadius: radii.sm, backgroundColor: colors.dangerSoft, color: colors.danger },
   hero: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },

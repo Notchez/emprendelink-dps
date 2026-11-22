@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function BusinessCard({ business, onPress }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const [imageFailed, setImageFailed] = useState(false);
   return (
     <Pressable
@@ -30,7 +31,7 @@ export function BusinessCard({ business, onPress }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   card: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: 14, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   pressed: { opacity: 0.84, transform: [{ scale: 0.99 }] },
   imageShell: { width: 74, height: 74, alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: radii.md, backgroundColor: colors.subtle },

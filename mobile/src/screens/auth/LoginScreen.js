@@ -8,10 +8,11 @@ import { AuthHeader } from "../../components/AuthHeader";
 import { PasswordInput } from "../../components/PasswordInput";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useAuth } from "../../context/AuthContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { useAppStyles, radii, shadows, spacing, typography } from "../../theme";
 import { hasValidationErrors, validateLogin } from "../../utils/validation";
 
 export function LoginScreen({ navigation }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { login, loginWithGoogle, loading, sessionError } = useAuth();
   const [values, setValues] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -59,7 +60,7 @@ export function LoginScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.xl },
   card: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
   errorBanner: { padding: spacing.md, borderRadius: radii.sm, backgroundColor: colors.dangerSoft, color: colors.danger, fontSize: typography.caption, lineHeight: 19 },

@@ -8,10 +8,11 @@ import { EmptyState } from "../../components/StateView";
 import { QuantityControl } from "../../components/QuantityControl";
 import { useCart } from "../../context/CartContext";
 import { useOrders } from "../../context/OrdersContext";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 import { formatMoney, formatOrderId } from "../../utils/formatters";
 
 export function CartScreen({ navigation }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { items, business, subtotal, totalItems, updateQuantity, removeItem, clearCart } = useCart();
   const { placeOrder } = useOrders();
   const [saving, setSaving] = useState(false);
@@ -105,7 +106,7 @@ export function CartScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   emptyPage: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xl },

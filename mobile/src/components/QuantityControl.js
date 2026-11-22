@@ -1,9 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors, radii, spacing } from "../theme";
+import { useAppStyles, radii, spacing } from "../theme";
 
 export function QuantityControl({ value, onChange, minimum = 1 }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.wrapper} accessibilityLabel={`Cantidad: ${value}`}>
       <Pressable accessibilityRole="button" accessibilityLabel="Restar una unidad" hitSlop={6} onPress={() => onChange(Math.max(minimum, value - 1))} style={styles.button}>
@@ -17,7 +18,7 @@ export function QuantityControl({ value, onChange, minimum = 1 }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   wrapper: { flexDirection: "row", alignItems: "center", gap: spacing.sm, padding: 3, borderWidth: 1, borderColor: colors.border, borderRadius: radii.pill, backgroundColor: colors.background },
   button: { width: 35, height: 35, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.surface },
   value: { minWidth: 24, color: colors.ink, fontWeight: "800", textAlign: "center" },

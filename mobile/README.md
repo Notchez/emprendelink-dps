@@ -17,11 +17,23 @@ que la aplicación web.
 
 Las pantallas CUSTOMER utilizan como referencia visual la versión responsive de la web:
 barra superior con acceso al carrito y perfil, navegación inferior por Negocios / Pedidos / Perfil,
-tarjetas compactas con imágenes completas (`contain`), paleta oscura y detalles de pedido con
-identificadores `PED-XXXXXXXX`. Los pedidos se separan en «En curso» e «Historial» y mantienen
+tarjetas compactas con imágenes completas (`contain`), tema automático claro/oscuro según el
+sistema Android o iOS y detalles de pedido con identificadores `PED-XXXXXXXX`.
+Los pedidos se separan en «En curso» e «Historial» y mantienen
 el enlace a su detalle. Las pantallas de catálogo, producto, carrito y perfil conservan la
 navegación y los controles nativos de React Native. El contenedor reserva el área inferior de
 gestos/botones del sistema Android para que no se superponga a las pestañas.
+
+La apariencia utiliza `useColorScheme` y se actualiza cuando el usuario cambia el tema del
+dispositivo; no se guarda una preferencia ni se ofrece un interruptor dentro de la aplicación.
+
+Para Android, **se necesita `expo-system-ui`**: instalar desde `mobile/` con
+`npx expo install expo-system-ui` antes de verificar la exportación. La opción
+`userInterfaceStyle: automatic` y el plugin están declarados en `app.json`.
+Este módulo nativo exige volver a crear e instalar el development build con
+`npx eas build --profile development --platform android` antes de comprobar
+el cambio automático del tema en un Samsung. Un reinicio de Metro no reemplaza
+esa reconstrucción nativa.
 
 Para validar el diseño en un teléfono Android, inicia el development build previamente instalado,
 ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas, búsqueda de

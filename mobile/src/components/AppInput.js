@@ -1,8 +1,9 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function AppInput({ label, error, rightAccessory, inputRef, ...inputProps }) {
+  const { styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.wrapper}>
       <Text style={styles.label}>{label}</Text>
@@ -21,7 +22,7 @@ export function AppInput({ label, error, rightAccessory, inputRef, ...inputProps
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   wrapper: { gap: spacing.sm },
   label: { color: colors.ink, fontSize: typography.caption, fontWeight: "700" },
   inputShell: {

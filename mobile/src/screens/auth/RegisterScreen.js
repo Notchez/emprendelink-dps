@@ -8,7 +8,7 @@ import { PasswordInput } from "../../components/PasswordInput";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { REGISTRATION_ROLES, ROLES } from "../../constants/roles";
 import { useAuth } from "../../context/AuthContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { useAppStyles, radii, shadows, spacing, typography } from "../../theme";
 import { hasValidationErrors, validateRegistration } from "../../utils/validation";
 
 const initialValues = {
@@ -23,6 +23,7 @@ const initialValues = {
 };
 
 export function RegisterScreen({ navigation }) {
+  const { styles } = useAppStyles(makeStyles);
   const { register, loading } = useAuth();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -103,7 +104,7 @@ export function RegisterScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.xl },
   card: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
   errorBanner: { padding: spacing.md, borderRadius: radii.sm, backgroundColor: colors.dangerSoft, color: colors.danger, fontSize: typography.caption },

@@ -6,9 +6,10 @@ import { BusinessCard } from "../../components/BusinessCard";
 import { EmptyState, ErrorState, LoadingState } from "../../components/StateView";
 import { SearchInput } from "../../components/SearchInput";
 import { useBusinesses } from "../../hooks/useBusinesses";
-import { colors, spacing, typography } from "../../theme";
+import { useAppStyles, spacing, typography } from "../../theme";
 
 export function BusinessesScreen({ navigation }) {
+  const { styles } = useAppStyles(makeStyles);
   const { businesses, loading, error, reload } = useBusinesses();
   const [search, setSearch] = useState("");
   const filtered = useMemo(() => {
@@ -47,7 +48,7 @@ export function BusinessesScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background, justifyContent: "center" },
   content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },
   header: { gap: spacing.lg, marginBottom: spacing.lg },

@@ -4,9 +4,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useAuth } from "../../context/AuthContext";
 import { getRoleLabel } from "../../constants/roles";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function ProfileScreen() {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { user, logout, loading } = useAuth();
 
   function requestLogout() {
@@ -52,6 +53,7 @@ export function ProfileScreen() {
 }
 
 function InfoRow({ icon, label, value }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoIcon}><Ionicons name={icon} size={20} color={colors.primary} /></View>
@@ -60,7 +62,7 @@ function InfoRow({ icon, label, value }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.lg, paddingHorizontal: spacing.md, paddingTop: spacing.xl },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1.1 },
   subtitle: { color: colors.muted, fontSize: typography.body, lineHeight: 22 },

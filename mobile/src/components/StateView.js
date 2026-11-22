@@ -2,9 +2,10 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AppButton } from "./AppButton";
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function LoadingState({ message = "Cargando..." }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.state} accessibilityRole="progressbar">
       <ActivityIndicator size="large" color={colors.primary} />
@@ -22,6 +23,7 @@ export function ErrorState({ message, onRetry }) {
 }
 
 function State({ icon, title, message, actionLabel, onAction, danger = false }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.state} accessibilityRole={danger ? "alert" : undefined}>
       <View style={[styles.icon, danger && styles.dangerIcon]}>
@@ -34,7 +36,7 @@ function State({ icon, title, message, actionLabel, onAction, danger = false }) 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   state: { alignItems: "center", justifyContent: "center", gap: spacing.md, padding: spacing.xl, borderRadius: radii.lg, backgroundColor: colors.surface },
   icon: { width: 58, height: 58, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.primarySoft },
   dangerIcon: { backgroundColor: colors.dangerSoft },

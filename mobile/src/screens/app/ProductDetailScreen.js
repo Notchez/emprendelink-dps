@@ -6,10 +6,11 @@ import { AppButton } from "../../components/AppButton";
 import { QuantityControl } from "../../components/QuantityControl";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useCart } from "../../context/CartContext";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 import { formatMoney } from "../../utils/formatters";
 
 export function ProductDetailScreen({ navigation, route }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { product, business } = route.params;
   const { addItem, replaceWithItem } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -72,7 +73,7 @@ export function ProductDetailScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.lg },
   imageShell: { height: 280, alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   image: { width: "100%", height: "100%" },
