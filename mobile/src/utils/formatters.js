@@ -16,6 +16,12 @@ export function formatDate(value) {
   }).format(date);
 }
 
+export function formatShortDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
+  return new Intl.DateTimeFormat("es-SV", { day: "numeric", month: "short", year: "numeric" }).format(date);
+}
+
 export function formatOrderStatus(status) {
   return ORDER_STATUS_LABELS[status] ?? status;
 }

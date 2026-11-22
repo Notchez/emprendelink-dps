@@ -14,7 +14,9 @@ export function BusinessesScreen({ navigation }) {
   const [search, setSearch] = useState("");
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return businesses.filter((business) => !query || business.name.toLowerCase().includes(query));
+    return businesses
+      .filter((business) => !query || business.name.toLowerCase().includes(query))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
   }, [businesses, search]);
 
   if (loading) return <SafeAreaView edges={["left", "right"]} style={styles.safe}><LoadingState message="Cargando negocios..." /></SafeAreaView>;

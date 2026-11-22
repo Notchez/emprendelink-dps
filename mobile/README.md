@@ -20,8 +20,15 @@ barra superior con acceso al carrito y perfil, navegación inferior por Negocios
 tarjetas compactas con imágenes completas (`contain`), tema automático claro/oscuro según el
 sistema Android o iOS y detalles de pedido con identificadores `PED-XXXXXXXX`.
 Los pedidos se separan en «En curso» e «Historial» y mantienen
-el enlace a su detalle. Las pantallas de catálogo, producto, carrito y perfil conservan la
-navegación y los controles nativos de React Native. El contenedor reserva el área inferior de
+el enlace a su detalle; los logos de los negocios se resuelven desde Firestore, incluso para
+pedidos históricos, con un icono de respaldo cuando no hay imagen.
+El carrito replica la composición responsive de la web: tarjeta de negocio y productos,
+control de cantidad, opción de vaciar, resumen, subtotal y pago contra entrega.
+**Continuar** abre el checkout nativo para revisar los datos de contacto, indicar una dirección
+específica para ese pedido, confirmar el método de pago y ver una pantalla de confirmación.
+**Mi perfil** permite editar nombre, teléfono, dirección e indicaciones sin alterar rol,
+correo ni estado de la cuenta. Estas pantallas conservan la navegación y los controles nativos
+de React Native. El contenedor reserva el área inferior de
 gestos/botones del sistema Android para que no se superponga a las pestañas.
 
 La apariencia utiliza `useColorScheme` y se actualiza cuando el usuario cambia el tema del
@@ -43,10 +50,12 @@ pruebas automáticas no sustituyen esta revisión visual en un dispositivo físi
 Los precios, el cliente y la comisión nunca se aceptan como autoridad desde el teléfono: los Route
 Handlers vuelven a consultar y validar esos datos antes de escribir con Firebase Admin.
 
-El contrato de pedidos del backend no incluye `businessName`. `orderService` conserva ese contrato y
-resuelve el nombre actual mediante `catalogService`; `businessName` se agrega únicamente al modelo de
-presentación móvil. La lista consulta los negocios activos una sola vez y solo resuelve por ID los
-negocios históricos que ya no estén activos.
+El contrato de pedidos del backend no incluye `businessName` ni `businessLogoUrl`.
+`orderService` conserva ese contrato y resuelve nombre/logo actuales mediante `catalogService`;
+ambos campos se agregan únicamente al modelo de presentación móvil. La lista consulta los
+negocios activos una sola vez y solo resuelve por ID los negocios históricos que ya no estén
+activos. La dirección/indicaciones elegidas en checkout se envían como datos del pedido y no
+modifican el perfil; los precios los valida siempre el servidor.
 
 ## Preparación local
 

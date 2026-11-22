@@ -1,21 +1,18 @@
-import { useState } from "react";
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppButton } from "../../components/AppButton";
+import { BusinessLogo } from "../../components/BusinessLogo";
 import { EmptyState } from "../../components/StateView";
 import { QuantityControl } from "../../components/QuantityControl";
 import { useCart } from "../../context/CartContext";
-import { useOrders } from "../../context/OrdersContext";
 import { useAppStyles, radii, spacing, typography } from "../../theme";
-import { formatMoney, formatOrderId } from "../../utils/formatters";
+import { formatMoney } from "../../utils/formatters";
 
 export function CartScreen({ navigation }) {
   const { colors, styles } = useAppStyles(makeStyles);
   const { items, business, subtotal, totalItems, updateQuantity, removeItem, clearCart } = useCart();
-  const { placeOrder } = useOrders();
-  const [saving, setSaving] = useState(false);
 
   function requestClear() {
     Alert.alert("Vaciar carrito", "¿Deseas eliminar todos los productos?", [
@@ -24,28 +21,20 @@ export function CartScreen({ navigation }) {
     ]);
   }
 
-  async function confirmOrder() {
-    if (!business || items.length === 0) return;
-    setSaving(true);
-    try {
-      const order = await placeOrder({ business, items });
-      clearCart();
-      Alert.alert("Pedido creado", `Tu pedido ${formatOrderId(order.id)} quedó pendiente.`, [
-        { text: "Ver pedidos", onPress: () => navigation.navigate("MainTabs", { screen: "Orders" }) },
-      ]);
-    } catch (failure) {
-      Alert.alert("No se pudo confirmar", failure instanceof Error ? failure.message : "Intenta de nuevo.");
-    } finally {
-      setSaving(false);
+  function continueShopping() {
+    if (business?.id) {
+      navigation.navigate("Catalog", { businessId: business.id, businessName: business.name });
+    } else {
+      navigation.navigate("MainTabs", { screen: "Businesses" });
     }
   }
 
   if (items.length === 0) {
     return (
-      <SafeAreaView edges={["left", "right"]} style={styles.emptyPage}>
+      <SafeAreaView edges={["left", "right", "bottom"]} style={styles.emptyPage}>
         <EmptyState
           title="Tu carrito está vacío"
-          message="Explora los negocios y agrega productos para comenzar un pedido."
+          message="Explora los negocios y agrega productos para comenzar una compra."
           icon="cart-outline"
           actionLabel="Explorar negocios"
           onAction={() => navigation.navigate("MainTabs", { screen: "Businesses" })}
@@ -56,52 +45,71 @@ export function CartScreen({ navigation }) {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.safe}>
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListHeaderComponent={
-          <View style={styles.headingGroup}>
-            <View style={styles.header}>
-              <View><Text style={styles.eyebrow}>TU COMPRA</Text><Text style={styles.title}>Carrito</Text><Text style={styles.subtitle}>{totalItems} {totalItems === 1 ? "producto" : "productos"}</Text></View>
-              <Pressable accessibilityRole="button" accessibilityLabel="Vaciar carrito" onPress={requestClear} style={styles.clearButton}>
-                <Ionicons name="trash-outline" size={20} color={colors.danger} />
+      <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>TU COMPRA</Text>
+          <Text style={styles.title}>Carrito</Text>
+          <Text style={styles.subtitle}>{totalItems} {totalItems === 1 ? "producto" : "productos"}</Text>
+        </View>
+
+        <View style={styles.productsCard}>
+          <View style={styles.businessRow}>
+            <BusinessLogo logoUrl={business?.logoUrl} name={business?.name} size={54} />
+            <View style={styles.businessCopy}>
+              <Text style={styles.businessCaption}>Pedido para</Text>
+              <Text numberOfLines={2} style={styles.businessName}>{business?.name || "Emprendimiento"}</Text>
+              <Pressable accessibilityRole="link" onPress={continueShopping} hitSlop={8}>
+                <Text style={styles.inlineLink}>Seguir comprando</Text>
               </Pressable>
             </View>
-            <View style={styles.businessRow}>
-              <View style={styles.businessIcon}><Ionicons name="storefront-outline" size={22} color={colors.muted} /></View>
-              <View style={styles.businessCopy}><Text style={styles.businessCaption}>Emprendimiento</Text><Text numberOfLines={1} style={styles.businessName}>{business?.name}</Text></View>
-            </View>
           </View>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            {item.imageUrl ? (
-              <Image source={{ uri: item.imageUrl }} style={styles.itemImage} resizeMode="contain" accessibilityLabel={`Imagen de ${item.name}`} />
-            ) : (
-              <View style={styles.itemImageFallback}><Ionicons name="image-outline" size={26} color={colors.muted} /></View>
-            )}
-            <View style={styles.itemBody}>
-              <Text numberOfLines={1} style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>{formatMoney(item.price)} c/u</Text>
-              <Text style={styles.lineTotal}>{formatMoney(item.price * item.quantity)}</Text>
-              <View style={styles.itemActions}>
-                <QuantityControl value={item.quantity} onChange={(quantity) => updateQuantity(item.id, quantity)} />
-                <Pressable accessibilityRole="button" accessibilityLabel={`Eliminar ${item.name}`} hitSlop={8} onPress={() => removeItem(item.id)}>
-                  <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                </Pressable>
+
+          {items.map((item) => (
+            <View key={item.id} style={styles.item}>
+              <View style={styles.itemTop}>
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.itemImage} resizeMode="cover" accessibilityLabel={`Imagen de ${item.name}`} />
+                ) : (
+                  <View style={styles.itemImageFallback}><Ionicons name="image-outline" size={25} color={colors.muted} /></View>
+                )}
+                <View style={styles.itemBody}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemPrice}>{formatMoney(item.price)} c/u</Text>
+                  <Pressable accessibilityRole="button" onPress={() => removeItem(item.id)} hitSlop={8}>
+                    <Text style={styles.deleteLink}>Eliminar</Text>
+                  </Pressable>
+                </View>
+              </View>
+              <View style={styles.controls}>
+                <QuantityControl minimum={0} value={item.quantity} onChange={(quantity) => updateQuantity(item.id, quantity)} />
+                <Text style={styles.lineTotal}>{formatMoney(item.price * item.quantity)}</Text>
               </View>
             </View>
+          ))}
+
+          <Pressable accessibilityRole="button" onPress={requestClear} style={styles.clearButton}>
+            <Text style={styles.clearText}>Vaciar carrito</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>Resumen</Text>
+          <View style={styles.summaryRow}><Text style={styles.summaryLabel}>Productos</Text><Text style={styles.summaryLabel}>{totalItems}</Text></View>
+          <View style={styles.totalRow}><Text style={styles.totalLabel}>Subtotal</Text><Text style={styles.summaryValue}>{formatMoney(subtotal)}</Text></View>
+          <View style={styles.payment}>
+            <Ionicons name="cash-outline" size={24} color={colors.ink} />
+            <View style={styles.paymentCopy}>
+              <Text style={styles.paymentTitle}>Pago contra entrega</Text>
+              <Text style={styles.paymentText}>Pagarás cuando recibas tu pedido.</Text>
+            </View>
           </View>
-        )}
-      />
-      <View style={styles.summary}>
-        <View style={styles.summaryRow}><Text style={styles.summaryLabel}>Subtotal</Text><Text style={styles.summaryValue}>{formatMoney(subtotal)}</Text></View>
-        <Text style={styles.notice}>El servidor verificará productos, precios y disponibilidad antes de crear el pedido.</Text>
-        <AppButton title="Confirmar pedido" onPress={() => void confirmOrder()} loading={saving} />
-      </View>
+          <AppButton title="Continuar" onPress={() => navigation.navigate("Checkout")} disabled={!business?.id || business?.active === false} />
+          {business?.active === false && <Text style={styles.error}>Este negocio ya no está disponible.</Text>}
+          <Pressable accessibilityRole="link" onPress={continueShopping} style={styles.continueLink}>
+            <Text style={styles.inlineLink}>Seguir comprando</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -109,30 +117,40 @@ export function CartScreen({ navigation }) {
 const makeStyles = (colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   emptyPage: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
-  content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xl },
-  headingGroup: { gap: spacing.lg, marginBottom: spacing.lg },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1 },
+  page: { gap: spacing.lg, padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },
+  header: { gap: 4 },
+  eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1.2 },
   title: { color: colors.ink, fontSize: 30, fontWeight: "800" },
-  subtitle: { color: colors.muted, fontSize: typography.caption },
-  clearButton: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.dangerSoft },
-  businessRow: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
-  businessIcon: { width: 52, height: 52, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.subtle },
-  businessCopy: { flex: 1, gap: spacing.xs },
+  subtitle: { color: colors.muted, fontSize: typography.body },
+  productsCard: { padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
+  businessRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.md, paddingBottom: spacing.lg, borderBottomWidth: 1, borderColor: colors.border },
+  businessCopy: { flex: 1, gap: 3 },
   businessCaption: { color: colors.muted, fontSize: typography.tiny },
   businessName: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
-  separator: { height: spacing.md },
-  item: { flexDirection: "row", alignItems: "flex-start", gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
-  itemImage: { width: 76, height: 76, borderRadius: radii.md, backgroundColor: colors.subtle },
-  itemImageFallback: { width: 76, height: 76, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.subtle },
+  inlineLink: { color: colors.primary, fontSize: typography.caption, fontWeight: "800" },
+  item: { gap: spacing.md, paddingVertical: spacing.lg, borderBottomWidth: 1, borderColor: colors.border },
+  itemTop: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  itemImage: { width: 70, height: 70, borderRadius: radii.md, backgroundColor: colors.subtle },
+  itemImageFallback: { width: 70, height: 70, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.subtle },
   itemBody: { flex: 1, gap: spacing.xs },
   itemName: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
   itemPrice: { color: colors.muted, fontSize: typography.caption },
-  itemActions: { flexDirection: "row", alignItems: "center", gap: spacing.md, marginTop: spacing.sm },
+  deleteLink: { color: colors.danger, fontSize: typography.caption },
+  controls: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.md },
   lineTotal: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
-  summary: { gap: spacing.md, padding: spacing.lg, borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
-  summaryRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  clearButton: { paddingTop: spacing.lg },
+  clearText: { color: colors.danger, fontSize: typography.body, fontWeight: "800" },
+  summaryCard: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
+  summaryTitle: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "900" },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", gap: spacing.sm },
   summaryLabel: { color: colors.muted, fontSize: typography.body },
-  summaryValue: { color: colors.ink, fontSize: typography.title, fontWeight: "900" },
-  notice: { color: colors.muted, fontSize: typography.tiny, lineHeight: 16 },
+  totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: spacing.lg, borderTopWidth: 1, borderColor: colors.border },
+  totalLabel: { color: colors.ink, fontSize: typography.body },
+  summaryValue: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "900" },
+  payment: { flexDirection: "row", alignItems: "flex-start", gap: spacing.md, padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.subtle },
+  paymentCopy: { flex: 1, gap: spacing.xs },
+  paymentTitle: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
+  paymentText: { color: colors.muted, fontSize: typography.caption },
+  continueLink: { alignItems: "center", paddingVertical: spacing.sm },
+  error: { color: colors.danger, backgroundColor: colors.dangerSoft, padding: spacing.sm, borderRadius: radii.sm },
 });

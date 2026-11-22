@@ -115,6 +115,19 @@ export function createAuthService({ loadDependencies = loadFirebaseDependencies,
       }
     },
 
+    async updateProfile(values) {
+      try {
+        const dependencies = await loadDependencies();
+        const identity = dependencies.auth.currentUser;
+        if (!identity) return failure("AUTH_REQUIRED", "Debes iniciar sesión.");
+        const result = await dependencies.userService.update(identity.uid, values);
+        if (!result.success) return result;
+        return success(result.data);
+      } catch (error) {
+        return authFailure(error, "No se pudo actualizar el perfil.");
+      }
+    },
+
     async logout() {
       try {
         const dependencies = await loadDependencies();

@@ -54,3 +54,8 @@ test("un carrito vacío acepta productos de un negocio distinto", () => {
   assert.equal(state.items.length, 1);
   assert.equal(state.business.id, otherBusiness.id);
 });
+
+test("cantidades móviles coinciden con el límite de 999 de la web y el backend", () => {
+  const state = updateCartItemQuantity(cartWithOneItem(), product.id, 1200);
+  assert.equal(state.items[0].quantity, 999);
+});

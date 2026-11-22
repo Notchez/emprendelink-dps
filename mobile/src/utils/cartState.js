@@ -16,12 +16,12 @@ export function canAddCartItem(state, selectedBusiness) {
 export function addCartItem(state, product, selectedBusiness, quantity = 1) {
   if (!canAddCartItem(state, selectedBusiness)) return state;
 
-  const safeQuantity = Math.min(99, Math.max(1, Number(quantity) || 1));
+  const safeQuantity = Math.min(999, Math.max(1, Number(quantity) || 1));
   const existing = state.items.find((item) => item.id === product.id);
   const items = existing
     ? state.items.map((item) =>
         item.id === product.id
-          ? { ...item, quantity: Math.min(99, item.quantity + safeQuantity) }
+          ? { ...item, quantity: Math.min(999, item.quantity + safeQuantity) }
           : item
       )
     : [...state.items, { ...product, quantity: safeQuantity }];
@@ -30,7 +30,7 @@ export function addCartItem(state, product, selectedBusiness, quantity = 1) {
 }
 
 export function replaceCartWithItem(product, selectedBusiness, quantity = 1) {
-  const safeQuantity = Math.min(99, Math.max(1, Number(quantity) || 1));
+  const safeQuantity = Math.min(999, Math.max(1, Number(quantity) || 1));
   return withCartInvariant([{ ...product, quantity: safeQuantity }], selectedBusiness);
 }
 
@@ -42,7 +42,7 @@ export function updateCartItemQuantity(state, productId, quantity) {
     );
   }
 
-  const safeQuantity = Math.min(99, Number(quantity) || 1);
+  const safeQuantity = Math.min(999, Number(quantity) || 1);
   return withCartInvariant(
     state.items.map((item) =>
       item.id === productId ? { ...item, quantity: safeQuantity } : item

@@ -59,7 +59,7 @@ export function ProductDetailScreen({ navigation, route }) {
         <View style={styles.quantityRow}>
           <View>
             <Text style={styles.quantityLabel}>Cantidad</Text>
-            <Text style={styles.quantityHelp}>Máximo 99 unidades</Text>
+            <Text style={styles.quantityHelp}>Máximo 999 unidades</Text>
           </View>
           <QuantityControl value={quantity} onChange={setQuantity} />
         </View>

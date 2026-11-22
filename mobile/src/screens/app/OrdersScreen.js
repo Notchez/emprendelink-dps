@@ -1,5 +1,6 @@
-import { SectionList, StyleSheet, Text, View } from "react-native";
+import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 import { EmptyState, ErrorState, LoadingState } from "../../components/StateView";
 import { OrderCard } from "../../components/OrderCard";
@@ -8,7 +9,7 @@ import { useOrders } from "../../context/OrdersContext";
 import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function OrdersScreen({ navigation }) {
-  const { styles } = useAppStyles(makeStyles);
+  const { colors, styles } = useAppStyles(makeStyles);
   const { orders, loading, error, refresh } = useOrders();
   const sections = orders.length > 0 ? [
     {
@@ -44,9 +45,16 @@ export function OrdersScreen({ navigation }) {
         )}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.eyebrow}>SEGUIMIENTO</Text>
-            <Text style={styles.title}>Mis pedidos</Text>
-            <Text style={styles.subtitle}>Consulta el estado y los detalles de tus compras.</Text>
+            <View style={styles.headerRow}>
+              <View style={styles.headingCopy}>
+                <Text style={styles.eyebrow}>TU ACTIVIDAD</Text>
+                <Text style={styles.title}>Pedidos</Text>
+                <Text style={styles.subtitle}>Revisa el estado de tus compras y consulta tu historial.</Text>
+              </View>
+              <Pressable accessibilityRole="button" accessibilityLabel="Actualizar pedidos" disabled={loading} onPress={refresh} style={styles.refresh}>
+                <Ionicons name="refresh" size={21} color={colors.ink} />
+              </Pressable>
+            </View>
           </View>
         }
         ListEmptyComponent={<EmptyState title="Aún no tienes pedidos" message="Cuando confirmes una compra aparecerá aquí." icon="receipt-outline" actionLabel="Explorar negocios" onAction={() => navigation.navigate("Businesses")} />}
@@ -61,6 +69,9 @@ const makeStyles = (colors) => StyleSheet.create({
   center: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },
   header: { gap: spacing.xs, marginBottom: spacing.xl },
+  headerRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm },
+  headingCopy: { flex: 1, gap: spacing.xs },
+  refresh: { width: 42, height: 42, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.surface },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1.1 },
   title: { color: colors.ink, fontSize: 30, fontWeight: "800", letterSpacing: -0.7 },
   subtitle: { color: colors.muted, fontSize: typography.body, lineHeight: 22 },

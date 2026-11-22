@@ -9,8 +9,10 @@ import { CustomerTopBar } from "../components/CustomerTopBar";
 import { CompleteProfileScreen } from "../screens/auth/CompleteProfileScreen";
 import { BusinessesScreen } from "../screens/app/BusinessesScreen";
 import { CartScreen } from "../screens/app/CartScreen";
+import { CheckoutScreen } from "../screens/app/CheckoutScreen";
 import { CatalogScreen } from "../screens/app/CatalogScreen";
 import { OrderDetailScreen } from "../screens/app/OrderDetailScreen";
+import { OrderConfirmationScreen } from "../screens/app/OrderConfirmationScreen";
 import { OrdersScreen } from "../screens/app/OrdersScreen";
 import { ProductDetailScreen } from "../screens/app/ProductDetailScreen";
 import { ProfileScreen } from "../screens/app/ProfileScreen";
@@ -107,6 +109,8 @@ function CustomerNavigator() {
         options={{ title: "Detalle del producto" }}
       />
       <Stack.Screen name="Cart" component={CartScreen} options={{ title: "Carrito" }} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: "Finalizar compra" }} />
+      <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} options={{ title: "Pedido recibido", headerBackVisible: false }} />
       <Stack.Screen
         name="OrderDetail"
         component={OrderDetailScreen}

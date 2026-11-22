@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { ErrorState, LoadingState } from "../../components/StateView";
+import { BusinessLogo } from "../../components/BusinessLogo";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { StatusBadge } from "../../components/StatusBadge";
 import { orderService } from "../../services/orderService";
@@ -41,7 +42,7 @@ export function OrderDetailScreen({ route }) {
     <ScreenContainer scroll contentStyle={styles.page} safeEdges={["left", "right"]}>
       {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
       <View style={styles.hero}>
-        <View style={styles.heroIcon}><Ionicons name="storefront-outline" size={29} color={colors.muted} /></View>
+        <BusinessLogo logoUrl={order.businessLogoUrl} name={order.businessName} size={62} />
         <View style={styles.heroCopy}>
           <Text style={styles.eyebrow}>DETALLE DE PEDIDO</Text>
           <Text style={styles.title}>{order.businessName || "Emprendimiento"}</Text>

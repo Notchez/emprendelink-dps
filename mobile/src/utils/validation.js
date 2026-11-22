@@ -26,6 +26,16 @@ export function validateLogin(values) {
   return Object.fromEntries(Object.entries(errors).filter(([, message]) => message));
 }
 
+export function validateDelivery(values) {
+  const address = String(values.address || "").trim();
+  const notes = String(values.notes || "").trim();
+  const errors = {
+    address: address.length < 5 ? "Escribe una dirección de al menos 5 caracteres." : address.length > 500 ? "La dirección no puede superar 500 caracteres." : "",
+    notes: notes.length > 500 ? "Las indicaciones no pueden superar 500 caracteres." : "",
+  };
+  return Object.fromEntries(Object.entries(errors).filter(([, message]) => message));
+}
+
 export function validateRegistration(values) {
   const errors = {
     name: String(values.name || "").trim().length >= 2 ? "" : "Escribe tu nombre completo.",
