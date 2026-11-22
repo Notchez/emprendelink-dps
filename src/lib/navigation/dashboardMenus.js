@@ -95,13 +95,13 @@ export const entrepreneurMenuItems = [
   },
   {
     type: "item",
-    text: "Reportes",
+    text: "Ventas",
     href: "/emprendedor/reportes",
     icon: "bi bi-bar-chart-line",
   },
   {
     type: "item",
-    text: "Estado de cuenta",
+    text: "Comisiones",
     href: "/emprendedor/estado-cuenta",
     icon: "bi bi-receipt",
   },

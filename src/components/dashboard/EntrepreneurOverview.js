@@ -7,6 +7,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { businessService } from "@/services/businessService";
 import { categoryService } from "@/services/categoryService";
 import { productService } from "@/services/productService";
+import { orderService } from "@/services/orderService";
+import { getActiveOrders } from "@/utils/entrepreneurReports";
+import { formatOrderDate, formatOrderMoney } from "@/utils/orderUtils";
+import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
 
 import KpiCard from "./KpiCard";
 import styles from "./EntrepreneurOverview.module.css";
@@ -35,6 +39,7 @@ export default function EntrepreneurOverview() {
               categories: 0,
               products: 0,
               activeProducts: 0,
+              activeOrders: [],
               error: "",
             });
           }
@@ -42,9 +47,10 @@ export default function EntrepreneurOverview() {
           return;
         }
 
-        const [categories, products] = await Promise.all([
+        const [categories, products, orders] = await Promise.all([
           categoryService.getByBusinessId(business.id),
           productService.getByBusinessId(business.id),
+          orderService.getOrders({ businessId: business.id }),
         ]);
 
         if (active) {
@@ -54,6 +60,7 @@ export default function EntrepreneurOverview() {
             categories: categories.length,
             products: products.length,
             activeProducts: products.filter((product) => product.active).length,
+            activeOrders: getActiveOrders(orders),
             error: "",
           });
         }
@@ -128,6 +135,37 @@ export default function EntrepreneurOverview() {
         </Link>
       </section>
 
+      <section className={styles.ordersSection} aria-labelledby="entrepreneur-active-orders-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <p className="eyebrow">Prioridad de hoy</p>
+            <h2 id="entrepreneur-active-orders-title">Pedidos activos</h2>
+            <p>Pedidos recibidos que aún no se entregaron ni cancelaron.</p>
+          </div>
+          <Link className={styles.primaryButton} href="/orders">Ver todos los pedidos</Link>
+        </div>
+
+        {result.activeOrders.length === 0 ? (
+          <p className={styles.emptyOrders}>No tienes pedidos activos por atender.</p>
+        ) : (
+          <div className={styles.ordersGrid}>
+            {result.activeOrders.slice(0, 6).map((order) => (
+              <article className={styles.orderCard} key={order.id}>
+                <div className={styles.orderTop}>
+                  <strong title={order.id}>PED-{String(order.id).slice(0, 8).toUpperCase()}</strong>
+                  <OrderStatusBadge status={order.status} />
+                </div>
+                <p><strong>{order.customer?.name || "Cliente no disponible"}</strong></p>
+                <p className={styles.orderMuted}>{formatOrderDate(order.createdAt)}</p>
+                <p>{(order.items || []).reduce((sum, item) => sum + Number(item.quantity || 0), 0)} productos · <strong>{formatOrderMoney(order.subtotal)}</strong></p>
+                <Link href={`/orders/${encodeURIComponent(order.id)}`}>Ver detalles del pedido →</Link>
+              </article>
+            ))}
+          </div>
+        )}
+        {result.activeOrders.length > 6 && <p className={styles.orderMuted}>Mostrando 6 de {result.activeOrders.length} pedidos activos.</p>}
+      </section>
+
       <section aria-labelledby="entrepreneur-summary-title">
         <h2 id="entrepreneur-summary-title">Resumen de tu negocio</h2>
 
@@ -162,9 +200,9 @@ export default function EntrepreneurOverview() {
 
           <Link href="/orders">Consultar pedidos</Link>
 
-          <Link href="/emprendedor/reportes">Reportes</Link>
+          <Link href="/emprendedor/reportes">Ventas</Link>
 
-          <Link href="/emprendedor/estado-cuenta">Estado de cuenta</Link>
+          <Link href="/emprendedor/estado-cuenta">Comisiones</Link>
         </div>
       </section>
     </div>

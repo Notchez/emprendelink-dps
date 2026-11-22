@@ -151,6 +151,7 @@ export function OrderDetailView({ orderId, readOnly = false }) {
           <h1 title={order.id}>{formatOrderId(order.id)}</h1>
 
           <p>{formatOrderDate(order.createdAt)}</p>
+          <p className={styles.fullOrderId}>Identificador completo: <code>{order.id}</code></p>
         </div>
 
         <OrderStatusBadge status={order.status} />
@@ -171,6 +172,10 @@ export function OrderDetailView({ orderId, readOnly = false }) {
           </p>
 
           <p>
+            <strong>Correo:</strong> {order.customer?.email || "—"}
+          </p>
+
+          <p>
             <strong>Dirección:</strong> {order.deliveryAddress}
           </p>
 
@@ -186,6 +191,10 @@ export function OrderDetailView({ orderId, readOnly = false }) {
 
           <p>
             <strong>Total:</strong> {formatOrderMoney(order.subtotal)}
+          </p>
+
+          <p>
+            <strong>Artículos:</strong> {order.items?.reduce((total, item) => total + Number(item.quantity || 0), 0) || 0}
           </p>
         </article>
 

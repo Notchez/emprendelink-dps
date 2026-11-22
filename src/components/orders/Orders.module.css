@@ -30,7 +30,7 @@
 
 .filters {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -68,6 +68,10 @@
   padding: 1rem;
 }
 
+.orderCard { display: grid; gap: 0.9rem; }
+.productsList { margin: 0.5rem 0 0; padding-left: 1.5rem; }
+.productsList li { margin-bottom: 0.4rem; }
+
 .cardTop,
 .cardInfo {
   display: flex;
@@ -87,6 +91,13 @@
 .orderId {
   margin: 0;
   font-weight: 700;
+}
+
+.fullOrderId {
+  margin-top: 0.4rem !important;
+  color: var(--el-muted, #607080);
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
 }
 
 .muted {
@@ -237,6 +248,15 @@
 .error {
   background: var(--el-danger-bg, #fee2e2);
   color: var(--el-danger, #8a1c1c);
+}
+
+.filterActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: -0.5rem 0 1.25rem;
 }
 
 @media (max-width: 720px) {

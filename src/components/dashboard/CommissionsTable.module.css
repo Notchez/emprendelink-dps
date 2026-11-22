@@ -28,3 +28,6 @@
 .table tbody tr:last-child td {
   border-bottom: none;
 }
+
+.table a { color: var(--el-link); font-weight: 700; text-decoration: none; }
+.table a:hover { text-decoration: underline; }
