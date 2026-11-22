@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
 import { ErrorState, LoadingState } from "../components/StateView";
+import { CustomerTopBar } from "../components/CustomerTopBar";
 import { CompleteProfileScreen } from "../screens/auth/CompleteProfileScreen";
 import { BusinessesScreen } from "../screens/app/BusinessesScreen";
 import { CartScreen } from "../screens/app/CartScreen";
@@ -32,7 +33,13 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
+        header: ({ navigation }) => (
+          <CustomerTopBar
+            title={{ Businesses: "Negocios", Orders: "Pedidos", Profile: "Mi perfil" }[route.name]}
+            onCart={() => navigation.getParent()?.navigate("Cart")}
+            onProfile={() => navigation.navigate("Profile")}
+          />
+        ),
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarHideOnKeyboard: true,
@@ -47,6 +54,7 @@ function MainTabs() {
           paddingBottom: 8,
           borderTopColor: colors.border,
           backgroundColor: colors.surface,
+          elevation: 8,
         },
         tabBarIcon: ({ color, focused, size }) => (
           <Ionicons

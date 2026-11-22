@@ -2,40 +2,54 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { StatusBadge } from "./StatusBadge";
-import { formatDate, formatMoney } from "../utils/formatters";
-import { colors, radii, shadows, spacing, typography } from "../theme";
+import { formatDate, formatMoney, formatOrderId } from "../utils/formatters";
+import { colors, radii, spacing, typography } from "../theme";
 
 export function OrderCard({ order, onPress }) {
-  const units = order.items.reduce((total, item) => total + item.quantity, 0);
+  const visibleItems = (order.items || []).slice(0, 3);
+  const extraItems = Math.max(0, (order.items?.length || 0) - visibleItems.length);
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={`Ver pedido ${order.id}`} onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.header}>
-        <View style={styles.icon}><Ionicons name="receipt-outline" size={23} color={colors.primary} /></View>
+        <View style={styles.icon}><Ionicons name="storefront-outline" size={24} color={colors.muted} /></View>
         <View style={styles.heading}>
+          <StatusBadge status={order.status} />
           <Text numberOfLines={1} style={styles.business}>{order.businessName || "Emprendimiento"}</Text>
-          <Text style={styles.id}>#{order.id.replace("order_", "")}</Text>
+          <Text style={styles.id}>{formatDate(order.createdAt)} · {formatOrderId(order.id)}</Text>
         </View>
-        <StatusBadge status={order.status} />
-      </View>
-      <View style={styles.divider} />
-      <View style={styles.footer}>
-        <View><Text style={styles.meta}>{formatDate(order.createdAt)}</Text><Text style={styles.meta}>{units} {units === 1 ? "producto" : "productos"}</Text></View>
         <Text style={styles.total}>{formatMoney(order.subtotal)}</Text>
+      </View>
+      <View style={styles.items}>
+        {visibleItems.map((item, index) => (
+          <View key={`${item.productId}-${index}`} style={styles.itemRow}>
+            <Text numberOfLines={2} style={styles.itemName}>{item.quantity} × {item.productName}</Text>
+            <Text style={styles.itemAmount}>{formatMoney(item.lineTotal)}</Text>
+          </View>
+        ))}
+        {extraItems > 0 && <Text style={styles.meta}>+ {extraItems} producto(s) más</Text>}
+      </View>
+      <View style={styles.footer}>
+        <Text style={styles.link}>Ver pedido</Text>
+        <Ionicons name="arrow-forward" size={17} color={colors.primary} />
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { gap: spacing.md, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
+  card: { gap: spacing.lg, padding: 18, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   pressed: { opacity: 0.82 },
-  header: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  icon: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primarySoft },
-  heading: { flex: 1, gap: 2 },
-  business: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
-  id: { color: colors.muted, fontSize: typography.caption },
-  divider: { height: 1, backgroundColor: colors.border },
-  footer: { flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
-  meta: { color: colors.muted, fontSize: typography.caption, lineHeight: 19 },
-  total: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },
+  header: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  icon: { width: 52, height: 52, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.subtle },
+  heading: { flex: 1, gap: 4, minWidth: 0 },
+  business: { color: colors.ink, fontSize: 16, fontWeight: "800" },
+  id: { color: colors.muted, fontSize: 11 },
+  items: { gap: spacing.sm, paddingVertical: spacing.md, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border },
+  itemRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: spacing.sm },
+  itemName: { flex: 1, color: colors.muted, fontSize: typography.caption, lineHeight: 19 },
+  itemAmount: { color: colors.ink, fontSize: typography.caption, fontWeight: "700" },
+  footer: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", gap: spacing.xs },
+  link: { color: colors.primary, fontSize: typography.caption, fontWeight: "800" },
+  meta: { color: colors.muted, fontSize: typography.caption },
+  total: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
 });

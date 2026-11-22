@@ -13,6 +13,20 @@ que la aplicación web.
 - carrito local; creación, listado, detalle e historial de pedidos mediante `/api/orders`.
 - ID token de Firebase enviado como `Authorization: Bearer <token>` a la API.
 
+### Interfaz de Cliente
+
+Las pantallas CUSTOMER utilizan como referencia visual la versión responsive de la web:
+barra superior con acceso al carrito y perfil, navegación inferior por Negocios / Pedidos / Perfil,
+tarjetas compactas con imágenes completas (`contain`), colores claros y detalles de pedido con
+identificadores `PED-XXXXXXXX`. Los pedidos se separan en «En curso» e «Historial» y mantienen
+el enlace a su detalle. Las pantallas de catálogo, producto, carrito y perfil conservan la
+navegación y los controles nativos de React Native.
+
+Para validar el diseño en un teléfono Android, inicia el development build previamente instalado,
+ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas, búsqueda de
+negocios/productos, imágenes, carrito, pedidos y cierre de sesión. La exportación Metro y las
+pruebas automáticas no sustituyen esta revisión visual en un dispositivo físico.
+
 Los precios, el cliente y la comisión nunca se aceptan como autoridad desde el teléfono: los Route
 Handlers vuelven a consultar y validar esos datos antes de escribir con Firebase Admin.
 

@@ -1,11 +1,10 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { AppButton } from "../../components/AppButton";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useAuth } from "../../context/AuthContext";
 import { getRoleLabel } from "../../constants/roles";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { colors, radii, spacing, typography } from "../../theme";
 
 export function ProfileScreen() {
   const { user, logout, loading } = useAuth();
@@ -18,20 +17,36 @@ export function ProfileScreen() {
   }
 
   return (
-    <ScreenContainer scroll contentStyle={styles.page}>
-      <View style={styles.heading}><Text style={styles.eyebrow}>TU CUENTA</Text><Text style={styles.title}>Mi perfil</Text><Text style={styles.subtitle}>Información utilizada en la experiencia móvil.</Text></View>
+    <ScreenContainer scroll contentStyle={styles.page} safeEdges={["left", "right"]}>
       <View style={styles.profileCard}>
         <View style={styles.avatar}><Text style={styles.avatarText}>{user?.name?.charAt(0).toUpperCase() || "U"}</Text></View>
-        <Text style={styles.name}>{user?.name}</Text>
-        <View style={styles.rolePill}><Text style={styles.role}>{getRoleLabel(user?.role)}</Text></View>
+        <View style={styles.profileCopy}>
+          <Text style={styles.eyebrow}>MI CUENTA</Text>
+          <Text style={styles.name}>{user?.name}</Text>
+          <Text style={styles.subtitle}>{user?.email}</Text>
+          <View style={styles.rolePill}><Text style={styles.role}>{getRoleLabel(user?.role)}</Text></View>
+        </View>
       </View>
       <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Mis datos</Text>
         <InfoRow icon="mail-outline" label="Correo" value={user?.email} />
         <InfoRow icon="call-outline" label="Teléfono" value={user?.phone || "No registrado"} />
         <InfoRow icon="location-outline" label="Dirección" value={user?.address || "No registrada"} />
         <InfoRow icon="chatbox-outline" label="Indicaciones" value={user?.deliveryInstructions || "Sin indicaciones"} />
       </View>
-      <AppButton title="Cerrar sesión" onPress={requestLogout} loading={loading} variant="ghost" />
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Cuenta</Text>
+        <Text style={styles.subtitle}>Administra tu sesión de EmprendeLink.</Text>
+        <Pressable
+          accessibilityRole="button"
+          disabled={loading}
+          onPress={requestLogout}
+          style={({ pressed }) => [styles.logoutButton, (pressed || loading) && styles.faded]}
+        >
+          <Ionicons name="log-out-outline" size={20} color={colors.danger} />
+          <Text style={styles.logoutText}>{loading ? "Cerrando sesión..." : "Cerrar sesión"}</Text>
+        </Pressable>
+      </View>
     </ScreenContainer>
   );
 }
@@ -46,23 +61,24 @@ function InfoRow({ icon, label, value }) {
 }
 
 const styles = StyleSheet.create({
-  page: { gap: spacing.lg },
-  heading: { gap: spacing.xs },
+  page: { gap: spacing.lg, paddingHorizontal: spacing.md, paddingTop: spacing.xl },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1.1 },
-  title: { color: colors.ink, fontSize: typography.hero, fontWeight: "900", letterSpacing: -0.7 },
   subtitle: { color: colors.muted, fontSize: typography.body, lineHeight: 22 },
-  profileCard: { alignItems: "center", gap: spacing.sm, padding: spacing.xl, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
-  avatar: { width: 78, height: 78, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.primary },
-  avatarText: { color: colors.white, fontSize: 32, fontWeight: "900" },
-  name: { color: colors.ink, fontSize: typography.title, fontWeight: "900" },
-  rolePill: { paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radii.pill, backgroundColor: colors.primarySoft },
+  profileCard: { flexDirection: "row", alignItems: "center", gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
+  avatar: { width: 58, height: 58, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.primary },
+  avatarText: { color: colors.white, fontSize: 24, fontWeight: "800" },
+  profileCopy: { flex: 1, alignItems: "flex-start", gap: spacing.xs },
+  name: { color: colors.ink, fontSize: typography.title, fontWeight: "800" },
+  rolePill: { paddingHorizontal: spacing.md, paddingVertical: 5, borderRadius: radii.pill, backgroundColor: colors.primarySoft },
   role: { color: colors.primaryDark, fontSize: typography.tiny, fontWeight: "900", textTransform: "uppercase" },
   card: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
+  sectionTitle: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },
   infoRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
   infoIcon: { width: 42, height: 42, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primarySoft },
   infoCopy: { flex: 1, gap: 2 },
   infoLabel: { color: colors.muted, fontSize: typography.tiny, fontWeight: "700", textTransform: "uppercase" },
   infoValue: { color: colors.ink, fontSize: typography.body, lineHeight: 21 },
-  note: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm, padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.primarySoft },
-  noteText: { flex: 1, color: colors.primaryDark, fontSize: typography.caption, lineHeight: 19 },
+  logoutButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.sm, minHeight: 44, paddingHorizontal: spacing.lg, borderWidth: 1, borderColor: colors.danger, borderRadius: 10 },
+  logoutText: { color: colors.danger, fontWeight: "800", fontSize: typography.body },
+  faded: { opacity: 0.6 },
 });

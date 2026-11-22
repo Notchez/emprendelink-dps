@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,6 +16,7 @@ export function CatalogScreen({ navigation, route }) {
   const { addItem, replaceWithItem, totalItems } = useCart();
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("cat_all");
+  const [logoFailed, setLogoFailed] = useState(false);
 
   const products = (() => {
     const query = search.trim().toLowerCase();
@@ -52,17 +53,24 @@ export function CatalogScreen({ navigation, route }) {
         ListHeaderComponent={
           <View style={styles.header}>
             <View style={styles.businessRow}>
-              <View style={styles.businessIcon}><Ionicons name="storefront-outline" size={27} color={colors.primary} /></View>
+              <View style={styles.businessIcon}>
+                {catalog.business.logoUrl && !logoFailed ? (
+                  <Image source={{ uri: catalog.business.logoUrl }} style={styles.logo} resizeMode="contain" onError={() => setLogoFailed(true)} accessibilityLabel={`Logo de ${catalog.business.name}`} />
+                ) : (
+                  <Ionicons name="storefront-outline" size={27} color={colors.muted} />
+                )}
+              </View>
               <View style={styles.heading}>
                 <Text style={styles.eyebrow}>EMPRENDIMIENTO</Text>
                 <Text style={styles.title}>{catalog.business.name}</Text>
                 <Text style={styles.subtitle}>Explora los productos disponibles.</Text>
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={`Abrir carrito con ${totalItems} productos`} onPress={() => navigation.navigate("Cart")} style={styles.cartButton}>
-                <Ionicons name="cart-outline" size={25} color={colors.primary} />
-                {totalItems > 0 ? <View style={styles.cartBadge}><Text style={styles.cartBadgeText}>{totalItems}</Text></View> : null}
-              </Pressable>
             </View>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Abrir carrito con ${totalItems} productos`} onPress={() => navigation.navigate("Cart")} style={({ pressed }) => [styles.cartButton, pressed && styles.pressed]}>
+              <Ionicons name="cart-outline" size={21} color={colors.ink} />
+              <Text style={styles.cartLabel}>Carrito</Text>
+              {totalItems > 0 ? <View style={styles.cartBadge}><Text style={styles.cartBadgeText}>{totalItems}</Text></View> : null}
+            </Pressable>
             <SearchInput value={search} onChangeText={setSearch} placeholder="Buscar productos" />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>
               {catalog.categories.map((category) => {
@@ -96,17 +104,20 @@ export function CatalogScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: "center", padding: spacing.lg, backgroundColor: colors.background },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  content: { padding: spacing.md, paddingTop: spacing.xl, paddingBottom: spacing.xxl },
   header: { gap: spacing.lg, marginBottom: spacing.lg },
-  businessRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-  businessIcon: { width: 56, height: 56, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primarySoft },
+  businessRow: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
+  businessIcon: { width: 72, height: 72, alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: radii.md, backgroundColor: colors.subtle },
+  logo: { width: "100%", height: "100%", backgroundColor: colors.surface },
   heading: { flex: 1, gap: 2 },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1 },
-  title: { color: colors.ink, fontSize: typography.title, fontWeight: "900" },
+  title: { color: colors.ink, fontSize: typography.title, fontWeight: "800" },
   subtitle: { color: colors.muted, fontSize: typography.caption },
-  cartButton: { width: 48, height: 48, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.border, borderRadius: radii.pill, backgroundColor: colors.surface },
-  cartBadge: { position: "absolute", top: -3, right: -3, minWidth: 21, height: 21, alignItems: "center", justifyContent: "center", paddingHorizontal: 5, borderRadius: radii.pill, backgroundColor: colors.danger },
+  cartButton: { minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.sm, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.subtle },
+  cartLabel: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
+  cartBadge: { minWidth: 21, height: 21, alignItems: "center", justifyContent: "center", paddingHorizontal: 5, borderRadius: radii.pill, backgroundColor: colors.primary },
   cartBadgeText: { color: colors.white, fontSize: 10, fontWeight: "900" },
+  pressed: { opacity: 0.8 },
   categories: { gap: spacing.sm, paddingRight: spacing.lg },
   category: { minHeight: 40, justifyContent: "center", paddingHorizontal: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.pill, backgroundColor: colors.surface },
   categorySelected: { borderColor: colors.primary, backgroundColor: colors.primary },
