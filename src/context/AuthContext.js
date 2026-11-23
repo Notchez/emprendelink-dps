@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { authService, authErrorMessage } from "@/services/authService";
+import { claimGuestCartForAccount, clearStoredCart } from "@/utils/cartStorage";
 
 export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
@@ -32,28 +33,35 @@ export function AuthProvider({ children }) {
   }, []);
   async function logout() {
     await authService.logout();
+    clearStoredCart();
     sessionStorage.removeItem("emprendelink_last_order");
     localStorage.removeItem("user");
   }
 
   async function login(email, password) {
     const user = await authService.login(email, password);
+    const identity = authService.getCurrentIdentity();
+    claimGuestCartForAccount(identity?.uid);
     if (user) {
-      setSession({ user, identity: authService.getCurrentIdentity(), loading: false, error: "" });
+      setSession({ user, identity, loading: false, error: "" });
     }
     return user;
   }
 
   async function loginWithGoogle() {
     const user = await authService.loginWithGoogle();
-    setSession({ user, identity: authService.getCurrentIdentity(), loading: false, error: "" });
+    const identity = authService.getCurrentIdentity();
+    claimGuestCartForAccount(identity?.uid);
+    setSession({ user, identity, loading: false, error: "" });
     return user;
   }
 
   async function register(data) {
     const user = await authService.register(data);
+    const identity = authService.getCurrentIdentity();
+    claimGuestCartForAccount(identity?.uid);
     if (user) {
-      setSession({ user, identity: authService.getCurrentIdentity(), loading: false, error: "" });
+      setSession({ user, identity, loading: false, error: "" });
     }
     return user;
   }

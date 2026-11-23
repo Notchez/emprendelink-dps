@@ -19,7 +19,7 @@ function IdentityScopedApp() {
 
   return (
     <OrdersProvider key={scopeKey}>
-      <CartProvider>
+      <CartProvider key={scopeKey}>
         <NavigationContainer theme={navigationTheme}>
           <StatusBar style={dark ? "light" : "dark"} />
           <RootNavigator />

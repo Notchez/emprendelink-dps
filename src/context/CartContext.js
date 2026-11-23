@@ -1,37 +1,22 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  CART_STORAGE_KEY,
+  CART_CHANGE_EVENT,
+  EMPTY_CART_SERIALIZED,
+  parseStoredCart,
+  scopedCartSnapshot,
+  serializeCart,
+  notifyCartChanged,
+  clearStoredCart,
+} from "@/utils/cartStorage";
 
 const CartContext = createContext(null);
 
-const CART_STORAGE_KEY = "emprendelink_cart";
-const CART_CHANGE_EVENT = "emprendelink-cart-change";
-const EMPTY_CART_SERIALIZED = JSON.stringify({
-  items: [],
-  businessId: null,
-});
-
 function parseCart(serializedCart) {
-  try {
-    const parsedCart = JSON.parse(serializedCart);
-
-    return {
-      items: Array.isArray(parsedCart.items) ? parsedCart.items : [],
-      businessId: typeof parsedCart.businessId === "string" ? parsedCart.businessId : null,
-    };
-  } catch (error) {
-    console.error("Error al recuperar carrito local", error);
-    return { items: [], businessId: null };
-  }
-}
-
-function getClientSnapshot() {
-  try {
-    return localStorage.getItem(CART_STORAGE_KEY) || EMPTY_CART_SERIALIZED;
-  } catch (error) {
-    console.error("Error al leer carrito local", error);
-    return EMPTY_CART_SERIALIZED;
-  }
+  return parseStoredCart(serializedCart) || { items: [], businessId: null };
 }
 
 function getServerSnapshot() {
@@ -48,16 +33,19 @@ function subscribeToCart(callback) {
   };
 }
 
-function saveCart(cart) {
-  try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-    window.dispatchEvent(new Event(CART_CHANGE_EVENT));
-  } catch (error) {
-    console.error("Error al persistir carrito", error);
-  }
-}
-
 export function CartProvider({ children }) {
+  const { identity, loading } = useAuth();
+  const ownerUid = identity?.uid || null;
+  const getClientSnapshot = useCallback(() => {
+    if (loading) return EMPTY_CART_SERIALIZED;
+    try {
+      return scopedCartSnapshot(localStorage.getItem(CART_STORAGE_KEY), ownerUid);
+    } catch (error) {
+      console.error("Error al leer carrito local", error);
+      return EMPTY_CART_SERIALIZED;
+    }
+  }, [loading, ownerUid]);
+
   const serializedCart = useSyncExternalStore(
     subscribeToCart,
     getClientSnapshot,
@@ -65,6 +53,15 @@ export function CartProvider({ children }) {
   );
 
   const { items, businessId } = useMemo(() => parseCart(serializedCart), [serializedCart]);
+
+  const saveCart = (cart) => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, serializeCart(cart, ownerUid));
+      notifyCartChanged();
+    } catch (error) {
+      console.error("Error al persistir carrito", error);
+    }
+  };
 
   const addItem = (product, quantity = 1) => {
     const currentCart = parseCart(getClientSnapshot());
@@ -133,12 +130,7 @@ export function CartProvider({ children }) {
   };
 
   const clearCart = () => {
-    try {
-      localStorage.removeItem(CART_STORAGE_KEY);
-      window.dispatchEvent(new Event(CART_CHANGE_EVENT));
-    } catch (error) {
-      console.error("Error al vaciar carrito local", error);
-    }
+    clearStoredCart();
   };
 
   const subtotal = items.reduce(
