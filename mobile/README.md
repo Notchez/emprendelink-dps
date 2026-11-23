@@ -44,9 +44,13 @@ ejecuta HTML/CSS dentro de React Native.
 - **Administrador:** indicadores globales, comisiones del mes por emprendimiento,
   compradores (consulta y activación/desactivación), emprendimientos (visibilidad y cambio
   de plan), administración de planes, pedidos con detalle/historial/cambio de estado,
-  ventas y comisiones.
+  ventas y comisiones. Los apartados financieros muestran tarjetas de resumen, selector
+  de mes, totales históricos y emprendimientos con detalle desplegable, siguiendo el
+  diseño responsive web.
 - **Emprendedor:** resumen del negocio, alta/edición de negocio, categorías, productos,
   consulta y actualización de pedidos, reporte de ventas y estado de cuenta de comisiones.
+  Ventas y comisiones permiten seleccionar el mes y consultar el histórico; las ventas
+  agrupan por fecha de entrega en El Salvador y las comisiones por mes UTC, igual que web.
 - **Cuenta:** el correo electrónico se muestra como dato fijo en los tres roles.
   La edición de perfil solo permite nombre, teléfono, dirección e indicaciones.
 
