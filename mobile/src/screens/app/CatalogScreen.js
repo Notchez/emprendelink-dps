@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Alert, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ProductCard } from "../../components/ProductCard";
-import { SearchInput } from "../../components/SearchInput";
 import { EmptyState, ErrorState, LoadingState } from "../../components/StateView";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../hooks/useCatalog";
@@ -15,18 +14,8 @@ export function CatalogScreen({ navigation, route }) {
   const { businessId } = route.params;
   const { catalog, loading, error, reload } = useCatalog(businessId);
   const { addItem, replaceWithItem, totalItems } = useCart();
-  const [search, setSearch] = useState("");
-  const [categoryId, setCategoryId] = useState("cat_all");
   const [logoFailed, setLogoFailed] = useState(false);
-
-  const products = (() => {
-    const query = search.trim().toLowerCase();
-    return (catalog?.products ?? []).filter((product) => {
-      const categoryMatches = categoryId === "cat_all" || product.categoryId === categoryId;
-      const textMatches = !query || `${product.name} ${product.description}`.toLowerCase().includes(query);
-      return categoryMatches && textMatches;
-    });
-  })();
+  const products = catalog?.products ?? [];
 
   function addProduct(product) {
     if (addItem(product, catalog.business, 1)) return;
@@ -72,24 +61,13 @@ export function CatalogScreen({ navigation, route }) {
               <Text style={styles.cartLabel}>Carrito</Text>
               {totalItems > 0 ? <View style={styles.cartBadge}><Text style={styles.cartBadgeText}>{totalItems}</Text></View> : null}
             </Pressable>
-            <SearchInput value={search} onChangeText={setSearch} placeholder="Buscar productos" />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>
-              {catalog.categories.map((category) => {
-                const selected = category.id === categoryId;
-                return (
-                  <Pressable key={category.id} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => setCategoryId(category.id)} style={[styles.category, selected && styles.categorySelected]}>
-                    <Text style={[styles.categoryText, selected && styles.categoryTextSelected]}>{category.name}</Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
             <View style={styles.resultsRow}>
               <Text style={styles.sectionTitle}>Productos</Text>
               <Text style={styles.count}>{products.length} {products.length === 1 ? "producto" : "productos"}</Text>
             </View>
           </View>
         }
-        ListEmptyComponent={<EmptyState title="Sin productos" message="No encontramos productos con estos filtros." icon="search-outline" />}
+        ListEmptyComponent={<EmptyState title="Sin productos" message="Este emprendimiento aún no tiene productos disponibles." icon="cube-outline" />}
         renderItem={({ item }) => (
           <ProductCard
             product={item}
@@ -119,11 +97,6 @@ const makeStyles = (colors) => StyleSheet.create({
   cartBadge: { minWidth: 21, height: 21, alignItems: "center", justifyContent: "center", paddingHorizontal: 5, borderRadius: radii.pill, backgroundColor: colors.primary },
   cartBadgeText: { color: colors.white, fontSize: 10, fontWeight: "900" },
   pressed: { opacity: 0.8 },
-  categories: { gap: spacing.sm, paddingRight: spacing.lg },
-  category: { minHeight: 40, justifyContent: "center", paddingHorizontal: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.pill, backgroundColor: colors.surface },
-  categorySelected: { borderColor: colors.primary, backgroundColor: colors.primary },
-  categoryText: { color: colors.muted, fontSize: typography.caption, fontWeight: "700" },
-  categoryTextSelected: { color: colors.white },
   resultsRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   sectionTitle: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "900" },
   count: { color: colors.muted, fontSize: typography.caption },
