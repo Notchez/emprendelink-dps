@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { BrandLockup } from "./BrandLockup";
-import { colors, spacing, typography } from "../theme";
+import { useAppStyles, spacing, typography } from "../theme";
 
 export function AuthHeader({ eyebrow, title, subtitle }) {
+  const { styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.wrapper}>
       <BrandLockup />
@@ -16,7 +17,7 @@ export function AuthHeader({ eyebrow, title, subtitle }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   wrapper: { gap: spacing.xxl, marginTop: spacing.lg },
   copy: { gap: spacing.sm },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "800", letterSpacing: 1.2 },

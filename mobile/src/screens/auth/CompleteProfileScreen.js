@@ -7,9 +7,10 @@ import { AuthHeader } from "../../components/AuthHeader";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { REGISTRATION_ROLES, ROLES } from "../../constants/roles";
 import { useAuth } from "../../context/AuthContext";
-import { colors, radii, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function CompleteProfileScreen() {
+  const { styles } = useAppStyles(makeStyles);
   const { identity, completeProfile, logout, loading } = useAuth();
   const [values, setValues] = useState({
     name: identity?.displayName || "",
@@ -62,7 +63,7 @@ export function CompleteProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.xl },
   card: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   error: { padding: spacing.md, borderRadius: radii.sm, backgroundColor: colors.dangerSoft, color: colors.danger, fontSize: typography.caption },

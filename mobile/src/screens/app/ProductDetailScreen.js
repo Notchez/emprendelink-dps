@@ -6,10 +6,11 @@ import { AppButton } from "../../components/AppButton";
 import { QuantityControl } from "../../components/QuantityControl";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useCart } from "../../context/CartContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 import { formatMoney } from "../../utils/formatters";
 
 export function ProductDetailScreen({ navigation, route }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { product, business } = route.params;
   const { addItem, replaceWithItem } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -45,7 +46,7 @@ export function ProductDetailScreen({ navigation, route }) {
     <ScreenContainer scroll contentStyle={styles.page} safeEdges={["left", "right"]}>
       <View style={styles.imageShell}>
         {product.imageUrl && !imageFailed ? (
-          <Image source={{ uri: product.imageUrl }} style={styles.image} onError={() => setImageFailed(true)} accessibilityLabel={`Imagen de ${product.name}`} />
+          <Image source={{ uri: product.imageUrl }} style={styles.image} resizeMode="contain" onError={() => setImageFailed(true)} accessibilityLabel={`Imagen de ${product.name}`} />
         ) : (
           <Ionicons name="image-outline" size={52} color={colors.muted} />
         )}
@@ -58,7 +59,7 @@ export function ProductDetailScreen({ navigation, route }) {
         <View style={styles.quantityRow}>
           <View>
             <Text style={styles.quantityLabel}>Cantidad</Text>
-            <Text style={styles.quantityHelp}>Máximo 99 unidades</Text>
+            <Text style={styles.quantityHelp}>Máximo 999 unidades</Text>
           </View>
           <QuantityControl value={quantity} onChange={setQuantity} />
         </View>
@@ -72,9 +73,9 @@ export function ProductDetailScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { gap: spacing.lg },
-  imageShell: { height: 300, alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
+  imageShell: { height: 280, alignItems: "center", justifyContent: "center", overflow: "hidden", borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   image: { width: "100%", height: "100%" },
   content: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   business: { color: colors.primary, fontSize: typography.caption, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 },

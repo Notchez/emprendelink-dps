@@ -71,6 +71,28 @@ test("logout elimina la sesión mediante Firebase Auth", async () => {
   assert.equal(data.wasSignedOut(), true);
 });
 
+test("actualizar perfil conserva el rol y utiliza la identidad autenticada", async () => {
+  const { dependencies } = fixture();
+  let target;
+  dependencies.userService.update = async (uid, changes) => {
+    target = { uid, changes };
+    return success({ name: changes.name, address: changes.address });
+  };
+  const service = createAuthService({ loadDependencies: async () => dependencies });
+  const result = await service.updateProfile({ name: "Ana", address: "Dirección nueva" });
+  assert.equal(result.success, true);
+  assert.equal(target.uid, "uid_1");
+  assert.equal(result.data.name, "Ana");
+});
+
+test("no se puede actualizar un perfil sin sesión", async () => {
+  const { dependencies } = fixture();
+  dependencies.auth.currentUser = null;
+  const result = await createAuthService({ loadDependencies: async () => dependencies }).updateProfile({ name: "Ana" });
+  assert.equal(result.success, false);
+  assert.equal(result.error.code, "AUTH_REQUIRED");
+});
+
 test("subscribe restaura una sesión persistida y su perfil", async () => {
   const { dependencies } = fixture();
   let onAuthStateChanged;

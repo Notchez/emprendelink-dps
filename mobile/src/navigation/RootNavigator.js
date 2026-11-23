@@ -5,18 +5,22 @@ import { StyleSheet, View } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
 import { ErrorState, LoadingState } from "../components/StateView";
+import { CustomerTopBar } from "../components/CustomerTopBar";
 import { CompleteProfileScreen } from "../screens/auth/CompleteProfileScreen";
 import { BusinessesScreen } from "../screens/app/BusinessesScreen";
 import { CartScreen } from "../screens/app/CartScreen";
+import { CheckoutScreen } from "../screens/app/CheckoutScreen";
 import { CatalogScreen } from "../screens/app/CatalogScreen";
 import { OrderDetailScreen } from "../screens/app/OrderDetailScreen";
+import { OrderConfirmationScreen } from "../screens/app/OrderConfirmationScreen";
 import { OrdersScreen } from "../screens/app/OrdersScreen";
 import { ProductDetailScreen } from "../screens/app/ProductDetailScreen";
 import { ProfileScreen } from "../screens/app/ProfileScreen";
 import { RolePendingScreen } from "../screens/app/RolePendingScreen";
+import { ManagementScreen } from "../screens/management/ManagementScreen";
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { RegisterScreen } from "../screens/auth/RegisterScreen";
-import { colors, typography } from "../theme";
+import { typography, useAppStyles, useAppTheme } from "../theme";
 import { getRootFlow, ROOT_FLOWS } from "./roleFlow";
 
 const Stack = createNativeStackNavigator();
@@ -29,10 +33,17 @@ const tabIcons = {
 };
 
 function MainTabs() {
+  const { colors } = useAppTheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
+        header: ({ navigation }) => (
+          <CustomerTopBar
+            title={{ Businesses: "Negocios", Orders: "Pedidos", Profile: "Mi perfil" }[route.name]}
+            onCart={() => navigation.getParent()?.navigate("Cart")}
+            onProfile={() => navigation.navigate("Profile")}
+          />
+        ),
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarHideOnKeyboard: true,
@@ -47,6 +58,7 @@ function MainTabs() {
           paddingBottom: 8,
           borderTopColor: colors.border,
           backgroundColor: colors.surface,
+          elevation: 8,
         },
         tabBarIcon: ({ color, focused, size }) => (
           <Ionicons
@@ -74,6 +86,7 @@ function AuthNavigator() {
 }
 
 function CustomerNavigator() {
+  const { colors } = useAppTheme();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -97,6 +110,8 @@ function CustomerNavigator() {
         options={{ title: "Detalle del producto" }}
       />
       <Stack.Screen name="Cart" component={CartScreen} options={{ title: "Carrito" }} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: "Finalizar compra" }} />
+      <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} options={{ title: "Pedido recibido", headerBackVisible: false }} />
       <Stack.Screen
         name="OrderDetail"
         component={OrderDetailScreen}
@@ -107,6 +122,7 @@ function CustomerNavigator() {
 }
 
 export function RootNavigator() {
+  const { styles } = useAppStyles(makeStyles);
   const { user, profileRequired, initializing, sessionError, sessionRecoverable, retrySession } = useAuth();
 
   if (initializing) return <View style={styles.loading}><LoadingState message="Restaurando sesión..." /></View>;
@@ -118,11 +134,13 @@ export function RootNavigator() {
 
   if (flow === ROOT_FLOWS.AUTH) return <AuthNavigator />;
   if (flow === ROOT_FLOWS.CUSTOMER) return <CustomerNavigator />;
+  if (flow === ROOT_FLOWS.ADMIN) return <ManagementScreen key="admin" isAdmin />;
+  if (flow === ROOT_FLOWS.ENTREPRENEUR) return <ManagementScreen key="entrepreneur" />;
 
-  // ENTREPRENEUR, ADMIN y cualquier rol desconocido quedan fuera del flujo CUSTOMER.
+  // Un rol desconocido nunca accede a pantallas de negocio o cliente.
   return <RolePendingScreen />;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   loading: { flex: 1, justifyContent: "center", backgroundColor: colors.background },
 });

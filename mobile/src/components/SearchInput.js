@@ -1,9 +1,10 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { colors, radii, shadows, spacing, typography } from "../theme";
+import { useAppStyles, radii, shadows, spacing, typography } from "../theme";
 
 export function SearchInput({ value, onChangeText, placeholder }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   return (
     <View style={styles.shell}>
       <Ionicons name="search-outline" size={21} color={colors.muted} />
@@ -22,7 +23,7 @@ export function SearchInput({ value, onChangeText, placeholder }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   shell: {
     minHeight: 52,
     flexDirection: "row",

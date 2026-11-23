@@ -25,9 +25,6 @@ export default function CatalogPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("cat_all");
-
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [cartOpen, setCartOpen] = useState(false);
@@ -69,28 +66,9 @@ export default function CatalogPage({ params }) {
   }, [slug]);
 
   const business = catalog?.business;
-  const categories = catalog?.categories || [];
   const products = useMemo(() => catalog?.products ?? [], [catalog?.products]);
 
-  const filteredProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return products.filter((product) => {
-      const matchesCategory =
-        selectedCategory === "cat_all" || product.categoryId === selectedCategory;
-
-      const matchesSearch =
-        !query ||
-        String(product.name || "")
-          .toLowerCase()
-          .includes(query) ||
-        String(product.description || "")
-          .toLowerCase()
-          .includes(query);
-
-      return product.active && matchesCategory && matchesSearch;
-    });
-  }, [products, search, selectedCategory]);
+  const visibleProducts = useMemo(() => products.filter((product) => product.active), [products]);
 
   function addProduct(product, quantity = 1) {
     return addItem(
@@ -163,51 +141,24 @@ export default function CatalogPage({ params }) {
           </button>
         </header>
 
-        <label className={styles.searchBox}>
-          <i className="bi bi-search" aria-hidden="true"></i>
-
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar productos..."
-            aria-label="Buscar productos"
-          />
-        </label>
-
-        {categories.length > 0 && (
-          <div className={styles.categories} aria-label="Categorías">
-            {categories.map((category) => (
-              <button
-                className={selectedCategory === category.id ? styles.activeCategory : ""}
-                type="button"
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        )}
-
         <section className={styles.productsSection}>
           <div className={styles.sectionHeading}>
             <h2>Productos</h2>
 
             <span>
-              {filteredProducts.length} {filteredProducts.length === 1 ? "producto" : "productos"}
+              {visibleProducts.length} {visibleProducts.length === 1 ? "producto" : "productos"}
             </span>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {visibleProducts.length === 0 ? (
             <div className={styles.empty}>
-              <i className="bi bi-search" aria-hidden="true"></i>
+              <i className="bi bi-box-seam" aria-hidden="true"></i>
 
-              <p>No encontramos productos con estos filtros.</p>
+              <p>Este emprendimiento aún no tiene productos disponibles.</p>
             </div>
           ) : (
             <div className={styles.productsGrid}>
-              {filteredProducts.map((product) => (
+              {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}

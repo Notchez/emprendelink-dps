@@ -1,14 +1,41 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AppButton } from "../../components/AppButton";
+import { AppInput } from "../../components/AppInput";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { useAuth } from "../../context/AuthContext";
-import { getRoleLabel } from "../../constants/roles";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { useAppStyles, radii, spacing, typography } from "../../theme";
 
 export function ProfileScreen() {
-  const { user, logout, loading } = useAuth();
+  const { colors, styles } = useAppStyles(makeStyles);
+  const { user, updateProfile, logout, loading } = useAuth();
+  const [values, setValues] = useState(() => ({
+    name: user?.name || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    deliveryInstructions: user?.deliveryInstructions || "",
+  }));
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  function change(name, value) {
+    setValues((current) => ({ ...current, [name]: value }));
+    setMessage("");
+    setError("");
+  }
+
+  async function save() {
+    setError("");
+    setMessage("");
+    try {
+      await updateProfile(values);
+      setMessage("Tus datos se guardaron correctamente.");
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "No se pudieron guardar los cambios.");
+    }
+  }
 
   function requestLogout() {
     Alert.alert("Cerrar sesión", "¿Deseas volver a la pantalla de acceso?", [
@@ -17,52 +44,60 @@ export function ProfileScreen() {
     ]);
   }
 
+  const firstName = user?.name?.trim().split(/\s+/)[0] || "Cliente";
+
   return (
-    <ScreenContainer scroll contentStyle={styles.page}>
-      <View style={styles.heading}><Text style={styles.eyebrow}>TU CUENTA</Text><Text style={styles.title}>Mi perfil</Text><Text style={styles.subtitle}>Información utilizada en la experiencia móvil.</Text></View>
-      <View style={styles.profileCard}>
-        <View style={styles.avatar}><Text style={styles.avatarText}>{user?.name?.charAt(0).toUpperCase() || "U"}</Text></View>
-        <Text style={styles.name}>{user?.name}</Text>
-        <View style={styles.rolePill}><Text style={styles.role}>{getRoleLabel(user?.role)}</Text></View>
+    <ScreenContainer scroll keyboard contentStyle={styles.page} safeEdges={["left", "right"]}>
+      <View style={styles.profileHeader}>
+        <View style={styles.avatar}><Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text></View>
+        <View style={styles.profileCopy}>
+          <Text style={styles.eyebrow}>MI PERFIL</Text>
+          <Text style={styles.name}>¡Hola, {firstName}!</Text>
+          <Text style={styles.subtitle}>{user?.email}</Text>
+        </View>
       </View>
+
+      {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
+      {message ? <Text accessibilityRole="alert" style={styles.success}>{message}</Text> : null}
+
       <View style={styles.card}>
-        <InfoRow icon="mail-outline" label="Correo" value={user?.email} />
-        <InfoRow icon="call-outline" label="Teléfono" value={user?.phone || "No registrado"} />
-        <InfoRow icon="location-outline" label="Dirección" value={user?.address || "No registrada"} />
-        <InfoRow icon="chatbox-outline" label="Indicaciones" value={user?.deliveryInstructions || "Sin indicaciones"} />
+        <Text style={styles.sectionTitle}>Mi información</Text>
+        <Text style={styles.subtitle}>Estos datos se utilizan para gestionar tus pedidos.</Text>
+        <AppInput label="Nombre completo" value={values.name} maxLength={100} autoComplete="name" onChangeText={(value) => change("name", value)} />
+        <AppInput label="Correo electrónico (no editable)" value={user?.email || ""} editable={false} autoCapitalize="none" keyboardType="email-address" />
+        <Text style={styles.subtitle}>El correo se conserva fijo para proteger tu identidad y tus pedidos.</Text>
+        <AppInput label="Teléfono" value={values.phone} maxLength={25} autoComplete="tel" keyboardType="phone-pad" onChangeText={(value) => change("phone", value)} />
+        <AppInput label="Dirección" value={values.address} maxLength={500} multiline numberOfLines={3} textAlignVertical="top" onChangeText={(value) => change("address", value)} />
+        <AppInput label="Indicaciones de entrega (opcional)" value={values.deliveryInstructions} maxLength={500} multiline numberOfLines={3} textAlignVertical="top" placeholder="Ej.: portón azul, llamar al llegar." onChangeText={(value) => change("deliveryInstructions", value)} />
+        <AppButton title="Guardar cambios" onPress={() => void save()} loading={loading} />
       </View>
-      <AppButton title="Cerrar sesión" onPress={requestLogout} loading={loading} variant="ghost" />
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Cuenta</Text>
+        <Text style={styles.subtitle}>Administra tu sesión de EmprendeLink.</Text>
+        <Pressable accessibilityRole="button" disabled={loading} onPress={requestLogout} style={({ pressed }) => [styles.logoutButton, (pressed || loading) && styles.faded]}>
+          <Ionicons name="log-out-outline" size={20} color={colors.danger} />
+          <Text style={styles.logoutText}>{loading ? "Cerrando sesión..." : "Cerrar sesión"}</Text>
+        </Pressable>
+      </View>
     </ScreenContainer>
   );
 }
 
-function InfoRow({ icon, label, value }) {
-  return (
-    <View style={styles.infoRow}>
-      <View style={styles.infoIcon}><Ionicons name={icon} size={20} color={colors.primary} /></View>
-      <View style={styles.infoCopy}><Text style={styles.infoLabel}>{label}</Text><Text style={styles.infoValue}>{value}</Text></View>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  page: { gap: spacing.lg },
-  heading: { gap: spacing.xs },
+const makeStyles = (colors) => StyleSheet.create({
+  page: { gap: spacing.lg, paddingHorizontal: spacing.md, paddingTop: spacing.xl },
   eyebrow: { color: colors.primary, fontSize: typography.tiny, fontWeight: "900", letterSpacing: 1.1 },
-  title: { color: colors.ink, fontSize: typography.hero, fontWeight: "900", letterSpacing: -0.7 },
-  subtitle: { color: colors.muted, fontSize: typography.body, lineHeight: 22 },
-  profileCard: { alignItems: "center", gap: spacing.sm, padding: spacing.xl, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
-  avatar: { width: 78, height: 78, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.primary },
-  avatarText: { color: colors.white, fontSize: 32, fontWeight: "900" },
-  name: { color: colors.ink, fontSize: typography.title, fontWeight: "900" },
-  rolePill: { paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radii.pill, backgroundColor: colors.primarySoft },
-  role: { color: colors.primaryDark, fontSize: typography.tiny, fontWeight: "900", textTransform: "uppercase" },
+  subtitle: { color: colors.muted, fontSize: typography.caption, lineHeight: 20 },
+  profileHeader: { flexDirection: "row", alignItems: "center", gap: spacing.lg, padding: spacing.md },
+  avatar: { width: 60, height: 60, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, backgroundColor: colors.primary },
+  avatarText: { color: colors.white, fontSize: 24, fontWeight: "800" },
+  profileCopy: { flex: 1, gap: spacing.xs },
+  name: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },
   card: { gap: spacing.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
-  infoRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-  infoIcon: { width: 42, height: 42, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primarySoft },
-  infoCopy: { flex: 1, gap: 2 },
-  infoLabel: { color: colors.muted, fontSize: typography.tiny, fontWeight: "700", textTransform: "uppercase" },
-  infoValue: { color: colors.ink, fontSize: typography.body, lineHeight: 21 },
-  note: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm, padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.primarySoft },
-  noteText: { flex: 1, color: colors.primaryDark, fontSize: typography.caption, lineHeight: 19 },
+  sectionTitle: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },
+  error: { color: colors.danger, backgroundColor: colors.dangerSoft, padding: spacing.md, borderRadius: radii.md },
+  success: { color: colors.success, backgroundColor: colors.successSoft, padding: spacing.md, borderRadius: radii.md },
+  logoutButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.sm, minHeight: 44, paddingHorizontal: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md },
+  logoutText: { color: colors.danger, fontWeight: "800", fontSize: typography.body },
+  faded: { opacity: 0.6 },
 });

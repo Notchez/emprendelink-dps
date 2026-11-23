@@ -13,13 +13,79 @@ que la aplicación web.
 - carrito local; creación, listado, detalle e historial de pedidos mediante `/api/orders`.
 - ID token de Firebase enviado como `Authorization: Bearer <token>` a la API.
 
+### Interfaz de Cliente
+
+Las pantallas CUSTOMER utilizan como referencia visual la versión responsive de la web:
+barra superior con acceso al carrito y perfil, navegación inferior por Negocios / Pedidos / Perfil,
+tarjetas compactas con imágenes completas (`contain`), tema automático claro/oscuro según el
+sistema Android o iOS y detalles de pedido con identificadores `PED-XXXXXXXX`.
+Los pedidos se separan en «En curso» e «Historial» y mantienen
+el enlace a su detalle; los logos de los negocios se resuelven desde Firestore, incluso para
+pedidos históricos, con un icono de respaldo cuando no hay imagen.
+El carrito replica la composición responsive de la web: tarjeta de negocio y productos,
+control de cantidad, opción de vaciar, resumen, subtotal y pago contra entrega.
+**Continuar** abre el checkout nativo para revisar los datos de contacto, indicar una dirección
+específica para ese pedido, confirmar el método de pago y ver una pantalla de confirmación.
+**Mi perfil** permite editar nombre, teléfono, dirección e indicaciones sin alterar rol,
+correo ni estado de la cuenta. Estas pantallas conservan la navegación y los controles nativos
+de React Native. El contenedor reserva el área inferior de
+gestos/botones del sistema Android para que no se superponga a las pestañas.
+
+La apariencia utiliza `useColorScheme` y se actualiza cuando el usuario cambia el tema del
+dispositivo; no se guarda una preferencia ni se ofrece un interruptor dentro de la aplicación.
+
+### Paneles de administrador y emprendedor
+
+Los perfiles `ADMIN` y `ENTREPRENEUR` ya no son redirigidos a pantallas de espera.
+Tienen un panel nativo con cabecera, menú desplegable, tarjetas, formularios y colores
+claros/oscuros equivalentes al shell responsive de Next.js. No se usa WebView ni se
+ejecuta HTML/CSS dentro de React Native.
+
+- **Administrador:** indicadores globales, comisiones del mes por emprendimiento,
+  compradores (consulta y activación/desactivación), emprendimientos (visibilidad y cambio
+  de plan), administración de planes, pedidos con detalle/historial/cambio de estado,
+  ventas y comisiones. Los apartados financieros muestran tarjetas de resumen, selector
+  de mes, totales históricos y emprendimientos con detalle desplegable, siguiendo el
+  diseño responsive web.
+- **Emprendedor:** resumen del negocio, alta/edición de negocio, categorías, productos,
+  consulta y actualización de pedidos, reporte de ventas y estado de cuenta de comisiones.
+  Ventas y comisiones permiten seleccionar el mes y consultar el histórico; las ventas
+  agrupan por fecha de entrega en El Salvador y las comisiones por mes UTC, igual que web.
+- **Cuenta:** el correo electrónico se muestra como dato fijo en los tres roles.
+  La edición de perfil solo permite nombre, teléfono, dirección e indicaciones.
+
+Las operaciones de pedidos, comisiones, activación de compradores y cambio de plan usan
+la API protegida de Next.js con el Firebase ID token. Las operaciones de negocios,
+planes, categorías y productos usan Firestore respetando sus reglas de roles.
+**Next.js debe permanecer encendido y ser accesible desde el celular** para cargar
+pedidos, ventas y comisiones. Los cambios administrativos requieren una cuenta ADMIN
+activa; un cliente no obtiene permisos administrativos por instalar la app.
+
+El diseño traduce la jerarquía visual y los flujos principales a componentes nativos;
+la comprobación de detalles de responsive y gestos se hace en un dispositivo real.
+
+Para Android, **se necesita `expo-system-ui`**: instalar desde `mobile/` con
+`npx expo install expo-system-ui` antes de verificar la exportación. La opción
+`userInterfaceStyle: automatic` y el plugin están declarados en `app.json`.
+Este módulo nativo exige volver a crear e instalar el development build con
+`npx eas build --profile development --platform android` antes de comprobar
+el cambio automático del tema en un Samsung. Un reinicio de Metro no reemplaza
+esa reconstrucción nativa.
+
+Para validar el diseño en un teléfono Android, inicia el development build previamente instalado,
+ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas, búsqueda de
+negocios/productos, imágenes, carrito, pedidos y cierre de sesión. La exportación Metro y las
+pruebas automáticas no sustituyen esta revisión visual en un dispositivo físico.
+
 Los precios, el cliente y la comisión nunca se aceptan como autoridad desde el teléfono: los Route
 Handlers vuelven a consultar y validar esos datos antes de escribir con Firebase Admin.
 
-El contrato de pedidos del backend no incluye `businessName`. `orderService` conserva ese contrato y
-resuelve el nombre actual mediante `catalogService`; `businessName` se agrega únicamente al modelo de
-presentación móvil. La lista consulta los negocios activos una sola vez y solo resuelve por ID los
-negocios históricos que ya no estén activos.
+El contrato de pedidos del backend no incluye `businessName` ni `businessLogoUrl`.
+`orderService` conserva ese contrato y resuelve nombre/logo actuales mediante `catalogService`;
+ambos campos se agregan únicamente al modelo de presentación móvil. La lista consulta los
+negocios activos una sola vez y solo resuelve por ID los negocios históricos que ya no estén
+activos. La dirección/indicaciones elegidas en checkout se envían como datos del pedido y no
+modifican el perfil; los precios los valida siempre el servidor.
 
 ## Preparación local
 

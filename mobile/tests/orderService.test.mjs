@@ -16,6 +16,19 @@ test("apiClient adjunta el Firebase ID token", async () => {
   assert.equal(request.options.headers.Authorization, "Bearer firebase-token");
 });
 
+test("apiClient explica fallos de conexión a la API sin mostrar errores internos de Android", async () => {
+  process.env.EXPO_PUBLIC_API_BASE_URL = "http://192.168.1.27:3000";
+  const client = createApiClient({
+    getToken: async () => success("firebase-token"),
+    fetchImpl: async () => { throw new Error("fetch failed: java.net.NoRouteToHostException: Host unreachable"); },
+  });
+  const result = await client.request("/api/orders");
+  assert.equal(result.success, false);
+  assert.equal(result.error.code, "NETWORK_ERROR");
+  assert.match(result.error.message, /EXPO_PUBLIC_API_BASE_URL/);
+  assert.doesNotMatch(result.error.message, /java\.net/);
+});
+
 test("createOrder envía solo identificadores, cantidades y entrega", async () => {
   let captured;
   const service = createOrderService({ client: { request: async (path, options) => { captured = { path, options }; return success({ id: "order_1" }); } } });
@@ -24,7 +37,24 @@ test("createOrder envía solo identificadores, cantidades y entrega", async () =
   assert.deepEqual(body.items, [{ productId: "product_1", quantity: 2 }]);
   assert.equal("price" in body.items[0], false);
   assert.equal("subtotal" in body, false);
+  assert.equal(body.deliveryAddress, "Dirección de prueba");
+  assert.equal(body.notes, "Llamar");
   assert.equal(result.data.businessName, "Negocio real");
+});
+
+test("checkout permite una dirección distinta sin modificar el perfil", async () => {
+  let body;
+  const service = createOrderService({ client: { request: async (_path, options) => { body = JSON.parse(options.body); return success({ id: "order_2" }); } } });
+  const result = await service.createOrder({
+    user: { address: "Dirección del perfil", deliveryInstructions: "Llamar" },
+    business: { id: "business_1", name: "Tienda", logoUrl: "https://example.test/logo.png" },
+    items: [{ id: "product_1", quantity: 1 }],
+    deliveryAddress: "Dirección solo para esta compra",
+    notes: "Portón azul",
+  });
+  assert.equal(body.deliveryAddress, "Dirección solo para esta compra");
+  assert.equal(body.notes, "Portón azul");
+  assert.equal(result.data.businessLogoUrl, "https://example.test/logo.png");
 });
 
 test("orderService usa endpoints protegidos para detalle e historial", async () => {
@@ -45,20 +75,22 @@ test("lista de pedidos obtiene nombres reales sin cambiar el contrato del backen
       { id: "order_2", businessId: "business_inactive" },
     ]) },
     catalog: {
-      getBusinesses: async () => success([{ id: "business_active", name: "Café Central" }]),
-      getBusinessById: async (id) => success({ id, name: "Taller Histórico" }),
+      getBusinesses: async () => success([{ id: "business_active", name: "Café Central", logoUrl: "https://example.test/active.png" }]),
+      getBusinessById: async (id) => success({ id, name: "Taller Histórico", logoUrl: "https://example.test/old.png" }),
     },
   });
   const result = await service.getCustomerOrders();
   assert.equal(result.success, true);
   assert.deepEqual(result.data.map((order) => order.businessName), ["Café Central", "Taller Histórico"]);
+  assert.deepEqual(result.data.map((order) => order.businessLogoUrl), ["https://example.test/active.png", "https://example.test/old.png"]);
 });
 
 test("detalle de pedido enriquece el negocio mediante catálogo", async () => {
   const service = createOrderService({
     client: { request: async () => success({ id: "order_1", businessId: "business_1" }) },
-    catalog: { getBusinessById: async () => success({ id: "business_1", name: "Panadería Aurora" }) },
+    catalog: { getBusinessById: async () => success({ id: "business_1", name: "Panadería Aurora", logoUrl: "https://example.test/aurora.png" }) },
   });
   const result = await service.getOrderById("order_1");
   assert.equal(result.data.businessName, "Panadería Aurora");
+  assert.equal(result.data.businessLogoUrl, "https://example.test/aurora.png");
 });

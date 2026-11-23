@@ -83,6 +83,22 @@ export function AuthProvider({ children }) {
   const loginWithGoogle = useCallback(() => runAuthAction(() => authService.loginWithGoogle()), [runAuthAction]);
   const completeProfile = useCallback((values) => runAuthAction(() => authService.completeProfile(values)), [runAuthAction]);
 
+  const updateProfile = useCallback(async (values) => {
+    const currentUid = identity?.uid;
+    if (!currentUid || !user) throw new Error("Debes iniciar sesión para actualizar tus datos.");
+    const revision = sessionRevision.current;
+    setLoading(true);
+    try {
+      const updates = unwrap(await authService.updateProfile(values));
+      if (revision === sessionRevision.current) {
+        setUser((current) => current?.id === currentUid ? { ...current, ...updates } : current);
+      }
+      return updates;
+    } finally {
+      setLoading(false);
+    }
+  }, [identity?.uid, user]);
+
   const logout = useCallback(async () => {
     setLoading(true);
     try {
@@ -95,8 +111,8 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     identity, user, profileRequired, initializing, loading, sessionError, sessionRecoverable,
-    login, register, loginWithGoogle, completeProfile, logout, retrySession,
-  }), [identity, user, profileRequired, initializing, loading, sessionError, sessionRecoverable, login, register, loginWithGoogle, completeProfile, logout, retrySession]);
+    login, register, loginWithGoogle, completeProfile, updateProfile, logout, retrySession,
+  }), [identity, user, profileRequired, initializing, loading, sessionError, sessionRecoverable, login, register, loginWithGoogle, completeProfile, updateProfile, logout, retrySession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -6,7 +6,7 @@
     "scheme": "emprendelink",
     "orientation": "portrait",
     "icon": "./assets/emprendelink-icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "description": "Aplicación móvil de EmprendeLink",
     "ios": {
       "supportsTablet": true,
@@ -25,6 +25,7 @@
     "plugins": [
       "expo-font",
       "expo-dev-client",
+      "expo-system-ui",
       "@react-native-google-signin/google-signin"
     ],
     "extra": {

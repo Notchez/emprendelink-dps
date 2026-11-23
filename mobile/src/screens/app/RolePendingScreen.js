@@ -6,9 +6,10 @@ import { BrandLockup } from "../../components/BrandLockup";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { ROLES, getRoleLabel } from "../../constants/roles";
 import { useAuth } from "../../context/AuthContext";
-import { colors, radii, shadows, spacing, typography } from "../../theme";
+import { useAppStyles, radii, shadows, spacing, typography } from "../../theme";
 
 export function RolePendingScreen() {
+  const { colors, styles } = useAppStyles(makeStyles);
   const { user, logout, loading } = useAuth();
   const isAdmin = user?.role === ROLES.ADMIN;
   const roleLabel = getRoleLabel(user?.role);
@@ -50,7 +51,7 @@ export function RolePendingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   page: { justifyContent: "center", gap: spacing.xl },
   card: {
     alignItems: "center",

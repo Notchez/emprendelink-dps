@@ -1,8 +1,9 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 
-import { colors, radii, spacing, typography } from "../theme";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function AppButton({ title, onPress, loading = false, disabled = false, variant = "primary", icon, accessibilityHint }) {
+  const { colors, styles } = useAppStyles(makeStyles);
   const inactive = disabled || loading;
   return (
     <Pressable
@@ -19,7 +20,7 @@ export function AppButton({ title, onPress, loading = false, disabled = false, v
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   base: {
     minHeight: 50,
     flexDirection: "row",
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
   },
   primary: { backgroundColor: colors.primary },
-  secondary: { backgroundColor: colors.primarySoft, borderWidth: 1, borderColor: "#BFDBFE" },
+  secondary: { backgroundColor: colors.primarySoft, borderWidth: 1, borderColor: colors.primaryDark },
   ghost: { backgroundColor: colors.transparent, borderWidth: 1, borderColor: colors.border },
   label: { color: colors.white, fontSize: typography.body, fontWeight: "800" },
   secondaryLabel: { color: colors.primaryDark },

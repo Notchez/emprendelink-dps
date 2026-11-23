@@ -1,9 +1,10 @@
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, spacing } from "../theme";
+import { useAppStyles, spacing } from "../theme";
 
 export function ScreenContainer({ children, scroll = false, keyboard = false, contentStyle, safeEdges = ["top", "left", "right"] }) {
+  const { styles } = useAppStyles(makeStyles);
   const content = scroll ? (
     <ScrollView
       contentContainerStyle={[styles.scrollContent, contentStyle]}
@@ -27,7 +28,7 @@ export function ScreenContainer({ children, scroll = false, keyboard = false, co
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   flex: { flex: 1 },
   safeArea: { flex: 1, backgroundColor: colors.background },
   content: { flex: 1, padding: spacing.lg },

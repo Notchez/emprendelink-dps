@@ -1,41 +1,59 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { StatusBadge } from "./StatusBadge";
-import { formatDate, formatMoney } from "../utils/formatters";
-import { colors, radii, shadows, spacing, typography } from "../theme";
+import { BusinessLogo } from "./BusinessLogo";
+import { ORDER_STATUS } from "../constants/orderStatus";
+import { formatMoney, formatOrderId, formatOrderStatus, formatShortDate } from "../utils/formatters";
+import { useAppStyles, radii, spacing, typography } from "../theme";
 
 export function OrderCard({ order, onPress }) {
-  const units = order.items.reduce((total, item) => total + item.quantity, 0);
+  const { colors, styles } = useAppStyles(makeStyles);
+  const visibleItems = (order.items || []).slice(0, 3);
+  const extraItems = Math.max(0, (order.items?.length || 0) - visibleItems.length);
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={`Ver pedido ${order.id}`} onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.header}>
-        <View style={styles.icon}><Ionicons name="receipt-outline" size={23} color={colors.primary} /></View>
+        <BusinessLogo logoUrl={order.businessLogoUrl} name={order.businessName} size={56} />
         <View style={styles.heading}>
+          <Text style={[styles.status, order.status === ORDER_STATUS.DELIVERED && styles.delivered, order.status === ORDER_STATUS.CANCELLED && styles.cancelled]}>{formatOrderStatus(order.status)} · {formatShortDate(order.createdAt)}</Text>
           <Text numberOfLines={1} style={styles.business}>{order.businessName || "Emprendimiento"}</Text>
-          <Text style={styles.id}>#{order.id.replace("order_", "")}</Text>
+          <Text style={styles.total}>{formatMoney(order.subtotal)}</Text>
         </View>
-        <StatusBadge status={order.status} />
       </View>
-      <View style={styles.divider} />
+      <View style={styles.items}>
+        {visibleItems.map((item, index) => (
+          <View key={`${item.productId}-${index}`} style={styles.itemRow}>
+            <Text numberOfLines={2} style={styles.itemName}>{item.quantity} × {item.productName}</Text>
+            <Text style={styles.itemAmount}>{formatMoney(item.lineTotal)}</Text>
+          </View>
+        ))}
+        {extraItems > 0 && <Text style={styles.meta}>+ {extraItems} producto(s) más</Text>}
+      </View>
       <View style={styles.footer}>
-        <View><Text style={styles.meta}>{formatDate(order.createdAt)}</Text><Text style={styles.meta}>{units} {units === 1 ? "producto" : "productos"}</Text></View>
-        <Text style={styles.total}>{formatMoney(order.subtotal)}</Text>
+        <Text style={styles.id}>{formatOrderId(order.id)}</Text>
+        <Text style={styles.link}>Ver pedido</Text>
+        <Ionicons name="arrow-forward" size={17} color={colors.primary} />
       </View>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  card: { gap: spacing.md, padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface, ...shadows.card },
+const makeStyles = (colors) => StyleSheet.create({
+  card: { gap: spacing.lg, padding: 18, borderWidth: 1, borderColor: colors.border, borderRadius: radii.lg, backgroundColor: colors.surface },
   pressed: { opacity: 0.82 },
-  header: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  icon: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: radii.md, backgroundColor: colors.primarySoft },
-  heading: { flex: 1, gap: 2 },
-  business: { color: colors.ink, fontSize: typography.body, fontWeight: "800" },
-  id: { color: colors.muted, fontSize: typography.caption },
-  divider: { height: 1, backgroundColor: colors.border },
-  footer: { flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
-  meta: { color: colors.muted, fontSize: typography.caption, lineHeight: 19 },
-  total: { color: colors.ink, fontSize: typography.subtitle, fontWeight: "800" },
+  header: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  heading: { flex: 1, gap: 4, minWidth: 0 },
+  status: { color: colors.primary, fontSize: typography.caption, fontWeight: "800" },
+  delivered: { color: colors.success },
+  cancelled: { color: colors.danger },
+  business: { color: colors.ink, fontSize: 16, fontWeight: "800" },
+  id: { flex: 1, color: colors.muted, fontSize: 10 },
+  items: { gap: spacing.sm, paddingVertical: spacing.md, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border },
+  itemRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: spacing.sm },
+  itemName: { flex: 1, color: colors.muted, fontSize: typography.caption, lineHeight: 19 },
+  itemAmount: { color: colors.ink, fontSize: typography.caption, fontWeight: "700" },
+  footer: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  link: { color: colors.primary, fontSize: typography.caption, fontWeight: "800" },
+  meta: { color: colors.muted, fontSize: typography.caption },
+  total: { color: colors.ink, fontSize: typography.body, fontWeight: "800", marginTop: spacing.sm },
 });

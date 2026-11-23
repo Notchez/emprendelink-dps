@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { ROLES } from "../src/constants/roles.js";
-import { hasValidationErrors, validateLogin, validateRegistration } from "../src/utils/validation.js";
+import { hasValidationErrors, validateDelivery, validateLogin, validateRegistration } from "../src/utils/validation.js";
 
 test("login acepta credenciales con formato válido", () => {
   assert.deepEqual(validateLogin({ email: "cliente@ejemplo.com", password: "secreto" }), {});
@@ -53,4 +53,10 @@ test("registro valida coincidencia de contraseñas", () => {
     confirmPassword: "Otra1234",
   });
   assert.equal(errors.confirmPassword, "Las contraseñas no coinciden.");
+});
+
+test("checkout exige dirección y permite indicaciones opcionales", () => {
+  assert.match(validateDelivery({ address: "a", notes: "" }).address, /dirección/);
+  assert.deepEqual(validateDelivery({ address: "Dirección de entrega", notes: "" }), {});
+  assert.match(validateDelivery({ address: "Dirección válida", notes: "x".repeat(501) }).notes, /500/);
 });

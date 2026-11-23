@@ -51,14 +51,14 @@ export function OrdersProvider({ children }) {
     void refresh();
   }, [identityId, refresh]);
 
-  const placeOrder = useCallback(async ({ business, items }) => {
+  const placeOrder = useCallback(async ({ business, items, deliveryAddress, notes }) => {
     if (user?.role && user.role !== ROLES.CUSTOMER) {
       throw new Error("Solo una cuenta de cliente puede confirmar pedidos.");
     }
     if (!identityId || !user) throw new Error("Debes iniciar sesión para confirmar un pedido.");
 
     const request = requestGuard.current.begin();
-    const result = await orderService.createOrder({ user, business, items });
+    const result = await orderService.createOrder({ user, business, items, deliveryAddress, notes });
     if (!result.success) throw new Error(result.error?.message || "No se pudo crear el pedido.");
     if (requestGuard.current.isCurrent(request)) {
       setOrders((current) => [result.data, ...current]);
