@@ -34,6 +34,32 @@ gestos/botones del sistema Android para que no se superponga a las pestañas.
 La apariencia utiliza `useColorScheme` y se actualiza cuando el usuario cambia el tema del
 dispositivo; no se guarda una preferencia ni se ofrece un interruptor dentro de la aplicación.
 
+### Paneles de administrador y emprendedor
+
+Los perfiles `ADMIN` y `ENTREPRENEUR` ya no son redirigidos a pantallas de espera.
+Tienen un panel nativo con cabecera, menú desplegable, tarjetas, formularios y colores
+claros/oscuros equivalentes al shell responsive de Next.js. No se usa WebView ni se
+ejecuta HTML/CSS dentro de React Native.
+
+- **Administrador:** indicadores globales, comisiones del mes por emprendimiento,
+  compradores (consulta y activación/desactivación), emprendimientos (visibilidad y cambio
+  de plan), administración de planes, pedidos con detalle/historial/cambio de estado,
+  ventas y comisiones.
+- **Emprendedor:** resumen del negocio, alta/edición de negocio, categorías, productos,
+  consulta y actualización de pedidos, reporte de ventas y estado de cuenta de comisiones.
+- **Cuenta:** el correo electrónico se muestra como dato fijo en los tres roles.
+  La edición de perfil solo permite nombre, teléfono, dirección e indicaciones.
+
+Las operaciones de pedidos, comisiones, activación de compradores y cambio de plan usan
+la API protegida de Next.js con el Firebase ID token. Las operaciones de negocios,
+planes, categorías y productos usan Firestore respetando sus reglas de roles.
+**Next.js debe permanecer encendido y ser accesible desde el celular** para cargar
+pedidos, ventas y comisiones. Los cambios administrativos requieren una cuenta ADMIN
+activa; un cliente no obtiene permisos administrativos por instalar la app.
+
+El diseño traduce la jerarquía visual y los flujos principales a componentes nativos;
+la comprobación de detalles de responsive y gestos se hace en un dispositivo real.
+
 Para Android, **se necesita `expo-system-ui`**: instalar desde `mobile/` con
 `npx expo install expo-system-ui` antes de verificar la exportación. La opción
 `userInterfaceStyle: automatic` y el plugin están declarados en `app.json`.

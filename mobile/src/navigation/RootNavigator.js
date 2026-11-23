@@ -17,6 +17,7 @@ import { OrdersScreen } from "../screens/app/OrdersScreen";
 import { ProductDetailScreen } from "../screens/app/ProductDetailScreen";
 import { ProfileScreen } from "../screens/app/ProfileScreen";
 import { RolePendingScreen } from "../screens/app/RolePendingScreen";
+import { ManagementScreen } from "../screens/management/ManagementScreen";
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { RegisterScreen } from "../screens/auth/RegisterScreen";
 import { typography, useAppStyles, useAppTheme } from "../theme";
@@ -133,8 +134,10 @@ export function RootNavigator() {
 
   if (flow === ROOT_FLOWS.AUTH) return <AuthNavigator />;
   if (flow === ROOT_FLOWS.CUSTOMER) return <CustomerNavigator />;
+  if (flow === ROOT_FLOWS.ADMIN) return <ManagementScreen key="admin" isAdmin />;
+  if (flow === ROOT_FLOWS.ENTREPRENEUR) return <ManagementScreen key="entrepreneur" />;
 
-  // ENTREPRENEUR, ADMIN y cualquier rol desconocido quedan fuera del flujo CUSTOMER.
+  // Un rol desconocido nunca accede a pantallas de negocio o cliente.
   return <RolePendingScreen />;
 }
 

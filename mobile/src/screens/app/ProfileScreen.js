@@ -64,7 +64,8 @@ export function ProfileScreen() {
         <Text style={styles.sectionTitle}>Mi información</Text>
         <Text style={styles.subtitle}>Estos datos se utilizan para gestionar tus pedidos.</Text>
         <AppInput label="Nombre completo" value={values.name} maxLength={100} autoComplete="name" onChangeText={(value) => change("name", value)} />
-        <AppInput label="Correo electrónico" value={user?.email || ""} editable={false} autoCapitalize="none" keyboardType="email-address" />
+        <AppInput label="Correo electrónico (no editable)" value={user?.email || ""} editable={false} autoCapitalize="none" keyboardType="email-address" />
+        <Text style={styles.subtitle}>El correo se conserva fijo para proteger tu identidad y tus pedidos.</Text>
         <AppInput label="Teléfono" value={values.phone} maxLength={25} autoComplete="tel" keyboardType="phone-pad" onChangeText={(value) => change("phone", value)} />
         <AppInput label="Dirección" value={values.address} maxLength={500} multiline numberOfLines={3} textAlignVertical="top" onChangeText={(value) => change("address", value)} />
         <AppInput label="Indicaciones de entrega (opcional)" value={values.deliveryInstructions} maxLength={500} multiline numberOfLines={3} textAlignVertical="top" placeholder="Ej.: portón azul, llamar al llegar." onChangeText={(value) => change("deliveryInstructions", value)} />
