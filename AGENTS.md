@@ -71,8 +71,10 @@ No colocar acceso directo complejo a Firestore dentro de componentes visuales.
 
 No colocar reglas críticas de negocio dentro de JSX.
 
-La aplicación móvil vive en `mobile/` y mantiene el mismo flujo por capas. Sus services siguen
-usando datos mock hasta la tarea de integración Firebase; no afirmar que ya persiste en Firebase.
+La aplicación móvil vive en `mobile/` y mantiene el mismo flujo por capas. Ya usa Firebase
+Authentication/Firestore cliente y la API REST protegida de Next.js. Tiene pantallas nativas para
+CUSTOMER, ENTREPRENEUR y ADMIN. No describirla como prototipo basado en mocks; las pruebas
+automatizadas sí utilizan dependencias simuladas e inyección de servicios.
 
 ---
 
@@ -481,3 +483,7 @@ docs/GIT_WORKFLOW.md
 ```
 
 Si existe contradicción, señalarla y pedir decisión antes de cambiar contratos compartidos.
+
+## Finalización académica 2026
+
+Las dos aplicaciones son parte de la entrega final DPS941. Antes de afirmar una validación, distinguir entre pruebas automatizadas, export Android y verificación manual en dispositivo. El flujo móvil de pedidos usa `mobile/src/context/OrdersContext.js` -> `mobile/src/services/orderService.js` -> `mobile/src/services/apiClient.js` -> API protegida. Las ventas y comisiones requieren el servidor Next.js accesible. No versionar seeders ni datos temporales de defensa. Para publicación, revisar `docs/ENTREGA_FINAL.md`.

@@ -14,6 +14,8 @@ EmprendeLink es una plataforma para microemprendedores que permite administrar n
 - Luis Miguel Granados Artiga — GA130557
 - Jorge Alfonzo Mendoza Padilla — MP241100
 
+Link de video: https://drive.google.com/file/d/1QbS6Q21RjCO1KAxpJVTVR_uC7G1SOpJi/view?usp=drive_link
+
 ---
 
 # Antes de comenzar
@@ -210,7 +212,7 @@ FIREBASE_SERVICE_ACCOUNT_JSON
 ```bash
 git clone https://github.com/Notchez/emprendelink-dps.git
 cd emprendelink-dps
-git switch develop
+git switch main
 npm ci
 ```
 
@@ -240,7 +242,7 @@ http://localhost:3000/api/health
 
 ---
 
-# Aplicación móvil — preparación de Etapa 3 Foro 2
+# Aplicación móvil — entrega final DPS941
 
 El repositorio incluye una aplicación independiente en:
 
@@ -260,9 +262,11 @@ Services
 Firebase cliente / API Next.js protegida
 ```
 
-La aplicación móvil implementa login, registro, Google Sign-In, sesión persistente, navegación por
-tabs, catálogo Firestore, carrito y pedidos reales mediante los Route Handlers. El historial y el
-detalle también se consultan en la API, sin trasladar acceso a datos dentro de las pantallas.
+La aplicación móvil implementa login, registro, Google Sign-In, sesión persistente y pantallas
+nativas para **CUSTOMER, ENTREPRENEUR y ADMIN**. Incluye catálogos con imágenes, carrito,
+checkout, pedidos con detalle e historial, gestión de negocios/categorías/productos, gestión
+administrativa de planes, compradores y emprendimientos, además de ventas y comisiones con filtros
+mensuales. Los pedidos y operaciones privilegiadas utilizan Route Handlers protegidos.
 
 La integración comparte Firebase Authentication y Firestore con la web durante pruebas
 integradas. Las operaciones privilegiadas de pedidos seguirán usando la API de Next.js y Firebase
@@ -505,7 +509,9 @@ AGENTS.md
 CONTRIBUTING.md
 
 docs/ARCHITECTURE.md
-docs/AUDIT_FORO2.md
+docs/INDEX.md
+docs/ENTREGA_FINAL.md
+docs/archivo/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/FIREBASE_SETUP.md
@@ -567,3 +573,11 @@ CI/CD
 ```
 
 debe comunicarse al equipo antes de integrarse.
+
+## Estado de la entrega final — 24/11/2026
+
+La implementación incluye una aplicación web con Next.js y una app nativa Android con React Native/Expo; ambas utilizan el mismo proyecto Firebase en las pruebas integradas. El video de defensa está enlazado después de los integrantes. La evidencia técnica, pruebas, rutas y límites conocidos se encuentran en [docs/ENTREGA_FINAL.md](docs/ENTREGA_FINAL.md).
+
+**No confundir entrega académica con despliegue público:** CD en Vercel, publicación en tiendas y decisión de licencia general no se documentan como completadas sin evidencia. La aplicación móvil necesita la API Next.js accesible desde el teléfono para pedidos, ventas y comisiones.
+
+**Datos temporales de defensa:** el seeder local se ejecutó para preparar pedidos de demostración. No es parte del producto ni se publica; antes de utilizar la base de datos para otros fines debe ejecutarse su limpieza controlada, descrita en la guía de entrega.

@@ -384,3 +384,13 @@ main
 ```
 
 Todo cambio importante debe pasar por Pull Request y CI.
+
+## Liberación académica final
+
+Para cerrar la entrega: rama temporal `docs/...` basada en `develop` → pruebas y revisión → PR a
+`develop` → CI en verde → PR de `develop` a `main` → CI en verde → merge. No empujar directo
+a `main`, no usar `--force`, no saltarse la protección de ramas. Tras la integración,
+actualizar las ramas locales con `git pull --ff-only`.
+
+No versionar `mobile/.env`, `.env.local`, Service Accounts ni el seeder temporal de defensa.
+El cierre del repositorio es independiente de la limpieza de datos temporales en Firestore.

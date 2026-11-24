@@ -1,4 +1,4 @@
-# EmprendeLink Mobile — Etapa 3 Foro 2
+# EmprendeLink Mobile — entrega final DPS941
 
 Aplicación React Native con Expo SDK 57 integrada con el mismo Firebase y la misma API de Next.js
 que la aplicación web.
@@ -73,8 +73,8 @@ el cambio automático del tema en un Samsung. Un reinicio de Metro no reemplaza
 esa reconstrucción nativa.
 
 Para validar el diseño en un teléfono Android, inicia el development build previamente instalado,
-ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas, búsqueda de
-negocios/productos, imágenes, carrito, pedidos y cierre de sesión. La exportación Metro y las
+ejecuta `npx expo start --dev-client --clear --lan` y comprueba las tres pestañas del Cliente, búsqueda de negocios, visualización de productos,
+imágenes, carrito, pedidos y cierre de sesión. Repite las pruebas de ADMIN y ENTREPRENEUR. La exportación Metro y las
 pruebas automáticas no sustituyen esta revisión visual en un dispositivo físico.
 
 Los precios, el cliente y la comisión nunca se aceptan como autoridad desde el teléfono: los Route
@@ -176,8 +176,24 @@ Services
 `src/lib/firebase/client.js` es la única inicialización del SDK. Los services aceptan dependencias
 inyectables para probar autenticación, consultas y HTTP sin tocar servicios reales.
 
-## Alcance pendiente
+## Estado de entrega final y verificaciones manuales
 
-El flujo funcional móvil de esta etapa es CUSTOMER. ENTREPRENEUR y ADMIN se enrutan a una salida
-segura con logout; su administración completa continúa en la web. Debe probarse manualmente Google
-Sign-In en un development build firmado y con las huellas del proyecto Firebase de cada integrante.
+La aplicación móvil dispone de interfaces nativas para **CUSTOMER, ENTREPRENEUR y ADMIN**. Los
+services operan con Firebase Authentication, Firestore y API Next.js protegida: no son mocks de
+producción. El flujo de cliente incluye navegación, catálogo, carrito, checkout, pedidos e historial;
+los paneles de administración incluyen negocios, productos, compradores, planes, ventas y comisiones.
+
+Verificaciones manuales antes de distribuir APK: Google Sign-In en el development build firmado,
+restauración y separación de sesión por UID, acceso por rol, pedidos de extremo a extremo,
+actualización de estados, comisiones solo en DELIVERED, cambio claro/oscuro, insets Android y
+conectividad a la API desde la red del dispositivo. `npm test` y `npm run export:android`
+validan pruebas y bundle, **no sustituyen una prueba real del APK**.
+
+El despliegue en tiendas (Google Play / App Store) no forma parte del estado confirmado de la entrega.
+Consultar [entrega final](../docs/ENTREGA_FINAL.md) y [Firebase](../docs/FIREBASE_SETUP.md).
+
+## Red local / IP variable
+
+En teléfono físico, `EXPO_PUBLIC_API_BASE_URL` debe apuntar al servidor Next.js con la IP LAN vigente y puerto 3000. No utilizar `localhost` para la PC en Android. Una reserva DHCP en el router evita que la IP del equipo cambie; si cambia, actualiza `mobile/.env` y vuelve a iniciar Metro.
+
+Comprobar desde Chrome Android: `http://IP-LAN:3000/api/health`. El puerto Metro de Expo (8081/8082) no es el puerto de la API (3000).

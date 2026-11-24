@@ -41,3 +41,6 @@ Thumbs.db
 coverage/
 # Etapa 3 - entregables generados
 docs/ETAPA3_FORO1.pdf
+
+# Seeder académico temporal: NO VERSIONAR
+/scripts/seed-demo-orders.mjs

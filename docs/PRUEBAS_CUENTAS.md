@@ -407,6 +407,22 @@ Varias pestañas del mismo perfil comparten la misma sesión Firebase.
 
 ---
 
+# 13. Validación móvil de entrega final
+
+1. En Android development build, iniciar sesión con CUSTOMER, ENTREPRENEUR y ADMIN por separado.
+2. CUSTOMER: catálogo, imágenes, carrito, cantidades, checkout, nuevo pedido e historial; cambiar de UID y confirmar que no se hereda el carrito.
+3. ENTREPRENEUR: negocio propio, categorías, productos, cambio de estados y reportes de ventas/comisiones con mes seleccionable.
+4. ADMIN: compradores, emprendimientos, planes, pedidos globales, ventas y comisiones; comprobar restricciones desde otra cuenta.
+5. Google Sign-In: comprobar en APK de desarrollo firmado (no Expo Go), incluyendo caso de perfil nuevo y cuenta desactivada.
+6. Verificar que `DELIVERED` genere comisión una sola vez y que `CANCELLED` no la genere.
+7. Cambiar el modo claro/oscuro de Android y revisar la navegación inferior/áreas seguras.
+8. Revisar la API desde el celular mediante `http://IP-LAN:3000/api/health` y configurar `mobile/.env` sin secretos administrativos.
+
+Los pedidos de demostración insertados por un seeder local deben distinguirse de compras reales.
+No incluir identificadores personales ni credenciales en las capturas o en los commits.
+
+Esta lista es un **plan de verificación manual**, no un informe de resultados completados.
+
 # Resultado esperado
 
 Debes poder demostrar:

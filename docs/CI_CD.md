@@ -87,8 +87,8 @@ Ejecuta las pruebas automatizadas.
 Actualmente:
 
 ```text
-Web: 12 tests
-Móvil: 18 tests
+Web: npm test (cantidad actual según archivos y runner)
+Móvil: npm test (cantidad actual según archivos y runner)
 ```
 
 Los tests no escriben en Firebase real.
@@ -206,9 +206,10 @@ npm test
 
 Los tests utilizan persistencia controlada en memoria.
 
-El export Android actual tampoco necesita variables `EXPO_PUBLIC_*` porque Firebase móvil aún no
-está implementado. Cuando se integre, el CI deberá recibir únicamente la configuración pública
-necesaria para compilar; Firebase Admin seguirá siendo exclusivo del servidor.
+Firebase móvil **sí está implementado**. Los tests con dependencias inyectadas y el export del
+bundle Android del CI no autentican usuarios ni se conectan a Firestore real. Las variables
+`EXPO_PUBLIC_*` para ejecutar la aplicación integrada se proporcionan localmente o durante el build
+según el entorno; nunca incluir una Service Account en el bundle móvil.
 
 ---
 
@@ -250,3 +251,7 @@ documentar URL final
 ```
 
 Este documento debe actualizarse cuando esa configuración quede terminada.
+
+## Evidencia de entrega final
+
+La comprobación de PR, el resultado real del job `validate` y los resultados de `npm test`, `npm run check` y `npm run export:android` deben verificarse en cada commit de entrega. Esta guía describe el pipeline configurado, **no certifica que una ejecución específica de noviembre de 2026 haya pasado**. El despliegue continuo (CD) en Vercel continúa documentado como no confirmado.

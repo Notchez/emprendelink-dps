@@ -9,7 +9,7 @@ la documentación o los recursos originales de EmprendeLink.
 Ese texto atribuye material de Expo; no debe interpretarse como una licencia otorgada por Expo sobre
 el trabajo original del equipo ni como la licencia general de este repositorio.
 
-## Pendiente para la entrega final
+## Decisión legal pendiente de confirmar por el equipo
 
 La entrega exige una licencia Creative Commons, pero antes de agregarla el equipo debe confirmar:
 
@@ -24,3 +24,9 @@ una licencia de software si el equipo desea publicar el código con permisos de 
 No se añadió una licencia durante esta auditoría porque escoger una variante o cambiar el alcance
 legal requiere una decisión expresa del equipo. Los avisos de terceros deben conservarse cualquiera
 que sea la decisión.
+
+## Nota al cerrar el repositorio
+
+No afirmar que el código está licenciado bajo Creative Commons o MIT solo porque usa dependencias
+con esas licencias. Los avisos de terceros de `mobile/THIRD_PARTY_NOTICES.md` deben permanecer.
+**Sin acuerdo explícito de los autores, no se añade automáticamente un archivo LICENSE.**

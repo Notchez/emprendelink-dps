@@ -39,13 +39,13 @@ cd emprendelink-dps
 Cambia a:
 
 ```bash
-git switch develop
+git switch main
 ```
 
 Actualiza:
 
 ```bash
-git pull origin develop
+git pull --ff-only origin main
 ```
 
 ---
@@ -76,7 +76,7 @@ npm ci
 cd ..
 ```
 
-No agregues Firebase móvil todavía; su integración se realizará sustituyendo los services actuales.
+Firebase Authentication, Google Sign-In y Firestore ya están integrados en `mobile/`. Configura las variables públicas en `mobile/.env`; no copies credenciales administrativas a Expo.
 
 ---
 
@@ -293,7 +293,10 @@ CONTRIBUTING.md
 docs/FIREBASE_SETUP.md
 docs/LLM_CONTEXT.md
 docs/ARCHITECTURE.md
-docs/AUDIT_FORO2.md
+docs/INDEX.md
+docs/ENTREGA_FINAL.md
+mobile/README.md
+docs/archivo/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/RESPONSIBILITIES.md
@@ -317,3 +320,13 @@ Si no sabes qué hacer:
 5. Lee la documentación.
 6. Pregunta antes de romper contratos compartidos.
 ```
+
+## Ejecución integrada web y Android (entrega final)
+
+1. Configura ".env.local" (raíz) y "mobile/.env" siguiendo `docs/FIREBASE_SETUP.md` y `mobile/.env.example`.
+2. Desde la raíz: `npm run dev -- --hostname 0.0.0.0` (API en puerto 3000).
+3. Desde `mobile/`: `npx expo start --dev-client --clear --lan`.
+4. En `mobile/.env`, `EXPO_PUBLIC_API_BASE_URL` debe apuntar a la IP LAN vigente de la PC, por ejemplo `http://192.168.1.X:3000` (sustituye X por el número actual).
+5. Abre `http://<IP-LAN>:3000/api/health` desde Chrome en el teléfono para comprobar conectividad.
+
+Para Google Sign-In y cambios nativos se necesita un development build Android (no Expo Go). No subas `.env`, `.env.local`, `google-services.json` ni Service Accounts.

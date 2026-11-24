@@ -76,3 +76,10 @@ npm run export:android
 ```
 
 Una auditoría limpia no es motivo para publicar sin las pruebas manuales anteriores.
+
+## Vigencia de los resultados
+
+Este informe registra el resultado de la auditoría del **18/11/2026**, no el estado garantizado de
+las dependencias en cualquier fecha posterior. Para una entrega nueva volver a ejecutar
+`npm audit` en la raíz y dentro de `mobile/`; conservar el resultado de CI asociado al commit
+final. No cambiar lockfiles o versiones únicamente para modificar la documentación.
