@@ -389,3 +389,12 @@ documentación
 ```
 
 Un cambio de contrato debe coordinarse con el equipo.
+
+## Metadatos temporales de pruebas académicas
+
+Los pedidos reales usan el contrato `Order` documentado arriba. Durante la defensa se pueden
+insertar **registros artificiales** con `demoSeed` y `demoSeededAt` opcionales como marca de
+limpieza; estos campos **no son requisitos del producto** y no deben mezclarse con el historial
+real de ventas. La eliminación controlada debe borrar el pedido marcado, su `orderHistory` y la
+comisión con ID del pedido, sin tocar `users`, `products`, `businesses` ni `plans`.
+No ejecutar un borrado global por fecha o por estado.

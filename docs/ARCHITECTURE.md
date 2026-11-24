@@ -92,3 +92,19 @@ credenciales nunca se comparten ni se versionan.
 Los módulos y plataformas se comunican mediante contratos compartidos y services. Un módulo no debe
 importar componentes internos de otro módulo para acceder a sus datos. Los contratos oficiales se
 mantienen en `docs/DATA_CONTRACTS.md` y `docs/API_CONVENTIONS.md`.
+
+## Protección del estado y reportes móviles
+
+`mobile/App.js` crea los Providers de carrito/pedidos con clave derivada del UID para aislar el
+estado al cambiar de usuario. `RootNavigator.js` presenta distintos flujos para CUSTOMER,
+ENTREPRENEUR y ADMIN, sin que la navegación sustituya las autorizaciones del servidor.
+
+El checkout móvil utiliza `OrdersContext.placeOrder()` → `orderService.createOrder()` →
+`apiClient.request()` → `POST /api/orders`. La API verifica token Firebase, rol, negocio,
+productos y precio en Firestore antes de escribir con Firebase Admin. La edición de estados
+respeta `ORDER_STATUS_TRANSITIONS`; los historiales se guardan en `orderHistory` y las
+comisiones en `commissions` al alcanzar `DELIVERED`.
+
+`mobile/src/screens/management/OrdersManagement.js` presenta informes mensuales y acumulados;
+no escribe comisiones desde el dispositivo. Los servicios de API requieren un servidor Next.js
+accesible desde el celular. El modo claro/oscuro se adapta al tema del sistema Android.

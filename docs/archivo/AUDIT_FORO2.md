@@ -1,3 +1,5 @@
+> **Documento histórico (04/11/2026).** Esta auditoría corresponde al estado del Foro 2; las referencias a mocks o integraciones pendientes no describen la entrega final. Véanse `../ENTREGA_FINAL.md` y `../../mobile/README.md`.
+
 # Auditoría técnica — preparación de Etapa 3 Foro 2
 
 Fecha de revisión: 4 de noviembre de 2026.

@@ -212,6 +212,27 @@ El repositorio usa `expo@~57.0.33` y `expo-dev-client@~57.0.21` dentro del SDK 5
 La auditoría de dependencias y el export Android no sustituyen una prueba en el dispositivo
 ni la reconstrucción del development build después de actualizar el cliente nativo.
 
+## 4.4 Comunicación local Android ↔ Next.js
+
+La API Next.js se ejecuta normalmente en el puerto **3000**; Metro/Expo usa puertos distintos.
+Desde la raíz del repositorio:
+
+```powershell
+npm run dev -- --hostname 0.0.0.0
+```
+
+Desde `mobile/`:
+
+```powershell
+npx expo start --dev-client --clear --lan
+```
+
+En el archivo ignorado `mobile/.env`, definir
+`EXPO_PUBLIC_API_BASE_URL=http://IP-ACTUAL-DE-LA-PC:3000`. En Windows, consultar la IP con
+`Get-NetIPConfiguration`. No codificar una IP específica en el repositorio: el router puede
+cambiarla mediante DHCP. Comprobar `http://IP-ACTUAL-DE-LA-PC:3000/api/health` desde el teléfono
+conectado a la misma red. Si la IP cambia, actualizar `mobile/.env` y volver a iniciar Expo.
+
 ---
 
 # 5. Crear `.env.local`

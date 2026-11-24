@@ -91,11 +91,12 @@ Context / hooks / lógica
 ↓
 Services
 ↓
-mock temporal hoy; Firebase y API web en la integración futura
+Firebase Authentication y Firestore cliente / API Next.js protegida
 ```
 
-Firebase móvil todavía no está implementado. No mover datos mock a las pantallas ni afirmar que la
-app móvil ya persiste en Firebase.
+Firebase móvil está integrado mediante services y Context. La aplicación incluye pantallas nativas
+CUSTOMER, ENTREPRENEUR y ADMIN; sus pedidos e informes usan la API Next.js protegida y Firebase Admin
+solo en el servidor. Los tests usan inyección/mocks, pero los services de producción consultan datos reales.
 
 ---
 
@@ -395,7 +396,7 @@ No afirmar que algo funciona si no se ejecutó.
 README.md
 AGENTS.md
 docs/ARCHITECTURE.md
-docs/AUDIT_FORO2.md
+docs/archivo/AUDIT_FORO2.md
 docs/API_CONVENTIONS.md
 docs/DATA_CONTRACTS.md
 docs/FIREBASE_SETUP.md
@@ -407,3 +408,14 @@ docs/PRUEBAS_CUENTAS.md
 ```
 
 Si estos documentos contradicen una propuesta, no inventes una nueva convención. Señala el conflicto.
+
+# Entrega final y estado real (noviembre 2026)
+
+- Web: Next.js 16.4.6 / React 19; móvil: React Native 0.86.3 / Expo 57.
+- Los tres roles tienen interfaz nativa móvil; no se utiliza WebView para los paneles.
+- Google Sign-In requiere development build, configuración OAuth/SHA y Firebase Authentication.
+- El carrito y las órdenes se aíslan al cambiar UID: consultar `mobile/App.js` y `OrdersContext.js`.
+- El cambio de estados y comisiones se aplica en servidor; DELIVERED crea una comisión y CANCELLED no.
+- La API está en `src/app/api/`; el móvil usa `EXPO_PUBLIC_API_BASE_URL` y Bearer ID token.
+- No hay evidencia documental de CD en producción o publicación en Google Play; no afirmarlas.
+- Video: https://drive.google.com/file/d/1QbS6Q21RjCO1KAxpJVTVR_uC7G1SOpJi/view?usp=drive_link. Véase `docs/ENTREGA_FINAL.md`.

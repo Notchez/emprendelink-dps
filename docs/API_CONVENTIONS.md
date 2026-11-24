@@ -44,21 +44,24 @@ src/app/api/
 
 ## Nombres
 
-Preferir sustantivos en plural:
+Preferir sustantivos en plural. **Rutas implementadas relevantes:**
 
 ```text
-/api/products
+/api/health
 /api/orders
-/api/customers
-/api/plans
-```
-
-Acciones especiales:
-
-```text
-/api/orders/[id]/status
+/api/orders/[id]
 /api/orders/[id]/history
+/api/orders/[id]/status
+/api/orders/[id]/financials
+/api/commissions
+/api/customers
+/api/admin/users/[id]/status
+/api/admin/businesses/[id]/plan
 ```
+
+Negocios, productos, categorías y planes no tienen todos un endpoint CRUD propio: varias
+operaciones autorizadas usan los services y el SDK de Firestore cliente. No afirmar que
+`/api/products` o `/api/plans` existen sin implementarlos.
 
 ## UI que consume API
 

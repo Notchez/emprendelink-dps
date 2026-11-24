@@ -92,3 +92,10 @@ Consume comisiones generadas por pedidos; no redefine esa regla.
 - PR;
 - documentación mínima;
 - poder defender su código.
+
+## Entrega multiplataforma
+
+La asignación anterior describe la división funcional del **módulo web**; no equivale a una
+atribución de commits móviles por persona. La versión React Native incorpora los tres roles y
+reutiliza los contratos compartidos. Consultar `mobile/README.md` y `docs/ENTREGA_FINAL.md`
+para el alcance final. La historia de contribuciones verificable está en los commits y PR de GitHub.
