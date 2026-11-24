@@ -1,0 +1,344 @@
+.shell {
+    --el-text: #111827;
+    --el-muted: #6b7280;
+    --el-surface: #ffffff;
+    --el-page-bg: #f5f6f8;
+    --el-subtle-bg: #f3f4f6;
+    --el-border: #e5e7eb;
+    --el-link: #2563eb;
+
+    --el-danger: #b91c1c;
+    --el-danger-bg: #fef2f2;
+
+    --el-success: #166534;
+    --el-success-bg: #dcfce7;
+
+    --el-warning: #92400e;
+    --el-warning-bg: #fef3c7;
+
+    min-height: 100vh;
+    background: var(--el-page-bg);
+    color: var(--el-text);
+    color-scheme: light;
+}
+
+.shell[data-theme="dark"] {
+    --el-text: #f3f4f6;
+    --el-muted: #aeb8c7;
+    --el-surface: #1f2937;
+    --el-page-bg: #111827;
+    --el-subtle-bg: #293548;
+    --el-border: #475569;
+    --el-link: #93c5fd;
+
+    --el-danger: #fca5a5;
+    --el-danger-bg: #451a1a;
+
+    --el-success: #86efac;
+    --el-success-bg: #143526;
+
+    --el-warning: #fde68a;
+    --el-warning-bg: #422f13;
+
+    color-scheme: dark;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    border-bottom: 1px solid var(--el-border);
+    background: color-mix(in srgb, var(--el-surface) 94%, transparent);
+    backdrop-filter: blur(16px);
+}
+
+.headerInner {
+    display: flex;
+    align-items: center;
+    width: min(1180px, calc(100% - 2rem));
+    min-height: 70px;
+    margin: 0 auto;
+    gap: 2rem;
+}
+
+.brand {
+    flex-shrink: 0;
+    color: var(--el-text);
+    font-size: 1.45rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+}
+
+.brand strong {
+    color: #2563eb;
+    font-weight: 800;
+}
+
+.mobileTitle {
+    display: none;
+}
+
+.desktopNavigation {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.desktopNavigation a {
+    padding: 0.65rem 0.9rem;
+    border-radius: 999px;
+    color: var(--el-muted);
+    font-size: 0.94rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.desktopNavigation a:hover {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.desktopNavigation .activeNavigation {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-left: auto;
+    min-width: 0;
+}
+
+.iconButton {
+    position: relative;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border: 1px solid var(--el-border);
+    border-radius: 50%;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font-size: 1.1rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.cartBadge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    display: grid;
+    min-width: 19px;
+    height: 19px;
+    place-items: center;
+    padding: 0 5px;
+    border: 2px solid var(--el-surface);
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 0.63rem;
+    font-weight: 800;
+}
+
+.authLinks {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.authLinks a {
+    padding: 0.65rem 0.9rem;
+    color: var(--el-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.authLinks .registerButton {
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.accountButton {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 0.3rem 0.55rem 0.3rem 0.3rem;
+    border-radius: 999px;
+    color: var(--el-text);
+    text-decoration: none;
+}
+
+.accountButton:hover {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.avatar {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.accountText {
+    display: grid;
+    min-width: 0;
+    line-height: 1.05;
+}
+
+.accountText small {
+    margin-bottom: 0.2rem;
+    color: var(--el-muted);
+    font-size: 0.65rem;
+}
+
+.accountText strong {
+    max-width: 110px;
+    overflow: hidden;
+    font-size: 0.86rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main {
+    width: min(1180px, calc(100% - 2rem));
+    min-width: 0;
+    margin: 0 auto;
+    padding: 2rem 0 3rem;
+}
+
+.footer {
+    border-top: 1px solid var(--el-border);
+    background: var(--el-surface);
+}
+
+.footer>div {
+    display: flex;
+    justify-content: space-between;
+    width: min(1180px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 1.5rem 0;
+    gap: 1rem;
+    color: var(--el-muted);
+    font-size: 0.85rem;
+}
+
+.footer strong {
+    color: var(--el-text);
+}
+
+.mobileNavigation {
+    display: none;
+}
+
+@media (max-width: 760px) {
+    .headerInner {
+        width: calc(100% - 1.2rem);
+        min-height: 60px;
+        gap: 0.6rem;
+    }
+
+    .brand,
+    .desktopNavigation {
+        display: none;
+    }
+
+    .mobileTitle {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        color: var(--el-text);
+        font-size: 1.15rem;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .actions {
+        gap: 0.4rem;
+    }
+
+    .accountText {
+        display: none;
+    }
+
+    .accountButton {
+        padding: 0;
+    }
+
+    .authLinks a:first-child {
+        display: none;
+    }
+
+    .authLinks .registerButton {
+        padding: 0.55rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
+    .main {
+        width: calc(100% - 1.2rem);
+        padding: 1.25rem 0 2rem;
+    }
+
+    .withBottomNavigation .main {
+        padding-bottom: 6.5rem;
+    }
+
+    .footer {
+        display: none;
+    }
+
+    .mobileNavigation {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 250;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--el-border);
+        background: var(--el-surface);
+        padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: 0 -6px 24px rgb(0 0 0 / 8%);
+    }
+
+    .mobileNavigationItem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-height: 68px;
+        color: var(--el-muted);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .mobileNavigationItem i {
+        font-size: 1.25rem;
+    }
+
+    .mobileNavigationItem:hover,
+    .mobileActive {
+        color: #2563eb;
+    }
+}

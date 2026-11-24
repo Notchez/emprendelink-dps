@@ -1,0 +1,584 @@
+.page {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 1250px;
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--el-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.heading h1 {
+    margin: 0 0 0.5rem;
+    color: var(--el-text);
+}
+
+.heading p:last-child {
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.primaryButton,
+.secondaryButton,
+.confirmButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 43px;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 9px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font: inherit;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.primaryButton,
+.confirmButton {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.primaryButton:hover,
+.confirmButton:hover:not(:disabled) {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+.secondaryButton:hover {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+}
+
+.confirmButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.checkoutGrid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr) minmax(300px, 380px);
+    align-items: start;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.formColumn {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.panel,
+.summaryPanel,
+.emptyState,
+.confirmationCard {
+    min-width: 0;
+    padding: 1.5rem;
+    border: 1px solid var(--el-border);
+    border-radius: 14px;
+    background: var(--el-surface);
+}
+
+.sectionHeading {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stepNumber {
+    display: grid;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.sectionHeading h2 {
+    margin: 0 0 0.4rem;
+    color: var(--el-text);
+    font-size: 1.35rem;
+}
+
+.sectionHeading p {
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.contactInfo {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.contactInfo>div {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+}
+
+.contactInfo span {
+    color: var(--el-muted);
+    font-size: 0.88rem;
+}
+
+.contactInfo strong {
+    color: var(--el-text);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.profileLink,
+.editCartLink {
+    display: inline-flex;
+    width: fit-content;
+    color: var(--el-link);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.profileLink {
+    margin-bottom: 1.25rem;
+}
+
+.profileLink:hover,
+.editCartLink:hover {
+    text-decoration: underline;
+}
+
+.field {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.field label {
+    color: var(--el-text);
+    font-weight: 700;
+}
+
+.optional,
+.field small {
+    color: var(--el-muted);
+    font-weight: 400;
+}
+
+.field textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 0.85rem;
+    border: 1px solid var(--el-border);
+    border-radius: 9px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font: inherit;
+    resize: vertical;
+}
+
+.field textarea:focus-visible {
+    outline: 2px solid var(--el-link);
+    outline-offset: 2px;
+}
+
+.field textarea:disabled {
+    opacity: 0.65;
+}
+
+.paymentMethod {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    background: var(--el-subtle-bg);
+}
+
+.paymentIcon {
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.paymentMethod>div {
+    flex: 1;
+    min-width: 0;
+}
+
+.paymentMethod strong {
+    color: var(--el-text);
+    font-size: 1.05rem;
+}
+
+.paymentMethod p {
+    margin: 0.4rem 0 0;
+    color: var(--el-muted);
+    line-height: 1.5;
+}
+
+.selectedPayment {
+    display: grid;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.summaryPanel {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.summaryPanel h2 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.35rem;
+}
+
+.summaryDescription {
+    margin: -0.7rem 0 0;
+    color: var(--el-muted);
+}
+
+.productsList {
+    display: grid;
+    gap: 1rem;
+}
+
+.product {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 0.85rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.product:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.productImage {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 9px;
+    background: var(--el-subtle-bg);
+    font-size: 1.5rem;
+}
+
+.productImage img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.productInfo {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.productInfo strong {
+    color: var(--el-text);
+    overflow-wrap: anywhere;
+}
+
+.productInfo span {
+    color: var(--el-muted);
+    font-size: 0.9rem;
+}
+
+.editCartLink {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.totals {
+    display: grid;
+    gap: 1rem;
+}
+
+.totalRow,
+.grandTotal {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.totalRow {
+    color: var(--el-muted);
+}
+
+.grandTotal {
+    padding-top: 1rem;
+    border-top: 1px solid var(--el-border);
+    color: var(--el-text);
+    font-size: 1.2rem;
+}
+
+.priceNotice {
+    margin: 0;
+    color: var(--el-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.paymentReminder {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.9rem;
+    border-radius: 9px;
+    background: var(--el-success-bg);
+    color: var(--el-success);
+    font-weight: 700;
+}
+
+.confirmButton {
+    width: 100%;
+}
+
+.confirmationNote {
+    margin: 0;
+    color: var(--el-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.error,
+.successNotice {
+    margin: 0;
+    padding: 0.9rem;
+    border-radius: 9px;
+}
+
+.error {
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
+}
+
+.successNotice {
+    background: var(--el-success-bg);
+    color: var(--el-success);
+}
+
+.emptyState {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 3.5rem;
+}
+
+.emptyState h2,
+.emptyState p {
+    margin: 0;
+}
+
+.emptyState p {
+    max-width: 440px;
+    color: var(--el-muted);
+}
+
+/* Confirmación */
+
+.confirmationCard {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.confirmationHeader {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--el-border);
+    text-align: center;
+}
+
+.confirmationIcon {
+    display: grid;
+    width: 78px;
+    height: 78px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--el-success-bg);
+    color: var(--el-success);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.confirmationHeader h1 {
+    margin: 0;
+    color: var(--el-text);
+}
+
+.confirmationHeader p {
+    max-width: 620px;
+    margin: 0;
+    color: var(--el-muted);
+}
+
+.orderNumber {
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 999px;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.confirmationGrid {
+    display: grid;
+    grid-template-columns: repeat(2,
+            minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.confirmationSection {
+    display: grid;
+    align-content: start;
+    gap: 0.8rem;
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--el-border);
+    border-radius: 12px;
+    background: var(--el-subtle-bg);
+}
+
+.confirmationSection h2 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.1rem;
+}
+
+.confirmationSection p {
+    margin: 0;
+    color: var(--el-muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.confirmationSection strong {
+    color: var(--el-text);
+}
+
+.confirmationProducts {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.confirmationProducts li {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--el-text);
+}
+
+.confirmationProducts li span {
+    overflow-wrap: anywhere;
+}
+
+.confirmationProducts li strong {
+    white-space: nowrap;
+}
+
+.confirmationTotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--el-border);
+    color: var(--el-text);
+    font-size: 1.25rem;
+}
+
+.confirmationActions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+@media (max-width: 990px) {
+    .checkoutGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .heading {
+        align-items: flex-start;
+    }
+
+    .panel,
+    .summaryPanel,
+    .confirmationCard {
+        padding: 1rem;
+    }
+
+    .contactInfo,
+    .confirmationGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .paymentMethod {
+        padding: 1rem;
+    }
+
+    .confirmationActions a {
+        width: 100%;
+    }
+}

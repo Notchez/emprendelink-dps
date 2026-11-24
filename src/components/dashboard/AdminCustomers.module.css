@@ -1,0 +1,273 @@
+/* Pantalla de compradores, compatible con temas claro y oscuro. */
+.page {
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.heading h1 {
+    margin: 0.5rem 0;
+}
+
+.heading p:last-child {
+    margin-bottom: 0;
+    color: var(--el-muted, #c4cfdf);
+}
+
+.secondaryButton,
+.activateButton,
+.dangerButton {
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--el-border);
+    border-radius: 9px;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondaryButton:hover:not(:disabled) {
+    border-color: var(--el-link);
+}
+
+.activateButton {
+    border-color: #087443;
+    background: #087443;
+    color: #ffffff;
+}
+
+.activateButton:hover:not(:disabled) {
+    background: #066239;
+}
+
+.dangerButton {
+    border-color: #a64848;
+    background: #7f3030;
+    color: #ffffff;
+}
+
+.dangerButton:hover:not(:disabled) {
+    background: #692727;
+}
+
+.secondaryButton:disabled,
+.activateButton:disabled,
+.dangerButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error,
+.success {
+    margin: 0;
+    padding: 1rem;
+    border-radius: 9px;
+}
+
+.error {
+    border: 1px solid var(--el-border);
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
+}
+
+.success {
+    border: 1px solid var(--el-border);
+    background: var(--el-success-bg);
+    color: var(--el-success);
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(min(100%, 220px), 1fr));
+    gap: 1rem;
+}
+
+.summaryCard,
+.tableCard,
+.detailsCard {
+    min-width: 0;
+    border: 1px solid var(--el-border);
+    border-radius: 14px;
+    background: var(--el-surface);
+}
+
+.summaryCard {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+}
+
+.summaryCard span {
+    color: var(--el-muted);
+}
+
+.summaryCard strong {
+    color: var(--el-text);
+    font-size: 1.8rem;
+}
+
+.tableWrap {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--el-border);
+    vertical-align: middle;
+}
+
+.table th {
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    font-weight: 700;
+}
+
+.table td {
+    color: var(--el-text);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.active,
+.inactive {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.active {
+    background: var(--el-success-bg);
+    color: var(--el-success);
+}
+
+.inactive {
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+}
+
+.notApplicable {
+    color: var(--el-muted);
+}
+
+.detailsCard {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.detailsHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.detailsHeading h2 {
+    margin: 0.35rem 0 0;
+}
+
+.sectionLabel {
+    margin: 0;
+    color: var(--el-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.detail {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 10px;
+    background: var(--el-subtle-bg);
+}
+
+.detail span {
+    color: var(--el-muted);
+    font-size: 0.9rem;
+}
+
+.detail strong,
+.detail a {
+    color: var(--el-text);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.detail a {
+    color: var(--el-link);
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.accountActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--el-border);
+}
+
+.accountActions h3 {
+    margin: 0 0 0.5rem;
+}
+
+.accountActions p {
+    max-width: 620px;
+    margin: 0;
+    color: var(--el-muted);
+}
+
+@media (max-width: 640px) {
+    .detailsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .detailsCard {
+        padding: 1rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+    }
+}

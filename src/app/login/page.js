@@ -1,9 +1,9 @@
+import { Suspense } from "react";
+import { AccountForm } from "@/components/auth/AccountForm";
 export default function Page() {
   return (
-    <main className="container">
-      <p className="eyebrow">Integrante 1</p>
-      <h1>Login</h1>
-      <p>Placeholder inicial. Implementar siguiendo README.md y AGENTS.md.</p>
-    </main>
+    <Suspense fallback={<p>Cargando...</p>}>
+      <AccountForm mode="login" />
+    </Suspense>
   );
 }

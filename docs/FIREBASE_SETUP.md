@@ -1,0 +1,933 @@
+# Configuración de Firebase desde cero — EmprendeLink
+
+Esta guía está pensada para un integrante que acaba de clonar el repositorio y nunca ha configurado Firebase.
+
+No necesitas acceso al Firebase de otro integrante.
+
+Cada desarrollador debe crear su propio proyecto Firebase.
+
+---
+
+# 1. Cómo funciona
+
+Todos usamos el mismo código:
+
+```text
+EmprendeLink
+├── UI
+├── lógica
+├── servicios
+├── reglas
+└── estructura de datos
+```
+
+Pero cada integrante puede utilizar una base de datos independiente:
+
+```text
+Tito
+└── Firebase Tito
+
+Marvin
+└── Firebase Marvin
+
+Rafael
+└── Firebase Rafael
+
+Luis
+└── Firebase Luis
+
+Jorge
+└── Firebase Jorge
+```
+
+Por lo tanto:
+
+- borrar datos en tu Firebase no afecta a los demás;
+- tus usuarios son solamente tuyos;
+- tus pedidos son solamente tuyos;
+- tus credenciales son solamente tuyas;
+- nadie necesita compartir una Service Account.
+
+---
+
+# 2. Requisitos
+
+Antes de continuar necesitas:
+
+- Git;
+- Node.js 24.x;
+- npm;
+- VS Code;
+- una cuenta de Google;
+- el repositorio EmprendeLink clonado.
+
+Comprueba Node:
+
+```bash
+node -v
+```
+
+Debe mostrar una versión `24.x`.
+
+Comprueba npm:
+
+```bash
+npm -v
+```
+
+---
+
+# 3. Crear un proyecto Firebase
+
+Abrir:
+
+```text
+https://console.firebase.google.com/
+```
+
+Seleccionar:
+
+```text
+Crear un proyecto
+```
+
+Puedes utilizar un nombre como:
+
+```text
+emprendelink-tu-nombre
+```
+
+Ejemplo:
+
+```text
+emprendelink-marvin
+```
+
+Google Analytics no es necesario para este proyecto.
+
+Finaliza la creación del proyecto.
+
+---
+
+# 4. Crear la aplicación Web
+
+Dentro del proyecto Firebase:
+
+```text
+Configuración del proyecto
+→ General
+→ Tus apps
+→ Agregar app
+→ Web
+```
+
+El icono Web normalmente aparece como:
+
+```text
+</>
+```
+
+Nombre sugerido:
+
+```text
+EmprendeLink Web
+```
+
+No es necesario configurar Firebase Hosting.
+
+Firebase mostrará una configuración parecida a:
+
+```js
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "...",
+};
+```
+
+NO copies ese código dentro del proyecto.
+
+Los valores deben ir en `.env.local`.
+
+## 4.1 Estado y preparación de la aplicación móvil
+
+La aplicación de `mobile/` usa Firebase Authentication y Firestore mediante Firebase JS SDK. Para
+Google Sign-In también registra la aplicación nativa que se vaya a compilar. Se conserva esta separación:
+
+```text
+Pantallas
+  ↓
+Context / hooks
+  ↓
+services de mobile
+  ↓
+Firebase Authentication, consultas permitidas de Firestore o API web
+```
+
+No se debe importar Firebase directamente desde las pantallas ni mover Firebase Admin al teléfono.
+Los services móviles son la frontera implementada para esas dependencias.
+
+## 4.2 `NEXT_PUBLIC_*` y `EXPO_PUBLIC_*`
+
+Las variables pertenecen a procesos de compilación distintos:
+
+| Prefijo | Consumidor | Ubicación prevista |
+| --- | --- | --- |
+| `NEXT_PUBLIC_*` | navegador de la aplicación Next.js | `.env.local` en la raíz |
+| `EXPO_PUBLIC_*` | bundle de React Native generado por Expo | archivo local ignorado dentro de `mobile/` |
+| sin prefijo público | servidor de Next.js | `.env.local` en la raíz |
+
+Las variables públicas de Firebase identifican el proyecto y permiten usar el SDK cliente; no
+conceden por sí solas acceso administrativo. La seguridad depende de Firebase Authentication, las
+reglas de Firestore y la validación server-side.
+
+No copies `FIREBASE_SERVICE_ACCOUNT_JSON` a una variable `EXPO_PUBLIC_*`. Una variable con ese
+prefijo queda incluida en el bundle móvil y puede ser inspeccionada por cualquier usuario.
+
+Las variables concretas están documentadas en `mobile/.env.example`. Copia ese archivo a
+`mobile/.env` y completa tus valores públicos. `EXPO_PUBLIC_API_BASE_URL` debe ser accesible desde el
+dispositivo; `localhost` dentro de Android no representa la computadora anfitriona.
+
+## 4.3 Google Sign-In móvil
+
+Habilita Google en Authentication y registra Android con el paquete `com.emprendelink.app`.
+Agrega las huellas SHA-1/SHA-256 del certificado que firma el development build. Coloca
+`google-services.json` en `mobile/`; el archivo está ignorado por Git. Para iOS usa el bundle ID
+equivalente y `GoogleService-Info.plist`.
+
+Configura también `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` con el OAuth Client ID de tipo Web. Google
+Sign-In contiene código nativo: requiere un development build con los plugins de `mobile/app.json`
+y no funciona dentro de Expo Go.
+
+La combinación fijada se verificó para Expo SDK 57: `firebase@12.18.0` satisface el requisito de
+Firebase 12 o posterior; AsyncStorage 2.2.0 y expo-dev-client ~57.0.21 coinciden con las versiones
+recomendadas por el SDK; Google Sign-In 17.0.0 declara compatibilidad con Expo `>=52.0.40`. Cuando se
+cambie un plugin, archivo de servicios, package/bundle ID o certificado, hay que reconstruir el
+development build. Consulta `mobile/README.md` para la lista completa de pasos manuales.
+
+El repositorio usa `expo@~57.0.33` y `expo-dev-client@~57.0.21` dentro del SDK 57.
+La auditoría de dependencias y el export Android no sustituyen una prueba en el dispositivo
+ni la reconstrucción del development build después de actualizar el cliente nativo.
+
+## 4.4 Comunicación local Android ↔ Next.js
+
+La API Next.js se ejecuta normalmente en el puerto **3000**; Metro/Expo usa puertos distintos.
+Desde la raíz del repositorio:
+
+```powershell
+npm run dev -- --hostname 0.0.0.0
+```
+
+Desde `mobile/`:
+
+```powershell
+npx expo start --dev-client --clear --lan
+```
+
+En el archivo ignorado `mobile/.env`, definir
+`EXPO_PUBLIC_API_BASE_URL=http://IP-ACTUAL-DE-LA-PC:3000`. En Windows, consultar la IP con
+`Get-NetIPConfiguration`. No codificar una IP específica en el repositorio: el router puede
+cambiarla mediante DHCP. Comprobar `http://IP-ACTUAL-DE-LA-PC:3000/api/health` desde el teléfono
+conectado a la misma red. Si la IP cambia, actualizar `mobile/.env` y volver a iniciar Expo.
+
+---
+
+# 5. Crear `.env.local`
+
+Desde la raíz del repositorio.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+macOS / Linux:
+
+```bash
+cp .env.example .env.local
+```
+
+Luego abre:
+
+```text
+.env.local
+```
+
+Completa:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+```
+
+Ejemplo conceptual:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=valor_de_tu_firebase
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu-proyecto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu-proyecto
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu-proyecto.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef
+```
+
+Usa tus valores reales.
+
+Nunca copies los valores de otro integrante.
+
+---
+
+# 6. Activar Firebase Authentication
+
+Firebase Console:
+
+```text
+Authentication
+→ Comenzar
+→ Sign-in method / Método de acceso
+```
+
+Habilitar:
+
+```text
+Correo electrónico/Contraseña
+Google
+```
+
+No necesitas habilitar el enlace de correo electrónico.
+
+En la web (`/login` y `/registro`), Google utiliza el proveedor del SDK de Firebase
+con una ventana emergente. No necesita una segunda API key ni un client secret en Next.js.
+La primera vez, si `users/{uid}` no existe, redirige a `/completar-perfil` para elegir
+CUSTOMER o ENTREPRENEUR y proporcionar los campos obligatorios. Nunca asigna ADMIN
+automáticamente. Si ya tiene perfil, conserva su UID, rol y estado.
+
+Después revisa:
+
+```text
+Authentication
+→ Settings / Configuración
+→ Authorized domains / Dominios autorizados
+```
+
+Para desarrollo local debe estar permitido:
+
+```text
+localhost
+```
+
+Antes de desplegar en Vercel, agrega también el dominio real de la aplicación a esa lista.
+Para el acceso web con Google, no basta con haber configurado el SHA de Android.
+No compartas credenciales OAuth ni copies variables de la configuración móvil a la web.
+
+Pruebas manuales recomendadas: acceso Google con perfil existente, primer acceso
+sin perfil, cuenta desactivada, cierre de popup, acceso con correo/contraseña y
+restricción de ADMIN desde el registro público.
+
+---
+
+# 7. Crear Firestore Database
+
+Firebase Console:
+
+```text
+Firestore Database
+→ Crear base de datos
+```
+
+Usar la base:
+
+```text
+(default)
+```
+
+Selecciona una región razonablemente cercana.
+
+Las reglas temporales elegidas durante el asistente no importan porque en el siguiente paso reemplazaremos las reglas por las oficiales del proyecto.
+
+---
+
+# 8. Aplicar las reglas de EmprendeLink
+
+En el repositorio existe:
+
+```text
+firestore.rules
+```
+
+Abre ese archivo.
+
+Luego ve en Firebase:
+
+```text
+Firestore Database
+→ Rules / Reglas
+```
+
+Reemplaza TODO el contenido del editor por el contenido completo de:
+
+```text
+firestore.rules
+```
+
+Luego presiona:
+
+```text
+Publish / Publicar
+```
+
+Estas reglas controlan directamente desde el navegador:
+
+```text
+users
+businesses
+plans
+categories
+products
+```
+
+Los pedidos utilizan Firebase Admin desde el servidor.
+
+Las colecciones:
+
+```text
+orders
+orderHistory
+commissions
+```
+
+no deben ser modificadas directamente desde el navegador.
+
+---
+
+# 9. Crear la Service Account para Firebase Admin
+
+EmprendeLink utiliza Firebase Admin para operaciones server-side como:
+
+- crear pedidos;
+- consultar pedidos;
+- historial;
+- cambio de estado;
+- cálculo y creación de comisiones.
+
+Cada integrante debe generar SU propia credencial.
+
+Firebase Console:
+
+```text
+Configuración del proyecto
+→ Service accounts
+→ Firebase Admin SDK
+→ Generate new private key
+```
+
+Firebase descargará un archivo JSON.
+
+Ese archivo es PRIVADO.
+
+Nunca:
+
+```text
+❌ subirlo a GitHub
+❌ enviarlo al grupo
+❌ ponerlo en Discord
+❌ ponerlo en WhatsApp
+❌ pegarlo en README
+❌ colocarlo dentro del repositorio
+```
+
+---
+
+# 10. Convertir la Service Account a una sola línea
+
+El proyecto espera:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_JSON=
+```
+
+El valor debe ser el JSON completo en una sola línea.
+
+En PowerShell puedes obtenerlo con:
+
+```powershell
+Get-Content "RUTA\AL\ARCHIVO.json" -Raw |
+  ConvertFrom-Json |
+  ConvertTo-Json -Compress
+```
+
+Ejemplo:
+
+```powershell
+Get-Content "$HOME\Downloads\mi-service-account.json" -Raw |
+  ConvertFrom-Json |
+  ConvertTo-Json -Compress
+```
+
+PowerShell mostrará algo parecido a:
+
+```text
+{"type":"service_account","project_id":"...","private_key":"..."}
+```
+
+Copia la línea completa.
+
+En `.env.local`:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
+```
+
+Debe permanecer en una sola línea.
+
+No agregues ese valor a `.env.example`.
+
+---
+
+# 11. Instalar el proyecto
+
+Desde la raíz:
+
+```bash
+npm ci
+```
+
+`npm ci` utiliza exactamente las versiones guardadas en:
+
+```text
+package-lock.json
+```
+
+No instales versiones nuevas de dependencias por tu cuenta.
+
+La aplicación móvil tiene su propio lockfile. Para instalar exactamente sus dependencias:
+
+```bash
+cd mobile
+npm ci
+```
+
+Esto instala también Firebase JS SDK, AsyncStorage, expo-dev-client y Google Sign-In en las versiones
+fijadas por `mobile/package-lock.json`.
+
+---
+
+# 12. Comprobar el proyecto
+
+Ejecuta:
+
+```bash
+npm test
+```
+
+Actualmente deben pasar:
+
+```text
+la suite web completa
+```
+
+Luego:
+
+```bash
+npm run check
+```
+
+Este comando ejecuta:
+
+```text
+ESLint
++
+Next.js production build
+```
+
+Finalmente:
+
+```bash
+npm run dev
+```
+
+Abrir:
+
+```text
+http://localhost:3000
+```
+
+También puedes probar:
+
+```text
+http://localhost:3000/api/health
+```
+
+Para validar el proyecto móvil actual desde `mobile/`:
+
+```bash
+npm test
+npm run export:android
+```
+
+Las pruebas usan dependencias simuladas y no requieren credenciales ni un Firebase real. El export
+comprueba el bundle, pero Google Sign-In debe verificarse manualmente en un development build.
+
+---
+
+# 13. Crear el primer ADMIN
+
+La aplicación pública NO permite registrarse como ADMIN.
+
+Esto es intencional.
+
+Primero abre:
+
+```text
+http://localhost:3000/registro
+```
+
+Crea una cuenta como:
+
+```text
+Emprendedor
+```
+
+Después ve a:
+
+```text
+Firebase Console
+→ Authentication
+→ Users
+```
+
+Busca el usuario y copia su:
+
+```text
+UID
+```
+
+Luego:
+
+```text
+Firestore Database
+→ Data
+→ users
+→ documento con ese UID
+```
+
+Cambia solamente:
+
+```text
+role
+```
+
+de:
+
+```text
+ENTREPRENEUR
+```
+
+a:
+
+```text
+ADMIN
+```
+
+Debe ser un campo tipo:
+
+```text
+string
+```
+
+No cambies:
+
+```text
+active
+email
+createdAt
+```
+
+Inicia sesión nuevamente.
+
+Debes entrar a:
+
+```text
+/admin
+```
+
+---
+
+# 14. Crear los planes iniciales
+
+Con la cuenta ADMIN:
+
+```text
+/admin/planes
+```
+
+Si todavía no existen planes, utiliza:
+
+```text
+Crear planes base
+```
+
+Esto crea los planes iniciales del proyecto.
+
+Un emprendimiento necesita un plan activo antes de poder crear su negocio.
+
+---
+
+# 15. Crear un Emprendedor real
+
+Cierra sesión.
+
+Registra otro correo como:
+
+```text
+Emprendedor
+```
+
+Debe ingresar a:
+
+```text
+/emprendedor
+```
+
+Luego configura:
+
+```text
+Configuración del negocio
+```
+
+Después crea:
+
+```text
+Categoría
+→ Producto
+→ Activar producto
+```
+
+---
+
+# 16. Crear un Cliente
+
+Cierra sesión.
+
+Registra otro correo como:
+
+```text
+Cliente
+```
+
+Los datos obligatorios son:
+
+```text
+nombre
+correo
+teléfono
+dirección
+contraseña
+```
+
+Opcional:
+
+```text
+indicaciones de entrega
+```
+
+El Cliente puede:
+
+```text
+explorar negocios
+agregar productos
+usar carrito
+hacer checkout
+ver pedidos
+ver perfil
+```
+
+---
+
+# 17. Probar un pedido
+
+Con un Emprendedor:
+
+```text
+crear negocio
+crear categoría
+crear producto
+activar producto
+```
+
+Con Cliente:
+
+```text
+/
+→ seleccionar negocio
+→ agregar producto
+→ carrito
+→ checkout
+→ confirmar pedido
+```
+
+El pedido debe aparecer en Firestore:
+
+```text
+orders
+```
+
+También debe crearse:
+
+```text
+orderHistory
+```
+
+Cuando el Emprendedor avance el pedido hasta:
+
+```text
+DELIVERED
+```
+
+se genera una comisión en:
+
+```text
+commissions
+```
+
+## 17.1 Pruebas integradas entre web y móvil
+
+Durante el desarrollo cotidiano cada integrante puede mantener su Firebase independiente. Para una
+prueba integrada, la web y el móvil deben usar temporalmente la configuración pública del mismo
+proyecto Firebase y el mismo contrato de colecciones.
+
+El resultado esperado de la integración implementada es:
+
+- una cuenta autenticada representa el mismo UID en ambas aplicaciones;
+- el perfil vive en `users/{uid}` y conserva uno de los roles oficiales;
+- negocios, categorías y productos se comparten mediante Firestore y sus reglas;
+- el móvil envía el ID token a la API web para pedidos y operaciones privilegiadas;
+- Firebase Admin permanece únicamente en los Route Handlers del servidor.
+
+Compartir un proyecto para esta prueba no implica compartir Service Accounts. Solo la instancia de
+servidor autorizada necesita esa credencial privada.
+
+---
+
+# 18. Colecciones utilizadas
+
+La aplicación puede crear estas colecciones:
+
+```text
+users
+businesses
+plans
+categories
+products
+orders
+orderHistory
+commissions
+```
+
+No necesitas crearlas manualmente.
+
+Firestore las crea cuando se guarda el primer documento.
+
+La única excepción práctica es que necesitas crear/configurar el primer ADMIN para comenzar a gestionar planes.
+
+---
+
+# 19. Índices de Firestore
+
+Actualmente EmprendeLink no requiere un archivo de índices compuestos personalizado.
+
+No crees índices al azar.
+
+Si Firebase muestra un error indicando que una consulta necesita un índice, guarda el mensaje y consulta al equipo antes de modificar la configuración.
+
+---
+
+# 20. Imágenes
+
+Actualmente los productos y logos utilizan:
+
+```text
+URL de imagen
+```
+
+No necesitas configurar Firebase Storage para trabajar con la versión actual del proyecto.
+
+---
+
+# 21. Qué NO compartir
+
+Nunca compartir:
+
+```text
+.env.local
+Service Account JSON
+private_key
+contraseñas
+tokens de sesión
+```
+
+Sí se puede compartir:
+
+```text
+.env.example
+firestore.rules
+código fuente
+documentación
+estructura de datos
+```
+
+---
+
+# 22. Si algo falla
+
+Primero comprobar:
+
+```bash
+npm test
+npm run check
+```
+
+Luego comprobar:
+
+```text
+.env.local
+Authentication Email/Password
+Firestore creado
+firestore.rules publicadas
+FIREBASE_SERVICE_ACCOUNT_JSON
+```
+
+Si necesitas ayuda de un LLM:
+
+1. dile que lea `AGENTS.md`;
+2. dile que lea `docs/LLM_CONTEXT.md`;
+3. nunca le envíes tu Service Account;
+4. nunca le envíes `.env.local` completo.
+
+---
+
+# Resultado esperado
+
+Cada integrante debe terminar con:
+
+```text
+Código compartido
+        +
+Firebase propio
+        +
+.env.local propio
+        +
+usuarios propios
+        +
+datos propios
+```
+
+Ningún integrante necesita acceso administrativo al Firebase personal de otro integrante.

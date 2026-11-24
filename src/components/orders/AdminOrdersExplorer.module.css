@@ -1,0 +1,37 @@
+.page { display: grid; gap: 1.5rem; }
+.heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.heading h1 { margin: 0.35rem 0; }
+.heading p { margin: 0; color: var(--el-muted); }
+.filters, .orderCard, .businessCard { background: var(--el-surface); border: 1px solid var(--el-border); border-radius: 14px; }
+.filters { padding: clamp(1rem, 2.5vw, 1.5rem); display: grid; gap: 1rem; }
+.sectionTitle { display: flex; align-items: start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.sectionTitle h2 { margin: 0; font-size: 1.25rem; }
+.sectionTitle p, .hint { margin: 0.4rem 0 0; color: var(--el-muted); font-size: 0.9rem; }
+.filterGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.filterGrid label { display: grid; gap: 0.4rem; font-size: 0.88rem; font-weight: 700; }
+.filterGrid input, .filterGrid select { width: 100%; min-width: 0; padding: 0.72rem; color: var(--el-text); background: var(--el-surface); border: 1px solid var(--el-border); border-radius: 9px; }
+.filterGrid input:focus-visible, .filterGrid select:focus-visible, .businessCard:focus-visible { outline: 3px solid var(--el-link); outline-offset: 2px; }
+.wideField { grid-column: span 2; }
+.secondaryButton, .clearButton, .showMore { border: 1px solid var(--el-border); border-radius: 9px; background: var(--el-surface); color: var(--el-link); padding: 0.65rem 1rem; font-weight: 700; cursor: pointer; }
+.clearButton { padding: 0.3rem 0.65rem; }
+.message { padding: 1rem; border: 1px solid var(--el-border); border-radius: 9px; background: var(--el-surface); }
+.error { padding: 1rem; border: 1px solid var(--el-danger); border-radius: 9px; background: var(--el-danger-bg); color: var(--el-danger); }
+.businessGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 225px), 1fr)); gap: 1rem; }
+.businessCard { display: grid; justify-items: start; text-align: left; gap: 1rem; padding: 1.3rem; color: var(--el-text); cursor: pointer; transition: transform 160ms ease, border-color 160ms ease; }
+.businessCard:hover { transform: translateY(-2px); border-color: var(--el-link); }
+.businessCard strong { font-size: 1.15rem; }
+.businessCard > span:last-child { color: var(--el-link); font-weight: 700; font-size: 0.9rem; }
+.businessIcon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: #fff; background: #2563eb; font-size: 1.2rem; }
+.orderGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.orderCard { display: grid; align-content: start; gap: 0.6rem; padding: 1.3rem; min-width: 0; }
+.orderCard h3 { font-size: 1.05rem; margin: 0; }
+.orderCard p { margin: 0; color: var(--el-muted); }
+.cardTop, .cardFooter { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 0.7rem; }
+.cardTop p { font-size: 0.86rem; margin-top: 0.25rem; }
+.cardFooter { align-items: center; padding-top: 0.7rem; margin-top: 0.5rem; border-top: 1px solid var(--el-border); }
+.cardFooter strong { font-size: 1.15rem; }
+.cardFooter a { color: var(--el-link); font-weight: 700; text-decoration: none; }
+.cardFooter a:hover { text-decoration: underline; }
+.showMore { width: 100%; margin-top: 1rem; }
+@media (max-width: 850px) { .filterGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wideField { grid-column: span 2; } }
+@media (max-width: 620px) { .filterGrid, .orderGrid { grid-template-columns: 1fr; } .wideField { grid-column: span 1; } }

@@ -1,0 +1,369 @@
+.page {
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.heading h1 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.heading p:last-child {
+    margin: 0.4rem 0 0;
+    color: var(--el-muted);
+}
+
+.eyebrow {
+    margin: 0 0 0.35rem;
+    color: #2563eb;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr) minmax(280px, 350px);
+    align-items: start;
+    gap: 1.25rem;
+}
+
+.products,
+.summary,
+.empty {
+    min-width: 0;
+    border: 1px solid var(--el-border);
+    border-radius: 16px;
+    background: var(--el-surface);
+}
+
+.products {
+    padding: 1.25rem;
+}
+
+.business {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.businessLogo {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 11px;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+}
+
+.businessLogo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #ffffff;
+}
+
+.business div:nth-child(2) {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.business span {
+    color: var(--el-muted);
+    font-size: 0.75rem;
+}
+
+.business strong {
+    overflow: hidden;
+    color: var(--el-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.business a {
+    color: #2563eb;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.items {
+    display: grid;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--el-border);
+}
+
+.image {
+    display: grid;
+    width: 82px;
+    height: 82px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+}
+
+.image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.info {
+    min-width: 0;
+}
+
+.info h2 {
+    margin: 0 0 0.35rem;
+    color: var(--el-text);
+    font-size: 1rem;
+}
+
+.info span {
+    color: var(--el-muted);
+    font-size: 0.84rem;
+}
+
+.info button {
+    display: block;
+    margin-top: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--el-danger);
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+.controls {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+}
+
+.controls>strong {
+    color: var(--el-text);
+    white-space: nowrap;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.quantity button {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid var(--el-border);
+    border-radius: 50%;
+    background: var(--el-subtle-bg);
+    color: var(--el-text);
+    cursor: pointer;
+}
+
+.quantity strong {
+    min-width: 20px;
+    text-align: center;
+}
+
+.clearButton {
+    margin-top: 1rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--el-danger);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.summary {
+    position: sticky;
+    top: 90px;
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.summary h2 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.2rem;
+}
+
+.summaryRow,
+.total {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.summaryRow {
+    color: var(--el-muted);
+}
+
+.total {
+    padding-top: 1rem;
+    border-top: 1px solid var(--el-border);
+    color: var(--el-text);
+    font-size: 1.1rem;
+}
+
+.payment {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.9rem;
+    border-radius: 11px;
+    background: var(--el-subtle-bg);
+}
+
+.payment i {
+    font-size: 1.25rem;
+}
+
+.payment strong {
+    color: var(--el-text);
+}
+
+.payment p {
+    margin: 0.25rem 0 0;
+    color: var(--el-muted);
+    font-size: 0.8rem;
+}
+
+.checkoutButton {
+    min-height: 48px;
+    border: 0;
+    border-radius: 11px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.checkoutButton:hover {
+    background: #1d4ed8;
+}
+
+.checkoutButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.continueLink {
+    color: #2563eb;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.error {
+    margin: 0;
+    padding: 0.8rem;
+    border-radius: 9px;
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
+}
+
+.empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    padding: 4rem 1rem;
+    text-align: center;
+}
+
+.empty i {
+    color: var(--el-muted);
+    font-size: 3.5rem;
+}
+
+.empty h2,
+.empty p {
+    margin: 0;
+}
+
+.empty h2 {
+    color: var(--el-text);
+}
+
+.empty p {
+    max-width: 430px;
+    color: var(--el-muted);
+}
+
+.empty a {
+    margin-top: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-radius: 11px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .summary {
+        position: static;
+    }
+}
+
+@media (max-width: 560px) {
+    .products {
+        padding: 1rem;
+    }
+
+    .business {
+        grid-template-columns: 48px minmax(0, 1fr);
+    }
+
+    .businessLogo {
+        width: 48px;
+        height: 48px;
+    }
+
+    .business a {
+        grid-column: 2;
+    }
+
+    .item {
+        grid-template-columns: 68px minmax(0, 1fr);
+    }
+
+    .image {
+        width: 68px;
+        height: 68px;
+    }
+
+    .controls {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

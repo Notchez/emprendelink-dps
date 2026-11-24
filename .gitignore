@@ -15,6 +15,13 @@
 .env.test.local
 .env.production.local
 
+# Firebase / Google credentials
+*firebase-adminsdk*.json
+service-account*.json
+serviceAccount*.json
+firebase-service-account*.json
+google-credentials*.json
+
 # vercel
 .vercel
 
@@ -32,3 +39,8 @@ Thumbs.db
 # misc
 *.pem
 coverage/
+# Etapa 3 - entregables generados
+docs/ETAPA3_FORO1.pdf
+
+# Seeder académico temporal: NO VERSIONAR
+/scripts/seed-demo-orders.mjs

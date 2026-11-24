@@ -1,0 +1,110 @@
+.card {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--el-border);
+    border-radius: 16px;
+    background: var(--el-surface);
+}
+
+.productButton {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 135px;
+    gap: 1rem;
+    width: 100%;
+    min-width: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    color: var(--el-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.content h3 {
+    margin: 0 0 0.45rem;
+    color: var(--el-text);
+    font-size: 1.05rem;
+}
+
+.content p {
+    display: -webkit-box;
+    margin: 0 0 1rem;
+    overflow: hidden;
+    color: var(--el-muted);
+    font-size: 0.87rem;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.content strong {
+    margin-top: auto;
+    color: var(--el-text);
+    font-size: 1rem;
+}
+
+.imageContainer {
+    display: grid;
+    width: 135px;
+    height: 115px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+    font-size: 2rem;
+}
+
+.imageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.addButton {
+    position: absolute;
+    right: 0.55rem;
+    bottom: 0.55rem;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 1rem;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 520px) {
+    .productButton {
+        grid-template-columns: minmax(0, 1fr) 105px;
+        padding: 0.9rem;
+    }
+
+    .imageContainer {
+        width: 105px;
+        height: 95px;
+    }
+
+    .content h3 {
+        font-size: 0.98rem;
+    }
+
+    .content p {
+        font-size: 0.8rem;
+    }
+}

@@ -1,4 +1,5 @@
 import { getApps, initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 function getFirebaseConfig() {
   return {
@@ -26,4 +27,8 @@ export function getFirebaseApp() {
   }
 
   return initializeApp(config);
+}
+
+export function getFirebaseDb() {
+  return getFirestore(getFirebaseApp());
 }

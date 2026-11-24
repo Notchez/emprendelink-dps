@@ -1,62 +1,47 @@
 # Arquitectura de EmprendeLink
 
-## Capas
+EmprendeLink contiene dos aplicaciones que comparten contratos de datos y reglas de negocio:
 
-### 1. UI / Presentación
+```text
+Web: Next.js + React + Firebase
+Móvil: React Native + Expo + Firebase JS SDK
+```
+
+## Aplicación web
+
+### 1. UI / presentación
 
 Ubicación principal:
 
-- `src/app`
-- `src/components`
+- `src/app`;
+- `src/components`.
 
-Responsabilidad:
-
-- mostrar información;
-- formularios;
-- navegación;
-- eventos de usuario;
-- estados visuales.
-
-No debe:
-
-- acceder directamente a Firestore;
-- contener reglas de negocio complejas.
+Muestra información, formularios, navegación y estados visuales. No debe acceder directamente a
+Firestore ni contener reglas de negocio complejas.
 
 ### 2. Estado y lógica
 
 Ubicación:
 
-- `src/context`
-- `src/hooks`
+- `src/context`;
+- `src/hooks`;
 - `src/utils` para funciones puras.
 
-Responsabilidad:
+Coordina sesión, roles, estado, validaciones reutilizables y reglas de negocio.
 
-- sesión;
-- roles;
-- coordinación del estado;
-- validaciones reutilizables;
-- reglas de negocio.
-
-### 3. Servicios / datos
+### 3. Servicios y datos
 
 Ubicación:
 
-- `src/services`
-- `src/app/api`
-- `src/lib/firebase`
+- `src/services`;
+- `src/app/api`;
+- `src/lib/firebase`.
 
-Responsabilidad:
-
-- llamadas HTTP;
-- acceso a Firebase;
-- normalización de respuestas;
-- persistencia.
-
-## Flujo esperado
+Los services cliente consumen Firebase Web SDK o los Route Handlers. Las operaciones privilegiadas
+de pedidos, historial y comisiones pasan por Route Handlers y Firebase Admin.
 
 ```text
-Componente
+Componente web
   ↓
 Hook / Context / función de dominio
   ↓
@@ -69,7 +54,57 @@ Respuesta estándar
 UI
 ```
 
+## Aplicación móvil
+
+Ubicación principal:
+
+- `mobile/src/screens` y `mobile/src/components`: presentación;
+- `mobile/src/context`, `mobile/src/hooks` y `mobile/src/utils`: estado y lógica;
+- `mobile/src/services`: frontera de acceso a Firebase cliente y API web;
+- `mobile/src/lib/firebase/client.js`: inicialización única del SDK y persistencia de Auth.
+
+```text
+Pantalla móvil
+  ↓
+Context / hook / validación
+  ↓
+Service
+  ↓
+Firebase Authentication / Firestore permitido / API web protegida
+```
+
+Las pantallas móviles no importan Firebase directamente. Authentication y lecturas públicas usan el
+SDK cliente detrás de services; pedidos e historial pasan por la API web con un Firebase ID token.
+
+## Integración web y móvil
+
+Durante pruebas integradas, ambas aplicaciones deben apuntar al mismo proyecto Firebase para
+compartir usuarios y datos. Firebase Authentication emitirá la identidad y Firestore conservará los
+perfiles y recursos. El móvil consultará directamente solo las colecciones permitidas por reglas;
+pedidos y operaciones privilegiadas seguirán pasando por la API de Next.js, que valida sesión, rol,
+propiedad y datos antes de usar Firebase Admin.
+
+En desarrollo individual cada integrante puede usar un proyecto Firebase propio. Las variables y
+credenciales nunca se comparten ni se versionan.
+
 ## Principio de autonomía
 
-Los módulos se comunican mediante contratos compartidos y services. Un módulo no debe importar
-componentes internos de otro módulo para acceder a sus datos.
+Los módulos y plataformas se comunican mediante contratos compartidos y services. Un módulo no debe
+importar componentes internos de otro módulo para acceder a sus datos. Los contratos oficiales se
+mantienen en `docs/DATA_CONTRACTS.md` y `docs/API_CONVENTIONS.md`.
+
+## Protección del estado y reportes móviles
+
+`mobile/App.js` crea los Providers de carrito/pedidos con clave derivada del UID para aislar el
+estado al cambiar de usuario. `RootNavigator.js` presenta distintos flujos para CUSTOMER,
+ENTREPRENEUR y ADMIN, sin que la navegación sustituya las autorizaciones del servidor.
+
+El checkout móvil utiliza `OrdersContext.placeOrder()` → `orderService.createOrder()` →
+`apiClient.request()` → `POST /api/orders`. La API verifica token Firebase, rol, negocio,
+productos y precio en Firestore antes de escribir con Firebase Admin. La edición de estados
+respeta `ORDER_STATUS_TRANSITIONS`; los historiales se guardan en `orderHistory` y las
+comisiones en `commissions` al alcanzar `DELIVERED`.
+
+`mobile/src/screens/management/OrdersManagement.js` presenta informes mensuales y acumulados;
+no escribe comisiones desde el dispositivo. Los servicios de API requieren un servidor Next.js
+accesible desde el celular. El modo claro/oscuro se adapta al tema del sistema Android.

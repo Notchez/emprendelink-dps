@@ -1,0 +1,246 @@
+.page {
+    display: grid;
+    gap: 2rem;
+    min-width: 0;
+}
+
+.heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.35rem;
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.heading h1 {
+    margin: 0;
+    color: var(--el-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.heading p:last-child {
+    margin: 0.45rem 0 0;
+    color: var(--el-muted);
+}
+
+.refreshButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--el-border);
+    border-radius: 10px;
+    background: var(--el-surface);
+    color: var(--el-text);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.refreshButton:disabled {
+    opacity: 0.6;
+}
+
+.section {
+    display: grid;
+    gap: 1rem;
+}
+
+.sectionTitle {
+    margin: 0;
+    color: var(--el-text);
+    font-size: 1.15rem;
+}
+
+.ordersList {
+    display: grid;
+    gap: 1rem;
+}
+
+.orderCard {
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem;
+    border: 1px solid var(--el-border);
+    border-radius: 16px;
+    background: var(--el-surface);
+}
+
+.orderHeader {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.businessLogo {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--el-subtle-bg);
+    color: var(--el-muted);
+    font-size: 1.4rem;
+}
+
+.businessLogo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #ffffff;
+}
+
+.businessData {
+    min-width: 0;
+}
+
+.businessData h2 {
+    margin: 0.3rem 0 0;
+    overflow: hidden;
+    color: var(--el-text);
+    font-size: 1.05rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status {
+    color: #2563eb;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.status[data-status="DELIVERED"] {
+    color: var(--el-success);
+}
+
+.status[data-status="CANCELLED"] {
+    color: var(--el-danger);
+}
+
+.total {
+    color: var(--el-text);
+    white-space: nowrap;
+}
+
+.items {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--el-border);
+    border-bottom: 1px solid var(--el-border);
+}
+
+.items p {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    color: var(--el-muted);
+    font-size: 0.9rem;
+}
+
+.items p span:last-child {
+    color: var(--el-text);
+    white-space: nowrap;
+}
+
+.items small {
+    color: var(--el-muted);
+}
+
+.orderFooter {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.orderFooter a {
+    color: #2563eb;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.orderFooter a:hover {
+    text-decoration: underline;
+}
+
+.message,
+.error,
+.emptySmall {
+    padding: 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 12px;
+    background: var(--el-surface);
+    color: var(--el-muted);
+}
+
+.error {
+    background: var(--el-danger-bg);
+    color: var(--el-danger);
+}
+
+.empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    padding: 3rem 1rem;
+    border: 1px solid var(--el-border);
+    border-radius: 16px;
+    background: var(--el-surface);
+    text-align: center;
+}
+
+.empty i {
+    color: var(--el-muted);
+    font-size: 3rem;
+}
+
+.empty h2,
+.empty p {
+    margin: 0;
+}
+
+.empty p {
+    color: var(--el-muted);
+}
+
+.empty a {
+    margin-top: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+@media (max-width: 560px) {
+    .heading {
+        align-items: flex-start;
+    }
+
+    .refreshButton span {
+        display: none;
+    }
+
+    .orderHeader {
+        grid-template-columns: 52px minmax(0, 1fr);
+    }
+
+    .businessLogo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .total {
+        grid-column: 2;
+    }
+}

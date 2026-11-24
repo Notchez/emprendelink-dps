@@ -1,6 +1,13 @@
-// Responsable: completar únicamente dentro del dominio asignado.
-// Mantener acceso a datos/API fuera de los componentes visuales.
+import { apiRequest } from "@/services/apiClient";
 
 export const statementService = {
-  // TODO: agregar métodos cuando se defina el contrato concreto del módulo.
+  async getCommissions(businessId) {
+    if (!businessId) {
+      throw new Error("No se encontró el negocio para consultar las comisiones.");
+    }
+
+    const params = new URLSearchParams({ businessId });
+
+    return apiRequest(`/api/commissions?${params.toString()}`);
+  },
 };
